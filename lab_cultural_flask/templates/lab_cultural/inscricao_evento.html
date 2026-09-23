@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inscrição — {{ evento.titulo }} — ISPGAYA</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+</head>
+
+<body class="antialiased bg-[#f4f4f4] text-black font-sans flex flex-col min-h-screen">
+
+  {% include 'includes/navbar.html' %}
+
+  <!-- BREADCRUMB (Similar to legacy image) -->
+  <nav class="bg-white border-b border-gray-200 py-3 mt-16 md:mt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center text-[11px] font-medium uppercase tracking-wider text-gray-500">
+        <a href="{{ url_for('frontoffice.index') }}" class="hover:text-orange-500 transition-colors">Início</a>
+        <span class="mx-2 text-gray-300">/</span>
+        <a href="{{ url_for('frontoffice.eventos') }}" class="hover:text-orange-500 transition-colors">Eventos</a>
+        <span class="mx-2 text-gray-300">/</span>
+        <span class="text-black">Registo de Inscrição</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow py-12 px-4">
+    <div class="max-w-6xl mx-auto">
+
+      <!-- TITLE SECTION (Based on legacy image) -->
+      <div class="mb-10">
+        <h1 class="text-2xl md:text-3xl font-serif text-orange-500 font-bold mb-2">
+          Registo On-line — {{ evento.titulo }}
+        </h1>
+        <div class="h-1 w-full bg-orange-500/20 rounded-full overflow-hidden">
+          <div class="h-full bg-orange-500 w-1/4"></div>
+        </div>
+      </div>
+
+      <div class="flex flex-col lg:flex-row gap-8">
+
+        <!-- LEFT: FORM SECTION -->
+        <div class="flex-grow">
+          <div class="bg-white p-8 md:p-12 shadow-sm border border-gray-100 rounded-sm">
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash mb-8 p-4 rounded-sm border text-sm font-medium flex justify-between items-center
+                  {% if category == 'success' %}bg-green-50 border-green-200 text-green-800
+                  {% elif category == 'error' %}bg-red-50 border-red-200 text-red-800
+                  {% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %}">
+              <div>
+                <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} mr-2"></i>
+                {{ message }}
+              </div>
+              <button class="flash-close ml-4 hover:opacity-70 transition-opacity">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <div class="prose prose-sm max-w-none text-gray-600 mb-10">
+              <p>Por favor, preencha os seus dados para efetuar o registo no evento. Os campos marcados com <span
+                  class="text-red-500 font-bold">*</span> são de preenchimento obrigatório.</p>
+            </div>
+
+            {% if bilhetes_disponiveis is none or bilhetes_disponiveis > 0 %}
+            <form action="{{ url_for('frontoffice.inscrever_evento', evento_id=evento.id) }}" method="POST"
+              class="space-y-8">
+
+              <!-- NOME -->
+              <div class="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <label class="md:text-right text-sm font-bold text-gray-700">
+                  <span class="text-red-500 mr-1">*</span> Nome Completo:
+                </label>
+                <div class="md:col-span-3">
+                  <input type="text" name="nome" required placeholder="O seu nome completo"
+                    class="w-full border border-gray-300 rounded-sm px-4 py-2.5 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all text-sm">
+                </div>
+              </div>
+
+              <!-- EMAIL -->
+              <div class="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                <label class="md:text-right text-sm font-bold text-gray-700">
+                  <span class="text-red-500 mr-1">*</span> E-mail:
+                </label>
+                <div class="md:col-span-3">
+                  <input type="email" id="student-email" name="email" required placeholder="E-mail Institucional"
+                    class="w-full border border-gray-300 rounded-sm px-4 py-2.5 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all text-sm">
+                  <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-tight">Será usado como principal forma de
+                    contacto.</p>
+                  <p id="email-error" class="text-xs text-red-500 hidden mt-2 font-bold">
+                    <i class="fas fa-exclamation-triangle mr-1"></i> Apenas e-mails da instituição são permitidos.
+                  </p>
+                </div>
+              </div>
+
+              <!-- BUTTONS -->
+              <div class="grid grid-cols-1 md:grid-cols-4 items-center gap-4 pt-6">
+                <div class="hidden md:block"></div>
+                <div class="md:col-span-3 flex flex-wrap gap-3">
+                  <button type="submit"
+                    class="bg-[#f97316] text-white font-medium text-lg px-7 py-1.5 rounded-[5px] hover:bg-[#ea580c] transition-colors no-underline">
+                    Registar
+                  </button>
+                  <a href="{{ url_for('frontoffice.evento_detalhe', evento_id=evento.id) }}"
+                    class="bg-[#abbcc7] text-white font-medium text-lg px-7 py-1.5 rounded-[5px] hover:bg-[#96a9b5] transition-colors no-underline">
+                    Cancelar
+                  </a>
+                </div>
+              </div>
+            </form>
+            {% else %}
+            <div class="bg-red-50 border border-red-100 p-8 text-center rounded-sm">
+              <i class="fas fa-sad-tear text-4xl text-red-400 mb-4"></i>
+              <h3 class="text-xl font-bold text-red-800 mb-2">Evento Esgotado</h3>
+              <p class="text-red-600 text-sm">Infelizmente já não existem lugares disponíveis para este evento.</p>
+              <a href="{{ url_for('frontoffice.eventos') }}"
+                class="inline-block mt-6 text-xs font-bold uppercase tracking-widest text-red-800 border-b-2 border-red-200 hover:border-red-500 transition-all">Ver
+                outros eventos</a>
+            </div>
+            {% endif %}
+
+          </div>
+        </div>
+
+        <!-- RIGHT: SIDEBAR (Help context from image) -->
+        <div class="lg:w-72 flex-shrink-0">
+          <div class="bg-white p-6 shadow-sm border border-gray-100 rounded-sm mb-6">
+            <h3 class="text-sm font-bold text-gray-800 mb-4 flex items-center">
+              <i class="fas fa-info-circle text-orange-500 mr-2"></i> Informações do Evento
+            </h3>
+            <div class="space-y-4 text-xs text-gray-600">
+              <div class="flex items-start">
+                <i class="far fa-calendar-alt w-5 mt-0.5 text-gray-400"></i>
+                <span class="ml-2">{{ evento.data_evento.strftime('%d/%m/%Y') if evento.data_evento else 'A anunciar'
+                  }}</span>
+              </div>
+              <div class="flex items-start">
+                <i class="far fa-clock w-5 mt-0.5 text-gray-400"></i>
+                <span class="ml-2">{{ evento.hora or 'A confirmar' }}</span>
+              </div>
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt w-5 mt-0.5 text-gray-400"></i>
+                <span class="ml-2">{{ evento.local or evento.cidade }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white p-6 shadow-sm border border-gray-100 rounded-sm">
+            <p class="text-xs text-gray-600 leading-relaxed">
+              Caso necessite de ajuda, por favor não hesite em contactar-nos:
+            </p>
+            <a href="mailto:labcultural@ispgaya.pt"
+              class="mt-4 block text-xs font-bold text-orange-500 hover:underline">
+              <i class="fas fa-envelope mr-1"></i> Contactos ISPGAYA
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  {% include 'includes/footer.html' %}
+
+  <script src="{{ url_for('static', filename='js/lab_cultural.js') }}"></script>
+  <script>
+    const emailInput = document.getElementById('student-email');
+    const emailError = document.getElementById('email-error');
+    const submitBtn = document.querySelector('button[type="submit"]');
+
+    async function validateInstitutionalEmail() {
+      const email = emailInput.value.trim();
+      if (!email) return;
+
+      try {
+        const response = await fetch('/api/v1/validar-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            email: email,
+            evento_id: {{ evento.id }}
+          })
+        });
+        const data = await response.json();
+
+        if (data.valido) {
+          emailError.classList.add('hidden');
+          emailInput.classList.remove('border-red-500');
+          emailInput.classList.add('border-green-500');
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = "1";
+        } else {
+          emailError.innerHTML = `<i class="fas fa-exclamation-triangle mr-1"></i> ${data.mensagem}`;
+          emailError.classList.remove('hidden');
+          emailInput.classList.add('border-red-500');
+          emailInput.classList.remove('border-green-500');
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = "0.5";
+        }
+      } catch (err) {
+        console.error("Erro na validação:", err);
+      }
+    }
+
+    emailInput.addEventListener('blur', validateInstitutionalEmail);
+    emailInput.addEventListener('input', function() {
+      // Limpa o estado de erro enquanto escreve
+      emailError.classList.add('hidden');
+      emailInput.classList.remove('border-red-500', 'border-green-500');
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = "1";
+    });
+
+    document.querySelector('form').addEventListener('submit', async function (e) {
+      const email = emailInput.value;
+      if (!email.toLowerCase().endsWith('@ispgaya.pt')) {
+        e.preventDefault();
+        validateInstitutionalEmail();
+      } else {
+        // Add loading state and disable double clicks
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = "0.7";
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> A processar...';
+        
+        return true;
+      }
+    });
+  </script>
+</body>
+
+</html>

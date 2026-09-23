@@ -1,0 +1,85 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}{{ 'Nova Sessão' if modo == 'criar' else 'Editar Sessão' }}{% endblock %}
+{% block page_title %}{{ 'Nova Sessão' if modo == 'criar' else 'Editar Sessão' }}{% endblock %}
+
+{% block bo_content %}
+<div class="bo-form-container">
+
+    <div class="bo-form-header">
+        <div class="bo-form-header__icon">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="bo-form-header__text">
+            <h2>{{ 'Agendar Nova Sessão' if modo == 'criar' else 'Editar Sessão' }}</h2>
+            <p>{{ 'Crie uma nova sessão de leitura para o calendário.' if modo == 'criar' else 'Atualize os detalhes desta sessão.' }}</p>
+        </div>
+    </div>
+
+    <div class="bo-form-card">
+        {% if erros %}
+        <div class="bo-flash bo-flash--error" style="margin-bottom:1.5rem;">
+            <i class="fas fa-exclamation-circle"></i>
+            {% for e in erros %}{{ e }} {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="bo-form" novalidate>
+
+            <div class="bo-form__row--2">
+                <div class="bo-form-group">
+                    <label for="data_sessao">Data da Sessão *</label>
+                    <input type="date" id="data_sessao" name="data_sessao" required
+                        value="{{ dados.get('data_sessao', '')|string }}">
+                </div>
+                <div class="bo-form-group">
+                    <label for="hora">Hora</label>
+                    <input type="time" id="hora" name="hora" value="{{ dados.get('hora', '18:30') }}">
+                </div>
+            </div>
+
+            <div class="bo-form__row--2">
+                <div class="bo-form-group">
+                    <label for="livro_id">Livro Associado</label>
+                    <select id="livro_id" name="livro_id">
+                        <option value="">— Sem livro específico —</option>
+                        {% for l in livros %}
+                        <option value="{{ l.id }}" {% if dados.get('livro_id')|string==l.id|string %}selected{% endif %}>
+                            {{ l.titulo }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="bo-form-group">
+                    <label for="local">Local</label>
+                    <input type="text" id="local" name="local"
+                        value="{{ dados.get('local', 'Biblioteca ISPGAYA') }}"
+                        placeholder="Ex: Biblioteca ISPGAYA">
+                </div>
+            </div>
+
+            <div class="bo-form__section"><i class="fas fa-align-left"></i> Conteúdo</div>
+
+            <div class="bo-form-group">
+                <label for="tema">Tema da Sessão *</label>
+                <input type="text" id="tema" name="tema" required maxlength="250"
+                    value="{{ dados.get('tema', '') }}" placeholder="Ex: Debate sobre o livro">
+            </div>
+
+            <div class="bo-form-group">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" name="descricao" rows="3"
+                    placeholder="Detalhes adicionais sobre a sessão...">{{ dados.get('descricao', '') }}</textarea>
+            </div>
+
+            <div class="bo-form__actions">
+                <a href="{{ url_for('backoffice.listar_sessoes') }}" class="bo-btn-cancel">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </a>
+                <button type="submit" class="bo-btn-submit">
+                    <i class="fas fa-save"></i> {{ 'Agendar Sessão' if modo == 'criar' else 'Guardar Alterações' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

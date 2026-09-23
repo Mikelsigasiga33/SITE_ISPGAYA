@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscrição Confirmada - ISPGAYA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+    <style>
+        body { font-family: 'Open Sans', sans-serif; }
+        .font-serif { font-family: 'Libre Baskerville', serif; }
+    </style>
+</head>
+<body class="bg-gray-50 antialiased text-gray-900">
+
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-white rounded-sm shadow-2xl overflow-hidden border border-gray-100">
+            <!-- Header -->
+            <div class="bg-orange-500 p-8 text-center text-white">
+                <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+                    <i class="fas fa-check text-4xl"></i>
+                </div>
+                <h1 class="text-2xl font-serif font-bold">Inscrição Concluída!</h1>
+            </div>
+
+            <!-- Content -->
+            <div class="p-8 text-center">
+                <p class="text-gray-600 mb-6">
+                    Olá <strong class="text-gray-900">{{ nome }}</strong>, a tua reserva para o espetáculo <br>
+                    <span class="text-orange-500 font-bold">"{{ espetaculo.titulo }}"</span> foi registada com sucesso.
+                </p>
+                
+                <div class="mb-6">
+                    <p class="text-xs text-gray-500 uppercase font-bold tracking-widest mb-1">Tipo de Ingresso</p>
+                    <p class="text-lg font-bold text-orange-600">Entrada Geral</p>
+                </div>
+
+                <div class="bg-orange-50 border border-orange-100 p-4 rounded-sm mb-8">
+                    <p class="text-sm text-orange-800">
+                        <i class="fas fa-envelope mr-2"></i> 
+                        Enviámos o teu bilhete digital para:<br>
+                        <strong class="text-orange-600">{{ email }}</strong>
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <p class="text-xs text-gray-400 uppercase font-bold tracking-widest">O que fazer agora?</p>
+                    <ul class="text-sm text-gray-600 text-left space-y-3 px-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-orange-500 mt-1 mr-3 text-[10px]"></i>
+                            <span>Verifica a tua caixa de entrada (e a pasta de Spam).</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-orange-500 mt-1 mr-3 text-[10px]"></i>
+                            <span>Descarrega o PDF do bilhete que está em anexo.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-orange-500 mt-1 mr-3 text-[10px]"></i>
+                            <span>Apresenta o código QR no dia do espetáculo.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mt-10 pt-6 border-t border-gray-100">
+                    <a href="{{ url_for('frontoffice.clube_teatro') }}" class="inline-block bg-[#f97316] text-white font-bold uppercase tracking-widest text-[10px] px-8 py-3 rounded-[5px] hover:bg-[#ea580c] transition-all no-underline">
+                        Voltar ao Clube de Teatro
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chatbot Widget -->
+    {% include 'includes/chatbot_widget.html' %}
+</body>
+</html>

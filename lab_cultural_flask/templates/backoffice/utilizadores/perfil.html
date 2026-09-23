@@ -1,0 +1,345 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}O Meu Perfil{% endblock %}
+{% block page_title %}O Meu Perfil & Segurança{% endblock %}
+
+{% block bo_content %}
+<div class="bo-form-container" style="max-width: 1200px; margin: 0 auto;">
+
+    <div class="bo-form-header" style="margin-bottom: 2rem;">
+        <div class="bo-form-header__icon" style="background: var(--bo-primary-light, #eff6ff); color: var(--bo-primary, #2563eb);">
+            <i class="fas fa-user-cog"></i>
+        </div>
+        <div class="bo-form-header__text">
+            <h2>Gestão do Perfil</h2>
+            <p>Atualize as suas informações pessoais e configure a autenticação de segurança em dois passos.</p>
+        </div>
+    </div>
+
+    {% if erros %}
+    <div class="bo-flash bo-flash--error" style="margin-bottom:1.5rem;">
+        <i class="fas fa-exclamation-circle"></i>
+        {% for erro in erros %}{{ erro }}<br>{% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="profile-grid">
+        <!-- COLUNA 1: DADOS DO PERFIL -->
+        <div class="bo-form-card" style="margin-bottom: 0;">
+            <div class="bo-form__section" style="margin-top: 0; padding-top: 0;">
+                <i class="fas fa-user-edit"></i> Informações Pessoais
+            </div>
+            
+            <form method="POST" class="bo-form" autocomplete="off">
+                <!-- Dummy inputs to prevent Chrome/Windows autofill -->
+                <input type="text" style="display:none;" name="dummy_username">
+                <input type="password" style="display:none;" name="dummy_password">
+                
+                <div class="bo-form__group">
+                    <label for="nome">Nome Completo *</label>
+                    <input type="text" id="nome" name="nome" value="{{ utilizador.get('nome', '') }}" required placeholder="Ex: João Silva">
+                </div>
+
+                <div class="bo-form__row">
+                    <div class="bo-form__group">
+                        <label for="username">Nome de Utilizador (Username)</label>
+                        <input type="text" id="username" value="{{ utilizador.get('username', '') }}" readonly disabled style="background-color: #f1f5f9; cursor: not-allowed;">
+                    </div>
+                    <div class="bo-form__group">
+                        <label for="email">E-mail *</label>
+                        <input type="email" id="email" name="email" value="{{ utilizador.get('email', '') }}" required placeholder="Ex: joao@ispgaya.pt">
+                    </div>
+                </div>
+
+                <div class="bo-form__group">
+                    <label for="password">Nova Password (deixar vazio para manter a atual)</label>
+                    <div class="password-input-wrapper" style="position: relative; display: flex; align-items: center;">
+                        <input type="text" id="password" name="password" autocomplete="off" placeholder="••••••••" style="width: 100%; padding-right: 45px; -webkit-text-security: disc; text-security: disc;">
+                        <button type="button" id="toggle-password-visibility" class="toggle-password-btn" style="position: absolute; right: 12px; background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.1rem;" title="Mostrar/Ocultar password">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="password-strength-container" id="password-strength-container" style="display: none; margin-top: 10px; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <div class="password-strength-bar" style="height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
+                            <div class="password-strength-bar-progress" id="password-strength-progress" style="height: 100%; width: 0%; border-radius: 3px; transition: width 0.4s;"></div>
+                        </div>
+                        <div class="password-strength-header" style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #475569; margin-bottom: 8px;">
+                            <span class="password-strength-label">Força: <strong id="password-strength-text" class="text-fraca">Fraca</strong></span>
+                            <span class="password-score-label"><span id="password-score-number">0</span>/6</span>
+                        </div>
+                        <ul class="password-problems-list" id="password-problems-list" style="margin: 0; padding: 0; list-style: none; font-size: 0.8rem; color: #ef4444; display: flex; flex-direction: column; gap: 6px;"></ul>
+                    </div>
+                </div>
+
+                <div class="bo-form__group">
+                    <label>Cargo / Permissão do Sistema</label>
+                    <input type="text" value="{% if utilizador.get('role') == 'admin' %}🛡️ Admin Global{% elif utilizador.get('role') == 'conteudo' %}📝 Gestor de Conteúdo{% elif utilizador.get('role') == 'noticias' %}📰 Gestor de Notícias{% elif utilizador.get('role') == 'leitura' %}📚 Clube de Leitura{% elif utilizador.get('role') == 'teatro' %}🎭 Clube de Teatro{% elif utilizador.get('role') == 'tuna' %}🎵 Tuna Académica{% endif %}" readonly disabled style="background-color: #f1f5f9; cursor: not-allowed;">
+                </div>
+
+                <div class="bo-form__actions" style="margin-top: 2rem;">
+                    <button type="submit" class="bo-btn-submit" id="save-profile-btn" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                        <i class="fas fa-save"></i> Guardar Alterações do Perfil
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- COLUNA 2: AUTENTICAÇÃO MULTIFATOR (2FA) -->
+        <div class="bo-form-card" style="margin-bottom: 0;">
+            <div class="bo-form__section" style="margin-top: 0; padding-top: 0;">
+                <i class="fas fa-shield-alt"></i> Segurança em Dois Passos (2FA)
+            </div>
+
+            {% if mfa_ativo %}
+            <!-- MFA ATIVO -->
+            <div class="mfa-status-card success" style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                <div class="mfa-status-icon" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;">
+                    <i class="fas fa-shield-check"></i>
+                </div>
+                <h3 style="color: #065f46; font-weight: 700; margin-bottom: 0.5rem;">Autenticação 2FA Ativada</h3>
+                <p style="color: #047857; font-size: 0.85rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                    A sua conta está protegida por um código temporário de acesso. Ao fazer login, ser-lhe-á solicitado o código gerado no seu dispositivo móvel.
+                </p>
+                
+                <form action="{{ url_for('backoffice.confirmar_desativar_2fa') }}" method="POST" onsubmit="return confirm('Tem a certeza que deseja desativar a autenticação de dois fatores? A sua conta ficará menos protegida.');">
+                    <button type="submit" class="bo-btn-cancel" style="background-color: #ef4444; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <i class="fas fa-trash-alt"></i> Desativar Proteção 2FA
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <!-- MFA INATIVO (FLUXO DE CONFIGURAÇÃO) -->
+            <div class="mfa-setup-flow">
+                <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5; margin-bottom: 1.5rem;">
+                    Adicione uma camada extra de segurança à sua conta. Para configurar o segundo fator (Google Authenticator), siga estes passos:
+                </p>
+
+                <div class="setup-step" style="display: flex; gap: 12px; margin-bottom: 1.2rem;">
+                    <div class="step-badge" style="width: 24px; height: 24px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0;">1</div>
+                    <div class="step-text" style="font-size: 0.85rem; color: #334155; line-height: 1.4;">
+                        Instale a aplicação <strong>Google Authenticator</strong> ou <strong>Microsoft Authenticator</strong> na loja de aplicações do seu telemóvel.
+                    </div>
+                </div>
+
+                <div class="setup-step" style="display: flex; gap: 12px; margin-bottom: 1.5rem; flex-direction: column;">
+                    <div style="display: flex; gap: 12px;">
+                        <div class="step-badge" style="width: 24px; height: 24px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0;">2</div>
+                        <div class="step-text" style="font-size: 0.85rem; color: #334155; line-height: 1.4;">
+                            Abra a aplicação no telemóvel e faça <strong>scan do código QR</strong> abaixo, ou introduza o segredo manualmente.
+                        </div>
+                    </div>
+                    
+                    <div class="qr-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 1.5rem; margin-left: 36px; margin-top: 10px;">
+                        <img src="{{ qr_code_url }}" alt="Código QR para Digitalizar" style="background: white; padding: 10px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 1rem;">
+                        <div style="text-align: center;">
+                            <span style="font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 4px;">Chave manual:</span>
+                            <code style="font-family: monospace; background: #e2e8f0; color: #0f172a; padding: 4px 8px; border-radius: 4px; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px;">{{ temp_secret }}</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setup-step" style="display: flex; gap: 12px; margin-bottom: 1.2rem; flex-direction: column;">
+                    <div style="display: flex; gap: 12px;">
+                        <div class="step-badge" style="width: 24px; height: 24px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0;">3</div>
+                        <div class="step-text" style="font-size: 0.85rem; color: #334155; line-height: 1.4;">
+                            Introduza o <strong>código de 6 dígitos</strong> gerado pela aplicação no telemóvel para confirmar e ativar a proteção.
+                        </div>
+                    </div>
+
+                    <form action="{{ url_for('backoffice.confirmar_ativar_2fa') }}" method="POST" autocomplete="off" style="margin-left: 36px; margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <input type="text" name="code" required placeholder="000 000" maxlength="6" pattern="\d{6}" autocomplete="off"
+                                   style="text-align: center; font-size: 1.5rem; letter-spacing: 0.4em; font-family: monospace; font-weight: 700; padding: 0.5rem; border: 2px solid #cbd5e1; border-radius: 6px; outline: none; transition: border-color 0.2s;"
+                                   onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'">
+                        </div>
+                        <button type="submit" class="bo-btn-submit" style="background: #10b981; border: none; padding: 0.75rem; border-radius: 6px; font-weight: 700; color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                            <i class="fas fa-lock"></i> Validar e Ativar 2FA
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+@media (min-width: 992px) {
+    .profile-grid {
+        grid-template-columns: 1.2fr 1fr;
+    }
+}
+
+/* Password styles copy from form.html */
+.toggle-password-btn:hover {
+    color: #2563eb;
+}
+.toggle-password-btn:active {
+    transform: scale(0.9);
+}
+.password-problems-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.password-problems-list li i {
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+.strength-fraca { background-color: #ef4444 !important; }
+.strength-media { background-color: #f59e0b !important; }
+.strength-forte { background-color: #10b981 !important; }
+.strength-muito-forte { background-color: #059669 !important; }
+.text-fraca { color: #ef4444; }
+.text-media { color: #d97706; }
+.text-forte { color: #10b981; }
+.text-muito-forte { color: #059669; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Password evaluation logic (replica from form.html)
+    const passwordInput = document.getElementById('password');
+    const toggleBtn = document.getElementById('toggle-password-visibility');
+    const container = document.getElementById('password-strength-container');
+    const progressBar = document.getElementById('password-strength-progress');
+    const labelText = document.getElementById('password-strength-text');
+    const scoreNumber = document.getElementById('password-score-number');
+    const problemsList = document.getElementById('password-problems-list');
+    const saveProfileBtn = document.getElementById('save-profile-btn');
+
+    let debounceTimer;
+    let isPasswordValid = true; // Permite vazio para manter a atual
+
+    // Detect webkit-text-security support
+    const supportsTextSecurity = ('webkitTextSecurity' in document.documentElement.style) || ('textSecurity' in document.documentElement.style);
+    if (!supportsTextSecurity && passwordInput) {
+        passwordInput.type = 'password';
+    }
+
+    if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', () => {
+            if (passwordInput.type === 'password') {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                toggleBtn.innerHTML = isPassword ? '<i class="far fa-eye-slash"></i>' : '<i class="far fa-eye"></i>';
+            } else {
+                const isMasked = passwordInput.style.webkitTextSecurity !== 'none';
+                passwordInput.style.webkitTextSecurity = isMasked ? 'none' : 'disc';
+                passwordInput.style.textSecurity = isMasked ? 'none' : 'disc';
+                toggleBtn.innerHTML = isMasked ? '<i class="far fa-eye-slash"></i>' : '<i class="far fa-eye"></i>';
+            }
+        });
+    }
+
+    if (passwordInput) {
+        passwordInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            const val = passwordInput.value;
+
+            if (!val) {
+                container.style.display = 'none';
+                isPasswordValid = true;
+                updateSubmitState();
+                return;
+            }
+
+            container.style.display = 'block';
+            debounceTimer = setTimeout(() => evaluatePassword(val), 250);
+        });
+    }
+
+    async function evaluatePassword(password) {
+        try {
+            const response = await fetch('/api/v1/avaliar-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+
+            if (!response.ok) return;
+            const data = await response.json();
+
+            const strength = data.classificacao;
+            const score = data.pontuacao;
+            const problems = data.problemas || [];
+
+            scoreNumber.textContent = score;
+            labelText.textContent = strength;
+            
+            progressBar.className = 'password-strength-bar-progress';
+            labelText.className = '';
+
+            let widthPercent = 0;
+            let strengthClass = '';
+            let textClass = '';
+
+            if (strength === 'Fraca') {
+                widthPercent = 25;
+                strengthClass = 'strength-fraca';
+                textClass = 'text-fraca';
+                isPasswordValid = false;
+            } else if (strength === 'Média') {
+                widthPercent = 50;
+                strengthClass = 'strength-media';
+                textClass = 'text-media';
+                isPasswordValid = true;
+            } else if (strength === 'Forte') {
+                widthPercent = 75;
+                strengthClass = 'strength-forte';
+                textClass = 'text-forte';
+                isPasswordValid = true;
+            } else if (strength === 'Muito forte') {
+                widthPercent = 100;
+                strengthClass = 'strength-muito-forte';
+                textClass = 'text-muito-forte';
+                isPasswordValid = true;
+            }
+
+            progressBar.style.width = widthPercent + '%';
+            progressBar.classList.add(strengthClass);
+            labelText.classList.add(textClass);
+
+            problemsList.innerHTML = '';
+            if (problems.length > 0) {
+                problems.forEach(prob => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span>${prob}</span>`;
+                    problemsList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.style.color = '#10b981';
+                li.innerHTML = `<i class="fas fa-check-circle"></i> <span>Excelente! A password cumpre todos os requisitos.</span>`;
+                problemsList.appendChild(li);
+            }
+
+            updateSubmitState();
+        } catch (e) {
+            console.error('Erro ao avaliar password:', e);
+        }
+    }
+
+    function updateSubmitState() {
+        if (saveProfileBtn) {
+            if (!isPasswordValid) {
+                saveProfileBtn.setAttribute('disabled', 'true');
+                saveProfileBtn.style.opacity = '0.6';
+                saveProfileBtn.style.cursor = 'not-allowed';
+                saveProfileBtn.title = 'A password introduzida é muito fraca.';
+            } else {
+                saveProfileBtn.removeAttribute('disabled');
+                saveProfileBtn.style.opacity = '1';
+                saveProfileBtn.style.cursor = 'pointer';
+                saveProfileBtn.title = '';
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

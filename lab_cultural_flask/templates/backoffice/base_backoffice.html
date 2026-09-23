@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Backoffice{% endblock %} | ISPGAYA Lab. Cultural</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/backoffice.css') }}">
+</head>
+
+<body class="bo-body">
+
+    <aside class="bo-sidebar">
+        <div class="bo-sidebar__header">
+            <span class="bo-logo-name">ISPGAYA</span>
+            <span class="bo-logo-sub">Lab. Cultural · Admin</span>
+        </div>
+
+        <nav class="bo-nav">
+            <a href="{{ url_for('backoffice.dashboard') }}"
+                class="bo-nav__link {% if request.endpoint == 'backoffice.dashboard' %}active{% endif %}">
+                <i class="fas fa-home"></i> Dashboard
+                {% if notificacoes_bo.total > 0 %}
+                <span class="bo-nav__badge" style="background: var(--bo-danger); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);">
+                    {{ notificacoes_bo.total }}
+                </span>
+                {% endif %}
+            </a>
+
+            {% set role = session.get('admin_role', 'admin') %}
+
+            <!-- SECCAO: ATENDIMENTO -->
+            {% if role in ('admin',) %}
+            <div class="bo-nav__section">Atendimento</div>
+            <a href="{{ url_for('backoffice.listar_mensagens') }}"
+                class="bo-nav__link {% if 'mensagem' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-envelope-open-text"></i> Dúvidas Recebidas
+                {% if notificacoes_bo.mensagens > 0 %}
+                <span class="bo-nav__badge">{{ notificacoes_bo.mensagens }}</span>
+                {% endif %}
+            </a>
+            {% endif %}
+
+            <!-- SECCAO: AGENDA E CONTEUDO -->
+            {% if role in ('admin', 'conteudo', 'noticias') %}
+            <div class="bo-nav__section">Agenda e Conteúdo</div>
+            
+            {% if role in ('admin', 'conteudo') %}
+            <a href="{{ url_for('backoffice.listar_eventos') }}"
+                class="bo-nav__link {% if 'evento' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-calendar-alt"></i> Eventos
+            </a>
+            {% endif %}
+            
+            <a href="{{ url_for('backoffice.listar_noticias') }}"
+                class="bo-nav__link {% if 'noticia' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-newspaper"></i> Notícias
+            </a>
+            
+            {% if role in ('admin', 'conteudo') %}
+            <a href="{{ url_for('backoffice.listar_categorias') }}"
+                class="bo-nav__link {% if 'categoria' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-tags"></i> Categorias
+            </a>
+            {% endif %}
+            {% endif %}
+
+            <!-- SECCAO: CLUBE DE LEITURA -->
+            {% if role in ('admin', 'leitura') %}
+            <div class="bo-nav__section">Clube de Leitura</div>
+            <a href="{{ url_for('backoffice.listar_livros') }}"
+                class="bo-nav__link {% if 'livro' in request.endpoint and 'requisicao' not in request.endpoint %}active{% endif %}">
+                <i class="fas fa-book"></i> Catálogo de Livros
+            </a>
+            <a href="{{ url_for('backoffice.listar_requisicoes') }}"
+                class="bo-nav__link {% if 'requisicoes' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-exchange-alt"></i> Requisições
+                {% if notificacoes_bo.requisicoes > 0 %}
+                <span class="bo-nav__badge">{{ notificacoes_bo.requisicoes }}</span>
+                {% endif %}
+            </a>
+            <a href="{{ url_for('backoffice.listar_sessoes') }}"
+                class="bo-nav__link {% if 'sessao' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-clock"></i> Sessões de Leitura
+            </a>
+            <a href="{{ url_for('backoffice.listar_membros_leitura') }}"
+                class="bo-nav__link {% if request.endpoint == 'backoffice.listar_membros_leitura' %}active{% endif %}">
+                <i class="fas fa-user-friends"></i> Membros do Clube
+                {% if notificacoes_bo.membros_leitura > 0 %}
+                <span class="bo-nav__badge">{{ notificacoes_bo.membros_leitura }}</span>
+                {% endif %}
+            </a>
+            {% endif %}
+
+            <!-- SECCAO: CLUBE DE TEATRO -->
+            {% if role in ('admin', 'teatro') %}
+            <div class="bo-nav__section">Clube de Teatro</div>
+            <a href="{{ url_for('backoffice.listar_espetaculos') }}"
+                class="bo-nav__link {% if request.endpoint == 'backoffice.listar_espetaculos' %}active{% endif %}">
+                <i class="fas fa-mask"></i> Espetáculos
+            </a>
+            <a href="{{ url_for('backoffice.listar_membros_teatro') }}"
+                class="bo-nav__link {% if request.endpoint == 'backoffice.listar_membros_teatro' %}active{% endif %}">
+                <i class="fas fa-users"></i> Membros do Clube
+                {% if notificacoes_bo.membros_teatro > 0 %}
+                <span class="bo-nav__badge">{{ notificacoes_bo.membros_teatro }}</span>
+                {% endif %}
+            </a>
+            {% endif %}
+
+            <!-- SECCAO: TUNA ACADÉMICA -->
+            {% if role in ('admin', 'tuna') %}
+            <div class="bo-nav__section">Tuna Académica</div>
+            <a href="{{ url_for('backoffice.listar_espetaculos_tuna') }}"
+                class="bo-nav__link {% if request.endpoint == 'backoffice.listar_espetaculos_tuna' %}active{% endif %}">
+                <i class="fas fa-music"></i> Atuações
+            </a>
+            <a href="{{ url_for('backoffice.listar_membros_tuna') }}"
+                class="bo-nav__link {% if request.endpoint == 'backoffice.listar_membros_tuna' %}active{% endif %}">
+                <i class="fas fa-users"></i> Membros da Tuna
+                {% if notificacoes_bo.membros_tuna > 0 %}
+                <span class="bo-nav__badge">{{ notificacoes_bo.membros_tuna }}</span>
+                {% endif %}
+            </a>
+            {% endif %}
+
+            <!-- SECCAO: SISTEMA -->
+            {% if role == 'admin' %}
+            <div class="bo-nav__section">Definições</div>
+            <a href="{{ url_for('backoffice.listar_utilizadores') }}"
+                class="bo-nav__link {% if 'utilizador' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-user-shield"></i> Gestão de Utilizadores
+            </a>
+            <a href="{{ url_for('backoffice.listar_clubes') }}"
+                class="bo-nav__link {% if 'clube' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-building"></i> Entidades e Clubes
+            </a>
+            <a href="{{ url_for('backoffice.esquema_bd') }}"
+                class="bo-nav__link {% if request.endpoint == 'backoffice.esquema_bd' %}active{% endif %}">
+                <i class="fas fa-project-diagram"></i> Esquema da BD
+            </a>
+            {% endif %}
+
+            <div class="bo-nav__section">Sessão</div>
+            <a href="{{ url_for('frontoffice.index') }}" class="bo-nav__link" target="_blank">
+                <i class="fas fa-external-link-alt"></i> Ver Site Público
+            </a>
+            <a href="{{ url_for('auth.logout') }}" class="bo-nav__link bo-nav__link--logout">
+                <i class="fas fa-sign-out-alt"></i> Terminar Sessão
+            </a>
+        </nav>
+    </aside>
+
+    <main class="bo-main">
+        <!-- Ornamentos ISPGAYA (Preenchimento de Vácuo) -->
+        <div class="dot-pattern dot-pattern--lg dot-pattern--behind" style="top: 10px; right: 20px;"></div>
+        <div class="dot-pattern dot-pattern--sm dot-pattern--behind" style="top: 40%; left: 40px;"></div>
+        <div class="dot-pattern dot-pattern--behind" style="bottom: 80px; right: 50px;"></div>
+        
+        <header class="bo-topbar">
+            <div class="bo-topbar__left">
+                <button class="bo-sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="bo-page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+            </div>
+            <div class="bo-topbar__right">
+                <a href="{{ url_for('backoffice.editar_perfil') }}" class="bo-admin-name" style="color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; hover: opacity: 0.85;">
+                    <i class="fas fa-user-shield"></i>
+                    {{ session.get('admin_nome', 'Admin') }}
+                    <small style="opacity:0.7; margin-left:4px;">
+                        {% if session.get('admin_role') == 'admin' %}(Admin)
+                        {% elif session.get('admin_role') == 'conteudo' %}(Conteúdo)
+                        {% elif session.get('admin_role') == 'leitura' %}(Leitura)
+                        {% elif session.get('admin_role') == 'teatro' %}(Teatro)
+                        {% elif session.get('admin_role') == 'tuna' %}(Tuna)
+                        {% endif %}
+                    </small>
+                </a>
+            </div>
+        </header>
+
+        <div class="bo-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="bo-flash-container">
+                {% for category, message in messages %}
+                <div class="bo-flash bo-flash--{{ category }} flex justify-between items-center" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div>
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                    <button class="flash-close ml-4" style="background: none; border: none; color: inherit; cursor: pointer; opacity: 0.7;" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            {% block bo_content %}{% endblock %}
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/lab_cultural.js') }}"></script>
+    <style>
+        /* Autocomplete for Backoffice */
+        .bo-autocomplete-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--bo-border);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: var(--bo-shadow);
+            z-index: 1000;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+        }
+        .bo-autocomplete-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--bo-bg-alt);
+        }
+        .bo-autocomplete-item:hover {
+            background: var(--bo-bg-alt);
+        }
+        .bo-autocomplete-item i {
+            color: var(--bo-muted);
+            font-size: 0.8rem;
+        }
+        .bo-autocomplete-item .title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--bo-text);
+        }
+        .bo-form-group { position: relative; }
+    </style>
+    <script>
+        // --- Live Filter Logic for Backoffice ---
+        document.addEventListener('DOMContentLoaded', () => {
+            let timer;
+            let autoTimer;
+
+            const injectSuggestions = () => {
+                const qInput = document.querySelector('.bo-filters-form input[name="q"]');
+                if (qInput && !qInput.parentNode.querySelector('.bo-autocomplete-results')) {
+                    const suggestions = document.createElement('div');
+                    suggestions.className = 'bo-autocomplete-results';
+                    qInput.parentNode.appendChild(suggestions);
+                    qInput.autocomplete = 'off';
+                }
+            };
+
+            const updateResults = async (url) => {
+                const form = document.querySelector('.bo-filters-form');
+                const listSection = document.querySelector('.bo-list-section');
+                if (!form || !listSection) return;
+
+                // 1. Guardar foco e cursor atual
+                const activeElement = document.activeElement;
+                const activeName = activeElement ? activeElement.name : null;
+                const cursorPosition = (activeElement && activeElement.tagName === 'INPUT' && activeElement.type === 'text') 
+                    ? activeElement.selectionStart : null;
+
+                const targetUrl = url || `${form.action}?${new URLSearchParams(new FormData(form)).toString()}`;
+                
+                listSection.style.opacity = '0.5';
+                listSection.style.pointerEvents = 'none';
+
+                try {
+                    const res = await fetch(targetUrl);
+                    const html = await res.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    const newList = doc.querySelector('.bo-list-section');
+                    if (newList) {
+                        listSection.innerHTML = newList.innerHTML;
+                        // Re-injetar suggestions e event listeners (delegação)
+                        injectSuggestions();
+                        
+                        const newForm = document.querySelector('.bo-filters-form');
+                        if (url) {
+                            const params = new URL(url, window.location.origin).searchParams;
+                            params.forEach((val, key) => {
+                                const input = newForm.querySelector(`[name="${key}"]`);
+                                if (input) input.value = val;
+                            });
+                        }
+
+                        // 2. Restaurar foco e cursor no novo elemento
+                        if (activeName && newForm) {
+                            const newActive = newForm.querySelector(`[name="${activeName}"]`);
+                            if (newActive) {
+                                newActive.focus();
+                                if (cursorPosition !== null && newActive.setSelectionRange) {
+                                    setTimeout(() => newActive.setSelectionRange(cursorPosition, cursorPosition), 0);
+                                }
+                            }
+                        }
+                    }
+                    window.history.pushState({}, '', targetUrl);
+                } catch (e) {
+                    console.error('Erro ao atualizar filtros:', e);
+                } finally {
+                    listSection.style.opacity = '1';
+                    listSection.style.pointerEvents = 'auto';
+                }
+            };
+
+            const handleAutocomplete = async (q) => {
+                const suggestions = document.querySelector('.bo-autocomplete-results');
+                if (!suggestions) return;
+                
+                if (q.length < 2) {
+                    suggestions.style.display = 'none';
+                    return;
+                }
+
+                // Determinar tipo baseado na URL
+                let tipo = 'evento';
+                if (window.location.href.includes('/leitura')) tipo = 'livro';
+                if (window.location.href.includes('/teatro')) tipo = 'teatro';
+                if (window.location.href.includes('/noticias')) tipo = 'noticia';
+
+                try {
+                    const res = await fetch(`/api/v1/autocomplete?q=${encodeURIComponent(q)}&tipo=${tipo}`);
+                    const data = await res.json();
+                    
+                    if (data.length > 0) {
+                        suggestions.innerHTML = data.map(item => `
+                            <div class="bo-autocomplete-item" onclick="selectBackofficeSuggestion('${item.titulo.replace(/'/g, "\\'")}')">
+                                <i class="fas ${tipo === 'livro' ? 'fa-book' : (tipo === 'teatro' ? 'fa-mask' : 'fa-calendar')}"></i>
+                                <span class="title">${item.titulo}</span>
+                            </div>
+                        `).join('');
+                        suggestions.style.display = 'block';
+                    } else {
+                        suggestions.style.display = 'none';
+                    }
+                } catch (e) { console.error(e); }
+            };
+
+            window.selectBackofficeSuggestion = (titulo) => {
+                const qInput = document.querySelector('.bo-filters-form input[name="q"]');
+                const suggestions = document.querySelector('.bo-autocomplete-results');
+                if (qInput) qInput.value = titulo;
+                if (suggestions) suggestions.style.display = 'none';
+                updateResults();
+            };
+
+            // Event Delegation para formulário dinâmico
+            document.addEventListener('change', (e) => {
+                if (e.target.closest('.bo-filters-form')) {
+                    if (e.target.tagName === 'SELECT' || e.target.type === 'date') {
+                        updateResults();
+                    }
+                }
+            });
+
+            document.addEventListener('input', (e) => {
+                if (e.target.closest('.bo-filters-form')) {
+                    if (e.target.tagName === 'INPUT' && e.target.type === 'text') {
+                        clearTimeout(timer);
+                        timer = setTimeout(() => updateResults(), 300);
+                        
+                        if (e.target.name === 'q') {
+                            clearTimeout(autoTimer);
+                            autoTimer = setTimeout(() => handleAutocomplete(e.target.value), 300);
+                        }
+                    }
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                // Paginação
+                const pageLink = e.target.closest('.bo-pagination a');
+                if (pageLink) {
+                    e.preventDefault();
+                    updateResults(pageLink.getAttribute('href'));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+
+                // Botão de Limpar (Reset)
+                const resetBtn = e.target.closest('.bo-filters-form .bo-btn--outline');
+                if (resetBtn) {
+                    e.preventDefault();
+                    const form = document.querySelector('.bo-filters-form');
+                    if (form) {
+                        form.querySelectorAll('input').forEach(i => i.value = '');
+                        form.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+                        updateResults(form.action);
+                    }
+                    return;
+                }
+
+                // Clicar fora do autocomplete
+                const qInput = document.querySelector('.bo-filters-form input[name="q"]');
+                const suggestions = document.querySelector('.bo-autocomplete-results');
+                if (suggestions && qInput && !qInput.contains(e.target) && !suggestions.contains(e.target)) {
+                    suggestions.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('submit', (e) => {
+                if (e.target.classList.contains('bo-filters-form')) {
+                    e.preventDefault();
+                    updateResults();
+                }
+            });
+
+            // Inicializar primeira vez
+            if (document.querySelector('.bo-filters-form')) {
+                injectSuggestions();
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,144 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Atuações da Tuna{% endblock %}
+{% block page_title %}Gestão de Atuações - Tuna{% endblock %}
+
+{% block bo_content %}
+<div class="bo-list-section">
+
+    <div class="bo-list-header">
+        <div class="bo-list-header__left">
+            <div class="bo-list-header__icon"><i class="fas fa-music"></i></div>
+            <h2>Atuações da Tuna <span>({{ espetaculos|length }})</span></h2>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <a href="{{ url_for('backoffice.listar_membros_tuna') }}" class="bo-btn bo-btn--outline">
+                <i class="fas fa-users"></i> Membros
+            </a>
+            <a href="{{ url_for('backoffice.criar_espetaculo_tuna') }}" class="bo-btn bo-btn--primary">
+                <i class="fas fa-plus"></i> Nova Atuação
+            </a>
+        </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="bo-filters-card" style="margin-bottom: 2rem; background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--bo-border-light);">
+        <form method="GET" action="{{ url_for('backoffice.listar_espetaculos_tuna') }}" class="bo-filters-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; align-items: end;">
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Pesquisar</label>
+                <input type="text" name="q" value="{{ filtros.q }}" placeholder="Título ou descrição..." style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+            </div>
+            
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Tipo</label>
+                <select name="tipo" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+                    <option value="">Todos</option>
+                    <option value="atuacao" {% if filtros.tipo == 'atuacao' %}selected{% endif %}>Atuação</option>
+                    <option value="ensaio" {% if filtros.tipo == 'ensaio' %}selected{% endif %}>Ensaio</option>
+                    <option value="festival" {% if filtros.tipo == 'festival' %}selected{% endif %}>Festival</option>
+                </select>
+            </div>
+
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Data De</label>
+                <input type="date" name="data_de" value="{{ filtros.data_de }}" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+            </div>
+
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Data Até</label>
+                <input type="date" name="data_ate" value="{{ filtros.data_ate }}" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+            </div>
+
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Ordenar Por</label>
+                <select name="ordem" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+                    <option value="criado_em" {% if filtros.ordem == 'criado_em' %}selected{% endif %}>Mais Recentes</option>
+                    <option value="data_evento" {% if filtros.ordem == 'data_evento' %}selected{% endif %}>Data do Evento</option>
+                    <option value="titulo" {% if filtros.ordem == 'titulo' %}selected{% endif %}>Título</option>
+                </select>
+            </div>
+
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Direção</label>
+                <select name="dir" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+                    <option value="ASC" {% if filtros.dir == 'ASC' %}selected{% endif %}>Crescente</option>
+                    <option value="DESC" {% if filtros.dir == 'DESC' %}selected{% endif %}>Decrescente</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 5px;">
+                <button type="submit" class="bo-btn bo-btn--primary" style="padding: 10px; flex: 1;">
+                    <i class="fas fa-filter"></i>
+                </button>
+                <a href="{{ url_for('backoffice.listar_espetaculos_tuna') }}" class="bo-btn bo-btn--outline" style="padding: 10px; flex: 1;" title="Limpar">
+                    <i class="fas fa-undo"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {% if espetaculos %}
+    <div class="bo-card-grid">
+        {% for e in espetaculos %}
+        <div class="bo-list-card">
+            <div class="bo-list-card__strip {% if e.tipo == 'atuacao' %}bo-list-card__strip--purple{% elif e.tipo == 'ensaio' %}bo-list-card__strip--blue{% else %}bo-list-card__strip--amber{% endif %}"></div>
+            <div class="bo-list-card__body">
+                {% if e.destaque %}
+                <div class="bo-list-card__featured" title="Destaque"><i class="fas fa-star"></i></div>
+                {% endif %}
+
+                <div class="bo-list-card__top">
+                    <h3 class="bo-list-card__title">{{ e.titulo }}</h3>
+                    <span class="bo-badge bo-badge--{{ e.tipo }}">{{ e.tipo }}</span>
+                </div>
+
+                {% if e.descricao %}
+                <p class="bo-list-card__desc">{{ e.descricao[:120] }}{% if e.descricao|length > 120 %}…{% endif %}</p>
+                {% endif %}
+
+                <div class="bo-list-card__meta">
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-calendar"></i>
+                        {{ e.data_evento.strftime('%d/%m/%Y') if e.data_evento else '—' }}
+                    </div>
+                    {% if e.hora %}
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-clock"></i>
+                        {{ e.hora|string }}
+                    </div>
+                    {% endif %}
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-ticket-alt"></i>
+                        {{ e.entrada }}
+                    </div>
+                </div>
+
+                <div class="bo-list-card__actions">
+                    <a href="{{ url_for('backoffice.galeria_tuna', esp_id=e.id) }}" class="bo-btn-edit" style="background:#10b981;color:white;border:none;" title="Galeria de Fotos">
+                        <i class="fas fa-images"></i>
+                    </a>
+                    <a href="{{ url_for('backoffice.editar_espetaculo_tuna', esp_id=e.id) }}" class="bo-btn-edit" title="Editar">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <form method="POST" action="{{ url_for('backoffice.toggle_destaque_tuna', esp_id=e.id) }}" style="display:inline;">
+                        <button type="submit" class="bo-btn-edit" title="{{ 'Remover Destaque' if e.destaque else 'Marcar como Destaque' }}" style="{{ 'color: #f59e0b;' if e.destaque else '' }}">
+                            <i class="{{ 'fas' if e.destaque else 'far' }} fa-star"></i>
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('backoffice.eliminar_espetaculo_tuna', esp_id=e.id) }}"
+                        onsubmit="return confirm('Eliminar esta atuação?')" style="display:inline;">
+                        <button type="submit" class="bo-btn-delete" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bo-list-empty">
+        <div class="bo-list-empty__icon"><i class="fas fa-music"></i></div>
+        <h3>Nenhuma atuação encontrada</h3>
+        <p>Adicione a primeira atuação, ensaio ou festival à agenda da Tuna Académica.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

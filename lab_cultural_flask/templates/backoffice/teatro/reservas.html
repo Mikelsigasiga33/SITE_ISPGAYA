@@ -1,0 +1,63 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Reservas - {{ espetaculo.titulo }}{% endblock %}
+{% block page_title %}Reservas do Espetáculo{% endblock %}
+
+{% block bo_content %}
+<div class="bo-card" style="margin-bottom: 2rem;">
+    <div class="bo-card-header">
+        <h3><i class="fas fa-ticket-alt"></i> Gestão de Lugares: {{ espetaculo.titulo }}</h3>
+        <a href="{{ url_for('backoffice.listar_espetaculos') }}" class="bo-btn bo-btn--outline">Voltar</a>
+    </div>
+    
+    <div class="bo-card-body" style="background: #f8fafc; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <h4 style="color: #1e293b; margin-bottom: 1rem; font-weight: bold;">Estado de Ocupação Geral</h4>
+        {% set total_vagas = (espetaculo.limite_filas or 8) * 12 %}
+        {% set percent = (inscricoes|length / total_vagas * 100) if total_vagas > 0 else 0 %}
+        {% set percent_rounded = percent | round(1) %}
+        <div style="font-size: 14px; margin-bottom: 1rem;">
+            <strong>{{ inscricoes|length }}</strong> lugares reservados de um máximo de <strong>{{ total_vagas }}</strong> lugares (Lotação: {{ percent_rounded }}%).
+        </div>
+        <div style="width: 100%; height: 16px; background: #e2e8f0; border-radius: 8px; overflow: hidden; margin-top: 0.5rem;">
+            <div style="width: {{ percent if percent <= 100 else 100 }}%; height: 100%; background: #f97316; transition: width 0.3s ease;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="bo-card">
+    <div class="bo-card-header">
+        <h3><i class="fas fa-list"></i> Lista de Inscrições</h3>
+        <span class="bo-badge bo-badge--espetaculo">Total: {{ inscricoes|length }}</span>
+    </div>
+    
+    <div class="bo-card-body p-0">
+        <div class="bo-table-container">
+            <table class="bo-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Código</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in inscricoes %}
+                    <tr>
+                        <td>#{{ i.id }}</td>
+                        <td><strong>{{ i.nome_aluno }}</strong></td>
+                        <td>{{ i.email_aluno }}</td>
+                        <td><span style="font-family: monospace; font-weight: bold; color: #f97316;">{{ i.codigo_inscricao }}</span></td>
+                        <td>{{ i.data_inscricao.strftime('%d/%m/%Y %H:%M') if i.data_inscricao else 'N/A' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem;">Nenhuma reserva efetuada até ao momento.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

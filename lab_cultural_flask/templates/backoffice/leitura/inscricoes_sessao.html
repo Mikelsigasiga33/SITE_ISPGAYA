@@ -1,0 +1,65 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Inscrições - {{ sessao.tema }}{% endblock %}
+{% block page_title %}Inscrições da Sessão{% endblock %}
+
+{% block bo_content %}
+<div class="bo-card" style="margin-bottom: 2rem;">
+    <div class="bo-card-header">
+        <h3><i class="fas fa-users"></i> {{ sessao.tema }}</h3>
+        <a href="{{ url_for('backoffice.listar_sessoes') }}" class="bo-btn bo-btn--outline">Voltar</a>
+    </div>
+    
+    <div class="bo-card-body" style="background: #f8fafc; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; gap: 2rem; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 250px;">
+            <p style="color: #64748b; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 0.25rem;">Livro</p>
+            <p style="color: #1e293b; font-weight: bold; font-size: 1rem;"><i class="fas fa-book" style="color: #f97316;"></i> {{ sessao.livro_titulo or 'Não definido' }}</p>
+        </div>
+        
+        <div style="flex: 1; min-width: 200px;">
+            <p style="color: #64748b; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 0.25rem;">Data e Hora</p>
+            <p style="color: #1e293b; font-weight: bold;"><i class="fas fa-calendar" style="color: #f97316;"></i> {{ sessao.data_sessao.strftime('%d/%m/%Y') if sessao.data_sessao else 'TBD' }} às {{ sessao.hora or '18:00' }}</p>
+        </div>
+        
+        <div style="flex: 1; min-width: 200px;">
+            <p style="color: #64748b; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 0.25rem;">Local</p>
+            <p style="color: #1e293b; font-weight: bold;"><i class="fas fa-map-marker-alt" style="color: #f97316;"></i> {{ sessao.local or 'ISPGAYA' }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="bo-card">
+    <div class="bo-card-header">
+        <h3><i class="fas fa-list"></i> Lista de Inscritos</h3>
+        <span class="bo-badge" style="background: #e0f2fe; color: #0284c7;">Total: {{ inscricoes|length }}</span>
+    </div>
+    
+    <div class="bo-card-body p-0">
+        <div class="bo-table-container">
+            <table class="bo-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email Institucional</th>
+                        <th>Data de Registo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in inscricoes %}
+                    <tr>
+                        <td>#{{ i.id }}</td>
+                        <td><strong>{{ i.nome }}</strong></td>
+                        <td><a href="mailto:{{ i.email }}" style="color: #f97316; font-weight: 500;">{{ i.email }}</a></td>
+                        <td>{{ i.criado_em.strftime('%d/%m/%Y %H:%M') if i.criado_em else 'N/A' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 2rem;">Ainda não há inscritos para esta sessão de leitura.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

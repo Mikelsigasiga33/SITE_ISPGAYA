@@ -1,0 +1,161 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}{{ 'Novo Livro' if modo == 'criar' else 'Editar Livro' }}{% endblock %}
+{% block page_title %}{{ 'Novo Livro' if modo == 'criar' else 'Editar Livro' }}{% endblock %}
+
+{% block bo_content %}
+<div class="bo-form-container">
+
+    <div class="bo-form-header">
+        <div class="bo-form-header__icon">
+            <i class="fas fa-book"></i>
+        </div>
+        <div class="bo-form-header__text">
+            <h2>{{ 'Adicionar Novo Livro' if modo == 'criar' else 'Editar Livro' }}</h2>
+            <p>{{ 'Adicione um livro à biblioteca do Clube de Leitura.' if modo == 'criar' else 'Atualize as informações deste livro.' }}</p>
+        </div>
+    </div>
+
+    <div class="bo-form-card">
+        {% if erros %}
+        <div class="bo-flash bo-flash--error" style="margin-bottom:1.5rem;">
+            <i class="fas fa-exclamation-circle"></i>
+            {% for e in erros %}{{ e }} {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="bo-form" enctype="multipart/form-data" novalidate>
+
+            <div class="bo-form__row--2">
+                <div class="bo-form-group">
+                    <label for="titulo">Título *</label>
+                    <input type="text" id="titulo" name="titulo" required maxlength="250"
+                        value="{{ dados.get('titulo', '') }}" placeholder="Título do livro">
+                </div>
+                <div class="bo-form-group">
+                    <label for="autor">Autor *</label>
+                    <input type="text" id="autor" name="autor" required maxlength="200"
+                        value="{{ dados.get('autor', '') }}" placeholder="Nome do autor">
+                </div>
+            </div>
+
+            <div class="bo-form-group">
+                <label for="sinopse">Sinopse</label>
+                <textarea id="sinopse" name="sinopse" rows="4"
+                    placeholder="Breve sinopse do livro...">{{ dados.get('sinopse', '') }}</textarea>
+            </div>
+
+            <div class="bo-form__section"><i class="fas fa-info-circle"></i> Detalhes</div>
+
+            <div class="bo-form__row--3">
+                <div class="bo-form-group">
+                    <label for="ano">Ano de Publicação</label>
+                    <input type="number" id="ano" name="ano" min="1000" max="2100"
+                        value="{{ dados.get('ano', '') }}" placeholder="2024">
+                </div>
+                <div class="bo-form-group">
+                    <label for="genero">Género</label>
+                    <input type="text" id="genero" name="genero" maxlength="100"
+                        value="{{ dados.get('genero', '') }}" placeholder="Ex: Ficção">
+                </div>
+                <div class="bo-form-group">
+                    <label for="mes_selecao">Mês de Seleção</label>
+                    <input type="text" id="mes_selecao" name="mes_selecao" placeholder="ex: março 2026"
+                        value="{{ dados.get('mes_selecao', '') }}">
+                </div>
+            </div>
+
+            <div class="bo-form-group">
+                <label for="imagem_ficheiro">Capa do Livro {% if modo == 'criar' %}*{% endif %}</label>
+                <input type="file" id="imagem_ficheiro" name="imagem_ficheiro" accept="image/*" {% if modo == 'criar' %}required{% endif %}>
+                {% if dados.get('imagem') %}
+                <div class="bo-form-preview">
+                    <img src="{{ url_for('static', filename=dados.get('imagem')) }}" alt="Capa" style="max-height: 120px;">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="bo-form-group">
+                <label for="url_biblioteca">Link Catálogo Biblioteca</label>
+                <div style="display: flex; gap: 10px; align-items: stretch;">
+                    <input type="url" id="url_biblioteca" name="url_biblioteca" 
+                           value="{{ dados.get('url_biblioteca', '') if dados.get('url_biblioteca') and dados.get('url_biblioteca') != 'None' else '' }}" 
+                           placeholder="https://biblioteca.exemplo.com/livro/123" style="flex: 1; margin-bottom: 0;">
+                    <button type="button" id="btn-verificar" class="bo-btn-submit" style="width: auto; padding: 0 20px; font-size: 0.8rem; height: auto;">
+                        <i class="fas fa-search"></i> Verificar
+                    </button>
+                </div>
+                <div id="status-verificacao" style="margin-top: 8px; font-weight: 700; font-size: 0.85rem; min-height: 1.2rem;">
+                    {% if dados.get('url_biblioteca') and dados.get('url_biblioteca') != 'None' %}
+                        {% if dados.get('esta_disponivel') == 1 %}
+                            <span style="color: #059669;"><i class="fas fa-check-circle"></i> Disponível</span>
+                        {% else %}
+                            <span style="color: #dc2626;"><i class="fas fa-times-circle"></i> Indisponível</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="bo-form-group">
+                <label class="bo-checkbox-label">
+                    <input type="checkbox" id="esta_disponivel_check" name="esta_disponivel" value="1" {% if dados.get('esta_disponivel', 1) == 1 %}checked{% endif %}>
+                    Disponível para Requisição
+                </label>
+                <p style="font-size: 0.75rem; color: #64748b; margin-top: 4px; margin-left: 1.5rem;">
+                    O estado é atualizado ao verificar o link, mas pode alterar manualmente se necessário.
+                </p>
+            </div>
+
+            <div class="bo-form-group">
+                <label class="bo-checkbox-label">
+                    <input type="checkbox" name="destaque" value="1" {% if dados.get('destaque') %}checked{% endif %}>
+                    Livro do Mês (destacar)
+                </label>
+            </div>
+
+            <script>
+                document.getElementById('btn-verificar').addEventListener('click', async function() {
+                    const url = document.getElementById('url_biblioteca').value;
+                    const statusDiv = document.getElementById('status-verificacao');
+                    
+                    if (!url) {
+                        statusDiv.innerHTML = '<span style="color: #94a3b8;">Por favor insira um URL primeiro.</span>';
+                        return;
+                    }
+
+                    statusDiv.innerHTML = '<span style="color: #2563eb;"><i class="fas fa-spinner fa-spin"></i> A verificar...</span>';
+                    
+                    try {
+                        const response = await fetch('/admin/verificar-livro', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ url: url })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.disponivel) {
+                            statusDiv.innerHTML = '<span style="color: #059669;"><i class="fas fa-check-circle"></i> Disponível</span>';
+                            document.getElementById('esta_disponivel_check').checked = true;
+                        } else {
+                            statusDiv.innerHTML = '<span style="color: #dc2626;"><i class="fas fa-times-circle"></i> ' + (data.mensagem || 'Indisponível') + '</span>';
+                            document.getElementById('esta_disponivel_check').checked = false;
+                        }
+                    } catch (error) {
+                        console.error('Erro:', error);
+                        statusDiv.innerHTML = '<span style="color: #dc2626;"><i class="fas fa-exclamation-triangle"></i> Erro na verificação</span>';
+                    }
+                });
+            </script>
+
+            <div class="bo-form__actions">
+                <a href="{{ url_for('backoffice.listar_livros') }}" class="bo-btn-cancel">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </a>
+                <button type="submit" class="bo-btn-submit">
+                    <i class="fas fa-save"></i> {{ 'Adicionar Livro' if modo == 'criar' else 'Guardar Alterações' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

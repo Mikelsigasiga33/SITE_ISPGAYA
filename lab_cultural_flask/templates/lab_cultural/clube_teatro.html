@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clube de Teatro — ISPGAYA</title>
+  <meta name="description"
+    content="O Clube de Teatro do ISPGAYA é uma comunidade vibrante de artistas e entusiastas da cena aberta a toda a comunidade académica." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+
+  <style>
+    .main-nav { transition: all 0.3s ease-in-out; }
+    .main-nav.scrolled { background-color: white; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); border-bottom: 1px solid rgb(243 244 246); }
+    .hero-dots-pattern::before { content: ""; position: absolute; top: -20px; right: 0; width: 150px; height: 150px; background-image: radial-gradient(#fb923c 1px, transparent 1px); background-size: 20px 20px; opacity: 0.2; z-index: -1; }
+    .image-card { border-radius: 1.5rem; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+  </style>
+</head>
+
+<body class="antialiased bg-white text-black font-sans">
+  <div id="app" class="min-h-screen flex flex-col items-stretch">
+    
+    <!-- HEADER / NAVIGATION (Same as Reading Club) -->
+    {% include 'includes/navbar.html' %}
+
+    <main class="flex-grow pt-24 md:pt-28 lg:pt-40">
+      
+      <!-- HERO & BREADCRUMBS -->
+      <div class="relative hero-dots-pattern">
+        <!-- Ornamentos ISPGAYA -->
+        <div class="dot-pattern dot-pattern--lg dot-pattern--behind" style="top: -40px; left: 40px; opacity: 0.15;"></div>
+        <div class="dot-pattern dot-pattern--sm dot-pattern--behind" style="top: 100px; right: 20px;"></div>
+
+        <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10">
+          <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+            <a href="{{ url_for('frontoffice.index') }}" class="hover:text-gray-900">Lab. Cultural</a>
+            <span class="mx-2">/</span>
+            <span class="font-semibold text-black">Clube de Teatro</span>
+          </nav>
+          
+          <div class="prose 2xl:prose-lg prose-headings:font-serif xl:max-w-3xl">
+            <h1 class="font-serif text-4xl md:text-5xl font-bold mb-4">Clube de Teatro</h1>
+            <p class="text-xl text-gray-600 leading-relaxed">
+              Expressão, palco e arte. No Clube de Teatro do ISPGAYA, onde a criatividade ganha vida.
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <!-- MAIN CONTENT -->
+      <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10 mb-24 mt-12 xl:mt-20">
+        <div class="grid grid-cols-12 gap-x-12 items-start">
+          
+          <!-- LEFT CONTENT -->
+          <div class="col-span-12 lg:col-span-7">
+            
+            <!-- Sobre o Grupo Section -->
+            <div class="mb-16">
+              <h2 class="font-serif text-3xl font-bold mb-6">Paixão pela Representação</h2>
+              <div class="prose text-gray-600 max-w-none text-lg">
+                <p class="mb-6">
+                  O Clube de Teatro do ISPGAYA é mais do que um grupo de alunos; é uma comunidade vibrante de artistas, pensadores e entusiastas da cena que buscam explorar novas formas de expressão.
+                </p>
+                <p>
+                  Fundado com o objetivo de promover a cultura dramática dentro da instituição, realizamos ensaios semanais, workshops e produções que desafiam os limites da nossa criatividade.
+                </p>
+              </div>
+              
+              <div class="grid grid-cols-3 gap-8 mt-10">
+                <div>
+                  <p class="text-4xl font-bold text-orange-500">2022</p>
+                  <p class="text-xs font-bold uppercase text-gray-400 mt-1">Fundação</p>
+                </div>
+                <div>
+                  <p class="text-4xl font-bold text-orange-500">{{ agenda|length }}</p>
+                  <p class="text-xs font-bold uppercase text-gray-400 mt-1">Sessões</p>
+                </div>
+                <div>
+                  <p class="text-4xl font-bold text-orange-500">Aberto</p>
+                  <p class="text-xs font-bold uppercase text-gray-400 mt-1">Público</p>
+                </div>
+              </div>
+            </div>
+
+
+
+            <!-- Programação (Agenda Items) -->
+            <div class="mb-20">
+              <h2 class="font-serif text-3xl font-bold mb-10 border-b pb-4">Próximas Atuações</h2>
+              <div class="space-y-16 lg:space-y-24">
+                {% for item in agenda[:6] %}
+                <article class="group relative">
+                  <div class="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12">
+                    
+                    <!-- Texto (Lado Esquerdo) -->
+                    <div class="flex-1 order-2 lg:order-1">
+                      <div class="space-y-4">
+                        <div class="flex items-center space-x-3 text-orange-500 font-bold text-xs uppercase tracking-widest">
+                          <span>#{{ item.tipo|upper }}</span>
+                          {% if item.entrada == 'gratuita' %}
+                          <span class="text-gray-300">•</span>
+                          <span>#GRATUITO</span>
+                          {% endif %}
+                        </div>
+
+                        <h3 class="text-2xl lg:text-3xl font-bold tracking-tight font-serif">
+                          <a href="{{ url_for('frontoffice.espetaculo_detalhe', esp_id=item.id) }}"
+                            class="hover:text-orange-500 transition-colors text-black leading-tight">
+                            {{ item.titulo }}
+                          </a>
+                        </h3>
+
+                        <div class="text-gray-500 font-medium italic text-sm">
+                          {{ item.data_evento.strftime('%d de %B, %Y') if item.data_evento else '' }}
+                          {% if item.local %} — {{ item.local }}{% endif %}
+                        </div>
+
+                        <p class="text-gray-600 leading-relaxed text-base max-w-2xl font-medium">
+                          {{ item.descricao|striptags|truncate(160) or 'Uma produção imperdível do nosso Clube de Teatro.' }}
+                        </p>
+
+                        <div class="pt-2">
+                           <a href="{{ url_for('frontoffice.espetaculo_detalhe', esp_id=item.id) }}" 
+                              class="inline-flex items-center text-[#f97316] font-bold text-sm uppercase tracking-widest hover:translate-x-2 transition-transform">
+                            Saber Mais 
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Imagem (Lado Direito) -->
+                    <div class="lg:w-5/12 order-1 lg:order-2">
+                      <div class="relative overflow-hidden shadow-sm group-hover:shadow-xl transition-all duration-500">
+                        <a href="{{ url_for('frontoffice.espetaculo_detalhe', esp_id=item.id) }}">
+                          {% if item.imagem %}
+                          <img src="{{ url_for('static', filename=item.imagem) }}" class="w-full aspect-[16/9] object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="{{ item.titulo }}">
+                          {% else %}
+                          <img src="{{ url_for('static', filename=random_image('teatro')) }}" class="w-full aspect-[16/9] object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="{{ item.titulo }}">
+                          {% endif %}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                {% endfor %}
+              </div>
+
+              <div class="mt-12 text-center">
+                <a href="{{ url_for('frontoffice.espetaculos_lista') }}" class="inline-flex items-center gap-2 bg-white border-2 border-black text-black px-8 py-3 font-bold uppercase tracking-widest text-[10px] hover:bg-black hover:text-white transition-all rounded-[5px] shadow-sm no-underline">
+                  Ver Agenda Completa <i class="fas fa-calendar-alt text-[11px]"></i>
+                </a>
+              </div>
+            </div>
+
+
+          </div>
+
+          <!-- RIGHT SIDEBAR (Sticky Illustration) -->
+          <div class="hidden lg:block col-span-5 sticky top-40 pl-10 border-l border-gray-100">
+            <div class="image-card mb-10 rounded-sm overflow-hidden shadow-2xl">
+              <img src="{{ url_for('static', filename='img/backgrounds/Noitedeteatro.jpg') }}" class="w-full h-80 object-cover" alt="Noite de Teatro">
+            </div>
+            
+            <div class="bg-gray-50 rounded-sm p-10 shadow-lg border border-gray-50 relative overflow-hidden">
+              <!-- Ornamentos ISPGAYA -->
+              <div class="dot-pattern dot-pattern--sm dot-pattern--behind" style="top: -10px; left: -10px;"></div>
+              <div class="dot-pattern dot-pattern--behind" style="bottom: -20px; right: -10px; opacity: 0.1;"></div>
+
+              <h3 class="font-serif text-2xl font-bold mb-4 italic">"O palco é um mundo onde tudo é possível."</h3>
+              <p class="text-gray-600 mb-8 leading-relaxed">
+                Queres desenvolver a tua autoconfiança, voz e presença? Os ensaios são semanais e abertos a todos os alunos, sem necessidade de experiência prévia.
+              </p>
+              <a href="{{ url_for('frontoffice.juntar_clube_teatro_form') }}" class="block text-center py-4 bg-orange-400 text-white font-bold uppercase tracking-widest text-[10px] rounded-[5px] shadow-lg hover:bg-orange-500 hover:scale-[1.02] transition-all no-underline">
+                Junta-te a nós
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- GALLERY (Wide section) -->
+      {% if registos_fotos %}
+      <section class="bg-black py-24 text-white">
+        <div class="container mx-auto px-4 sm:px-6 xl:px-8">
+          <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+            <div class="max-w-2xl">
+              <h2 class="font-serif text-4xl md:text-5xl font-bold mb-4">Registo Fotográfico</h2>
+              <p class="text-gray-400 text-lg">Um olhar sobre o que acontece em palco e nos bastidores do nosso clube.</p>
+            </div>
+            <a href="{{ url_for('frontoffice.galeria_teatro') }}" class="group inline-flex items-center gap-3 bg-orange-500 text-white px-8 py-4 font-bold uppercase tracking-widest text-[10px] hover:bg-white hover:text-black transition-all rounded-[5px] shadow-xl no-underline">
+              Ver Tudo <i class="fas fa-images group-hover:scale-110 transition-transform text-[11px]"></i>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {% for foto in registos_fotos %}
+            <div class="aspect-square rounded-sm overflow-hidden hover:scale-105 transition-transform duration-500 shadow-xl border border-white/10 group">
+              <img src="{{ url_for('static', filename=foto) }}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="Foto Teatro">
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+      {% endif %}
+
+    </main>
+
+    <!-- FOOTER -->
+    {% include 'includes/footer.html' %}
+  </div>
+</body>
+</html>

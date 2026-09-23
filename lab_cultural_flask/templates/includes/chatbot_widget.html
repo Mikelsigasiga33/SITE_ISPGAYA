@@ -1,0 +1,699 @@
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CHATBOT WIDGET FLUTUANTE — Assistente Virtual ISPGAYA     -->
+<!-- Incluído globalmente via footer.html                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<style>
+/* ── Widget Container ── */
+#chatbot-widget {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    font-family: 'Inter', 'Open Sans', sans-serif;
+}
+
+/* ── Toggle Button (FAB) ── */
+#chatbot-toggle-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #f97316;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 6px 24px rgba(249, 115, 22, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+#chatbot-toggle-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 32px rgba(249, 115, 22, 0.5);
+}
+#chatbot-toggle-btn .chatbot-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    background: #10b981;
+    border-radius: 50%;
+    border: 2px solid white;
+    animation: pulse-badge 2s infinite;
+}
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* ── Chat Window ── */
+#chatbot-window {
+    position: absolute;
+    bottom: 72px;
+    right: 0;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    height: 520px;
+    max-height: calc(100vh - 120px);
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#chatbot-window.chatbot-open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+/* ── Header ── */
+.chatbot-header {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+.chatbot-header__info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.chatbot-header__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+.chatbot-header__title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+.chatbot-header__status {
+    font-size: 0.65rem;
+    opacity: 0.85;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 2px;
+}
+.chatbot-header__status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #86efac;
+    animation: pulse-badge 2s infinite;
+}
+.chatbot-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.chatbot-header__actions button {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition: background 0.2s;
+}
+.chatbot-header__actions button:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* ── Messages ── */
+.chatbot-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #f8fafc;
+}
+.chatbot-messages::-webkit-scrollbar {
+    width: 4px;
+}
+.chatbot-messages::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+/* Bot message */
+.chatbot-msg-bot {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    max-width: 85%;
+}
+.chatbot-msg-bot__avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #f97316;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+}
+.chatbot-msg-bot__bubble {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 2px 12px 12px 12px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: #334155;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+/* User message */
+.chatbot-msg-user {
+    display: flex;
+    justify-content: flex-end;
+    max-width: 85%;
+    align-self: flex-end;
+}
+.chatbot-msg-user__bubble {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    border-radius: 12px 2px 12px 12px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2);
+}
+
+/* Quick replies */
+.chatbot-quick-replies {
+    padding: 8px 16px 10px;
+    background: white;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.chatbot-quick-replies button,
+.chatbot-quick-replies a {
+    padding: 6px 12px;
+    background: #fff7ed;
+    color: #ea580c;
+    border: 1px solid #fed7aa;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+.chatbot-quick-replies button:hover,
+.chatbot-quick-replies a:hover {
+    background: #f97316;
+    color: white;
+    border-color: #f97316;
+}
+
+/* Input area */
+.chatbot-input-area {
+    padding: 12px 16px;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.chatbot-input-area input {
+    flex: 1;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 10px 16px;
+    font-size: 0.82rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+}
+.chatbot-input-area input:focus {
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+.chatbot-input-area button {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #f97316;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.chatbot-input-area button:hover {
+    background: #ea580c;
+    transform: scale(1.05);
+}
+
+/* Typing animation */
+.chatbot-typing-bubble {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+}
+.chatbot-typing-dot {
+    width: 6px;
+    height: 6px;
+    background: #94a3b8;
+    border-radius: 50%;
+    animation: cbTyping 1.4s infinite ease-in-out;
+}
+.chatbot-typing-dot:nth-child(1) { animation-delay: 0s; }
+.chatbot-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.chatbot-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes cbTyping {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+}
+
+/* Fade in animation */
+.chatbot-fade-in {
+    animation: cbFadeIn 0.3s ease-out forwards;
+}
+@keyframes cbFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    #chatbot-window {
+        width: calc(100vw - 16px);
+        height: calc(100vh - 90px);
+        bottom: 68px;
+        right: -16px;
+        border-radius: 12px;
+    }
+    #chatbot-widget {
+        bottom: 16px;
+        right: 16px;
+    }
+}
+</style>
+
+<!-- Widget HTML -->
+<div id="chatbot-widget">
+    <!-- Chat Window -->
+    <div id="chatbot-window">
+        <!-- Header -->
+        <div class="chatbot-header">
+            <div class="chatbot-header__info">
+                <div class="chatbot-header__avatar">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                    <div class="chatbot-header__title">Assistente Virtual</div>
+                    <div class="chatbot-header__status">
+                        <span class="chatbot-header__status-dot"></span> Online
+                    </div>
+                </div>
+            </div>
+            <div class="chatbot-header__actions">
+                <button onclick="cbResetChat()" title="Limpar conversa">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button onclick="cbToggleWindow()" title="Fechar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="chatbot-messages" id="cb-messages">
+            <div class="chatbot-msg-bot chatbot-fade-in">
+                <div class="chatbot-msg-bot__avatar"><i class="fa-solid fa-robot"></i></div>
+                <div class="chatbot-msg-bot__bubble">
+                    Olá! Sou o Assistente Virtual do Laboratório Cultural do ISPGAYA. Como posso ajudar-te hoje?
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Replies -->
+        <div class="chatbot-quick-replies" id="cb-quick-replies">
+            <button onclick="cbSendQuickReply('Teatro')">🎭 Teatro</button>
+            <button onclick="cbSendQuickReply('Biblioteca')">📚 Biblioteca</button>
+            <button onclick="cbSendQuickReply('Tuna')">🎶 Tuna</button>
+            <button onclick="cbSendQuickReply('Enviar Mensagem')">✉️ Mensagem</button>
+        </div>
+
+        <!-- Input -->
+        <div class="chatbot-input-area">
+            <input type="text" id="cb-input" placeholder="Escreve a tua mensagem..."
+                   onkeydown="if(event.key === 'Enter') cbSendMessage()" autocomplete="off">
+            <button onclick="cbSendMessage()" aria-label="Enviar">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Toggle Button (FAB) -->
+    <button id="chatbot-toggle-btn" onclick="cbToggleWindow()" aria-label="Abrir assistente virtual">
+        <i class="fa-solid fa-comment-dots" id="chatbot-toggle-icon"></i>
+        <span class="chatbot-badge" id="chatbot-badge"></span>
+    </button>
+</div>
+
+<script>
+(function() {
+    /* ── State ── */
+    let cbChatState = { step: 'idle', nome: '', email: '', mensagem: '' };
+    let cbChatHistory = [];
+    let cbIsOpen = false;
+
+    /* ── Toggle ── */
+    window.cbToggleWindow = function() {
+        const win = document.getElementById('chatbot-window');
+        const icon = document.getElementById('chatbot-toggle-icon');
+        const badge = document.getElementById('chatbot-badge');
+        cbIsOpen = !cbIsOpen;
+        if (cbIsOpen) {
+            win.classList.add('chatbot-open');
+            icon.className = 'fa-solid fa-xmark';
+            badge.style.display = 'none';
+            // Focus input
+            setTimeout(() => document.getElementById('cb-input').focus(), 300);
+        } else {
+            win.classList.remove('chatbot-open');
+            icon.className = 'fa-solid fa-comment-dots';
+        }
+    };
+
+    /* ── Reset Chat ── */
+    window.cbResetChat = function() {
+        sessionStorage.removeItem('chatbot_history');
+        sessionStorage.removeItem('chatbot_suggestions');
+        cbChatHistory = [];
+        cbChatState = { step: 'idle', nome: '', email: '', mensagem: '' };
+        const container = document.getElementById('cb-messages');
+        container.innerHTML = `
+            <div class="chatbot-msg-bot chatbot-fade-in">
+                <div class="chatbot-msg-bot__avatar"><i class="fa-solid fa-robot"></i></div>
+                <div class="chatbot-msg-bot__bubble">
+                    Olá! Sou o Assistente Virtual do Laboratório Cultural do ISPGAYA. Como posso ajudar-te hoje?
+                </div>
+            </div>
+        `;
+        cbRenderQuickReplies([
+            {label: "🎭 Teatro", text: "Teatro"},
+            {label: "📚 Biblioteca", text: "Biblioteca"},
+            {label: "🎶 Tuna", text: "Tuna"},
+            {label: "✉️ Mensagem", text: "Enviar Mensagem"}
+        ]);
+    };
+
+    /* ── Append Messages ── */
+    function cbAppendUser(text) {
+        const c = document.getElementById('cb-messages');
+        c.insertAdjacentHTML('beforeend', `
+            <div class="chatbot-msg-user chatbot-fade-in">
+                <div class="chatbot-msg-user__bubble">${text}</div>
+            </div>
+        `);
+        c.scrollTop = c.scrollHeight;
+    }
+
+    function cbParseMarkdown(text) {
+        if (!text) return "";
+        let html = text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\[(.*?)\]\((.*?)\)/g, function(match, label, url) {
+            const target = url.startsWith('/') ? '' : ' target="_blank" rel="noopener noreferrer"';
+            return `<a href="${url}" style="color:#f97316;font-weight:600;text-decoration:underline;"${target}>${label}</a>`;
+        });
+        const lines = html.split('\n');
+        let inList = false, result = '';
+        lines.forEach(line => {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
+                if (!inList) { result += '<ul style="list-style:disc;padding-left:18px;margin:6px 0;">'; inList = true; }
+                result += `<li>${trimmed.substring(2)}</li>`;
+            } else {
+                if (inList) { result += '</ul>'; inList = false; }
+                if (trimmed === '') result += '<div style="height:6px;"></div>';
+                else result += `<div>${line}</div>`;
+            }
+        });
+        if (inList) result += '</ul>';
+        return result;
+    }
+
+    function cbAppendBot(text, suggestions) {
+        const c = document.getElementById('cb-messages');
+        const parsed = cbParseMarkdown(text);
+        c.insertAdjacentHTML('beforeend', `
+            <div class="chatbot-msg-bot chatbot-fade-in">
+                <div class="chatbot-msg-bot__avatar"><i class="fa-solid fa-robot"></i></div>
+                <div class="chatbot-msg-bot__bubble">${parsed}</div>
+            </div>
+        `);
+        c.scrollTop = c.scrollHeight;
+        cbRenderQuickReplies(suggestions || []);
+    }
+
+    function cbShowTyping() {
+        const c = document.getElementById('cb-messages');
+        const id = 'cb-typing-' + Date.now();
+        c.insertAdjacentHTML('beforeend', `
+            <div id="${id}" class="chatbot-msg-bot chatbot-fade-in">
+                <div class="chatbot-msg-bot__avatar"><i class="fa-solid fa-robot"></i></div>
+                <div class="chatbot-msg-bot__bubble">
+                    <div class="chatbot-typing-bubble">
+                        <span class="chatbot-typing-dot"></span>
+                        <span class="chatbot-typing-dot"></span>
+                        <span class="chatbot-typing-dot"></span>
+                    </div>
+                </div>
+            </div>
+        `);
+        c.scrollTop = c.scrollHeight;
+        return id;
+    }
+
+    function cbRemoveTyping(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    /* ── Quick Replies ── */
+    function cbRenderQuickReplies(replies) {
+        const container = document.getElementById('cb-quick-replies');
+        if (!replies || replies.length === 0) {
+            container.style.display = 'none';
+            sessionStorage.removeItem('chatbot_suggestions');
+            return;
+        }
+        sessionStorage.setItem('chatbot_suggestions', JSON.stringify(replies));
+        container.style.display = 'flex';
+        container.innerHTML = replies.map(r => {
+            if (r.link) {
+                return `<a href="${r.link}">${r.label}</a>`;
+            } else if (r.action === 'start_message') {
+                return `<button onclick="cbStartConversationalForm()">${r.label}</button>`;
+            } else {
+                return `<button onclick="cbSendQuickReply('${(r.text || '').replace(/'/g, "\\'")}')">${r.label}</button>`;
+            }
+        }).join('');
+    }
+
+    window.cbSendQuickReply = function(text) {
+        cbAppendUser(text);
+        cbProcessMessage(text);
+    };
+
+    window.cbStartConversationalForm = function() {
+        cbChatState.step = 'waiting_name';
+        const loader = cbShowTyping();
+        setTimeout(() => {
+            cbRemoveTyping(loader);
+            cbAppendBot("Com certeza. Qual é o seu Nome Completo?");
+            cbRenderQuickReplies([]);
+        }, 600);
+    };
+
+    /* ── Send Message ── */
+    window.cbSendMessage = function() {
+        const input = document.getElementById('cb-input');
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        cbAppendUser(text);
+        if (cbChatState.step === 'idle') {
+            cbProcessMessage(text);
+        } else {
+            cbHandleConversationalStep(text);
+        }
+    };
+
+    /* ── Process Message (API) ── */
+    async function cbProcessMessage(text) {
+        const loader = cbShowTyping();
+        const lowerText = text.toLowerCase();
+        if (cbChatState.step === 'idle' && (lowerText === 'enviar mensagem' || lowerText === 'deixar mensagem')) {
+            cbRemoveTyping(loader);
+            cbChatState.step = 'waiting_name';
+            cbAppendBot("Com certeza. Qual é o seu Nome Completo?", []);
+            return;
+        }
+        cbChatHistory.push({ role: 'user', parts: [{ text: text }] });
+        if (cbChatHistory.length > 10) cbChatHistory = cbChatHistory.slice(-10);
+        sessionStorage.setItem('chatbot_history', JSON.stringify(cbChatHistory));
+        try {
+            const res = await fetch('/api/v1/chatbot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text, history: cbChatHistory })
+            });
+            const data = await res.json();
+            cbRemoveTyping(loader);
+            if (data.response) {
+                cbChatHistory.push({ role: 'model', parts: [{ text: data.response }] });
+                if (cbChatHistory.length > 10) cbChatHistory = cbChatHistory.slice(-10);
+                sessionStorage.setItem('chatbot_history', JSON.stringify(cbChatHistory));
+                cbAppendBot(data.response, data.suggestions);
+            } else {
+                cbAppendBot("Desculpa, ocorreu um erro ao processar a tua mensagem. Tenta novamente mais tarde.");
+            }
+        } catch (e) {
+            cbRemoveTyping(loader);
+            cbAppendBot("Não consegui ligar-me ao servidor. Por favor, verifica a tua ligação.");
+        }
+    }
+
+    /* ── Conversational Form (Leave Message) ── */
+    function cbHandleConversationalStep(text) {
+        const loader = cbShowTyping();
+        setTimeout(async () => {
+            cbRemoveTyping(loader);
+            if (cbChatState.step === 'waiting_name') {
+                cbChatState.nome = text;
+                cbChatState.step = 'waiting_email';
+                cbAppendBot(`Obrigado, ${cbChatState.nome}. E qual é o seu E-mail Institucional?`);
+            } else if (cbChatState.step === 'waiting_email') {
+                if (!text.endsWith('@ispgaya.pt')) {
+                    cbAppendBot("Ups! Apenas são aceites e-mails institucionais terminados em **@ispgaya.pt**. Por favor, tente novamente:");
+                    return;
+                }
+                cbChatState.email = text;
+                cbChatState.step = 'waiting_message';
+                cbAppendBot("Perfeito! Agora escreva a sua mensagem ou dúvida, por favor:");
+            } else if (cbChatState.step === 'waiting_message') {
+                cbChatState.mensagem = text;
+                const submitLoader = cbShowTyping();
+                try {
+                    const res = await fetch('/api/v1/chatbot/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            nome: cbChatState.nome,
+                            email: cbChatState.email,
+                            mensagem: cbChatState.mensagem
+                        })
+                    });
+                    const data = await res.json();
+                    cbRemoveTyping(submitLoader);
+                    if (data.success) {
+                        cbAppendBot(`Excelente, ${cbChatState.nome}! A sua mensagem foi enviada à nossa equipa. Responderemos para o email **${cbChatState.email}** assim que possível. ✨`, [
+                            {"label": "🚪 Voltar ao Menu", "text": "Olá"}
+                        ]);
+                    } else {
+                        cbAppendBot(`Ocorreu um problema ao submeter a mensagem: ${data.message || 'Erro desconhecido'}. Deseja tentar novamente?`, [
+                            {"label": "✉️ Recomeçar", "text": "Enviar Mensagem"},
+                            {"label": "🚪 Menu", "text": "Olá"}
+                        ]);
+                    }
+                } catch (e) {
+                    cbRemoveTyping(submitLoader);
+                    cbAppendBot("Erro ao submeter. Por favor, verifique a ligação e tente mais tarde.", [
+                        {"label": "🚪 Menu", "text": "Olá"}
+                    ]);
+                }
+                cbChatState = { step: 'idle', nome: '', email: '', mensagem: '' };
+            }
+        }, 600);
+    }
+
+    /* ── Load History from sessionStorage ── */
+    function cbLoadHistory() {
+        const raw = sessionStorage.getItem('chatbot_history');
+        if (raw) {
+            try {
+                cbChatHistory = JSON.parse(raw);
+                if (cbChatHistory.length > 0) {
+                    const c = document.getElementById('cb-messages');
+                    c.innerHTML = '';
+                    cbChatHistory.forEach(item => {
+                        const text = item.parts[0].text;
+                        if (item.role === 'user') {
+                            c.insertAdjacentHTML('beforeend', `
+                                <div class="chatbot-msg-user chatbot-fade-in">
+                                    <div class="chatbot-msg-user__bubble">${text}</div>
+                                </div>
+                            `);
+                        } else {
+                            const parsed = cbParseMarkdown(text);
+                            c.insertAdjacentHTML('beforeend', `
+                                <div class="chatbot-msg-bot chatbot-fade-in">
+                                    <div class="chatbot-msg-bot__avatar"><i class="fa-solid fa-robot"></i></div>
+                                    <div class="chatbot-msg-bot__bubble">${parsed}</div>
+                                </div>
+                            `);
+                        }
+                    });
+                    c.scrollTop = c.scrollHeight;
+                    const rawSugg = sessionStorage.getItem('chatbot_suggestions');
+                    if (rawSugg) cbRenderQuickReplies(JSON.parse(rawSugg));
+                    else cbRenderQuickReplies([]);
+                }
+            } catch (e) {
+                console.error("Erro ao carregar histórico do chatbot:", e);
+                cbChatHistory = [];
+            }
+        }
+    }
+
+    /* ── Init ── */
+    cbLoadHistory();
+})();
+</script>

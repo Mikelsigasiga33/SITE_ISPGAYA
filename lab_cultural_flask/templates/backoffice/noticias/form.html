@@ -1,0 +1,95 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}{{ 'Nova Notícia' if modo == 'criar' else 'Editar Notícia' }}{% endblock %}
+{% block page_title %}{{ 'Nova Notícia' if modo == 'criar' else 'Editar Notícia' }}{% endblock %}
+
+{% block bo_content %}
+<div class="bo-form-container">
+
+    <div class="bo-form-header">
+        <div class="bo-form-header__icon">
+            <i class="fas fa-newspaper"></i>
+        </div>
+        <div class="bo-form-header__text">
+            <h2>{{ 'Publicar Nova Notícia' if modo == 'criar' else 'Editar Notícia' }}</h2>
+            <p>{{ 'Escreva e publique uma nova notícia no portal.' if modo == 'criar' else 'Atualize o conteúdo desta notícia.' }}</p>
+        </div>
+    </div>
+
+    <div class="bo-form-card">
+        {% if erros %}
+        <div class="bo-flash bo-flash--error" style="margin-bottom:1.5rem;">
+            <i class="fas fa-exclamation-circle"></i>
+            {% for e in erros %}{{ e }} {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="bo-form" enctype="multipart/form-data" novalidate>
+
+            <div class="bo-form-group">
+                <label for="titulo">Título *</label>
+                <input type="text" id="titulo" name="titulo" required maxlength="250"
+                    value="{{ dados.get('titulo', '') }}" placeholder="Título da notícia">
+            </div>
+
+            <div class="bo-form-group">
+                <label for="resumo">Resumo (máx. 500 caracteres)</label>
+                <textarea id="resumo" name="resumo" rows="2"
+                    maxlength="500" placeholder="Um breve resumo da notícia...">{{ dados.get('resumo', '') }}</textarea>
+            </div>
+
+            <div class="bo-form-group">
+                <label for="conteudo">Conteúdo *</label>
+                <textarea id="conteudo" name="conteudo" rows="8" required
+                    placeholder="Conteúdo completo da notícia...">{{ dados.get('conteudo', '') }}</textarea>
+            </div>
+
+            <div class="bo-form__section"><i class="fas fa-cog"></i> Detalhes</div>
+
+            <div class="bo-form__row--2">
+                <div class="bo-form-group">
+                    <label for="categoria_id">Categoria</label>
+                    <select id="categoria_id" name="categoria_id">
+                        <option value="">— Sem categoria —</option>
+                        {% for cat in categorias %}
+                        <option value="{{ cat.id }}" {% if dados.get('categoria_id')|string==cat.id|string %}selected{% endif %}>
+                            {{ cat.icone }} {{ cat.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="bo-form-group">
+                    <label for="publicado_em">Data de Publicação *</label>
+                    <input type="date" id="publicado_em" name="publicado_em" required
+                        value="{{ dados.get('publicado_em', '')|string }}">
+                </div>
+            </div>
+
+            <div class="bo-form-group">
+                <label for="imagem_ficheiro">Imagem da Notícia</label>
+                <input type="file" id="imagem_ficheiro" name="imagem_ficheiro" accept="image/*">
+                {% if dados.get('imagem') %}
+                <div class="bo-form-preview">
+                    <img src="{{ url_for('static', filename=dados.get('imagem')) }}" alt="Preview" style="max-height: 100px;">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="bo-form-group">
+                <label class="bo-checkbox-label">
+                    <input type="checkbox" name="destaque" value="1" {% if dados.get('destaque') %}checked{% endif %}>
+                    Destacar na página principal
+                </label>
+            </div>
+
+            <div class="bo-form__actions">
+                <a href="{{ url_for('backoffice.listar_noticias') }}" class="bo-btn-cancel">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </a>
+                <button type="submit" class="bo-btn-submit">
+                    <i class="fas fa-save"></i> {{ 'Publicar' if modo == 'criar' else 'Guardar Alterações' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

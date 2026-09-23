@@ -1,0 +1,244 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Eventos{% endblock %}
+{% block page_title %}Gestão de Eventos{% endblock %}
+
+{% block bo_content %}
+<div class="bo-list-section">
+
+    <div class="bo-list-header" style="margin-bottom: 2rem;">
+        <div class="bo-list-header__left">
+            <div class="bo-list-header__icon"><i class="fas fa-calendar-days"></i></div>
+            <h2>Eventos <span>({{ total }})</span></h2>
+        </div>
+        <a href="{{ url_for('backoffice.criar_evento') }}" class="bo-btn bo-btn--primary">
+            <i class="fas fa-plus"></i> Novo Evento
+        </a>
+    </div>
+
+    <!-- FILTROS AVANÇADOS -->
+    <div class="bo-filters-card" style="margin-bottom: 2rem; background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--bo-border-light);">
+        <form method="GET" action="{{ url_for('backoffice.listar_eventos') }}" class="bo-filters-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; align-items: end;">
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Pesquisar</label>
+                <input type="text" name="q" value="{{ filtros.q }}" placeholder="Título ou descrição..." style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+            </div>
+            
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Cidade</label>
+                <select name="cidade" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+                    <option value="">Todas</option>
+                    {% for c in cidades %}
+                    <option value="{{ c }}" {% if filtros.cidade == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Data De</label>
+                <input type="date" name="data_de" value="{{ filtros.data_de }}" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+            </div>
+
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Data Até</label>
+                <input type="date" name="data_ate" value="{{ filtros.data_ate }}" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+            </div>
+
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Ordenar</label>
+                <select name="ordem" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+                    <option value="criado_em" {% if filtros.ordem == 'criado_em' %}selected{% endif %}>Mais Recentes</option>
+                    <option value="data_evento" {% if filtros.ordem == 'data_evento' %}selected{% endif %}>Data do Evento</option>
+                    <option value="titulo" {% if filtros.ordem == 'titulo' %}selected{% endif %}>Título</option>
+                    <option value="destaque" {% if filtros.ordem == 'destaque' %}selected{% endif %}>Destaque</option>
+                </select>
+            </div>
+
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Direção</label>
+                <select name="dir" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+                    <option value="ASC" {% if filtros.dir == 'ASC' %}selected{% endif %}>Crescente</option>
+                    <option value="DESC" {% if filtros.dir == 'DESC' %}selected{% endif %}>Decrescente</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 5px;">
+                <button type="submit" class="bo-btn bo-btn--primary" style="padding: 10px; flex: 1;">
+                    <i class="fas fa-filter"></i>
+                </button>
+                <a href="{{ url_for('backoffice.listar_eventos') }}" class="bo-btn bo-btn--outline" style="padding: 10px; flex: 1;" title="Limpar">
+                    <i class="fas fa-undo"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {% if eventos %}
+    <div class="bo-card-grid">
+        {% for ev in eventos %}
+        <div class="bo-list-card">
+            <div class="bo-list-card__strip {{ 'bo-list-card__strip--blue' if ev.tipo == 'interno' else 'bo-list-card__strip--purple' }}"></div>
+            <div class="bo-list-card__body">
+                {% if ev.destaque %}
+                <div class="bo-list-card__featured" title="Destaque"><i class="fas fa-star"></i></div>
+                {% endif %}
+
+                <div class="bo-list-card__top">
+                    <h3 class="bo-list-card__title">{{ ev.titulo }}</h3>
+                    <span class="bo-badge bo-badge--{{ ev.tipo }}">{{ ev.tipo }}</span>
+                </div>
+
+                {% if ev.descricao %}
+                <p class="bo-list-card__desc">{{ ev.descricao[:120] }}{% if ev.descricao|length > 120 %}…{% endif %}</p>
+                {% endif %}
+
+                <div class="bo-list-card__meta">
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-calendar"></i>
+                        {{ ev.data_evento.strftime('%d/%m/%Y') if ev.data_evento else '—' }}
+                    </div>
+                    {% if ev.hora %}
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-clock"></i>
+                        {{ ev.hora|string }}
+                    </div>
+                    {% endif %}
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ ev.cidade }}
+                    </div>
+                    {% if ev.categoria_nome %}
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-tag"></i>
+                        {{ ev.categoria_nome }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="bo-list-card__actions">
+                    <a href="{{ url_for('backoffice.editar_evento', evento_id=ev.id) }}" class="bo-btn-edit" title="Editar">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    {% if ev.tipo == 'interno' %}
+                    <button type="button" class="bo-btn-graph" title="Ver Gráfico de Vendas" 
+                        onclick="abrirGrafico('{{ ev.id }}', '{{ ev.titulo }}')">
+                        <i class="fas fa-chart-line"></i>
+                    </button>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('backoffice.toggle_destaque_evento', evento_id=ev.id) }}" style="display:inline;">
+                        <button type="submit" class="bo-btn-edit" title="{{ 'Remover Destaque' if ev.destaque else 'Marcar como Destaque' }}" style="{{ 'color: #f59e0b;' if ev.destaque else '' }}">
+                            <i class="{{ 'fas' if ev.destaque else 'far' }} fa-star"></i>
+                        </button>
+                    </form>
+                    <a href="{{ url_for('frontoffice.evento_detalhe', evento_id=ev.id) }}" class="bo-btn-view" target="_blank" title="Ver no site">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <form method="POST" action="{{ url_for('backoffice.eliminar_evento', evento_id=ev.id) }}"
+                        onsubmit="return confirm('Eliminar este evento?')" style="display:inline;">
+                        <button type="submit" class="bo-btn-delete" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- MODAL DO GRÁFICO -->
+    <div id="modal-grafico" class="bo-modal">
+        <div class="bo-modal-content">
+            <div class="bo-modal-header">
+                <h3 id="modal-titulo" class="bo-page-title" style="margin:0;">Gráfico de Vendas</h3>
+                <button class="bo-modal-close" onclick="fecharModal()">&times;</button>
+            </div>
+            <div class="bo-modal-body">
+                <div id="modal-loading" style="text-align:center; padding: 40px; display:none;">
+                    <i class="fas fa-circle-notch fa-spin fa-2x" style="color: var(--bo-accent);"></i>
+                    <p style="margin-top:12px; color: var(--bo-muted);">A carregar dados das vendas...</p>
+                </div>
+                <div id="modal-erro" style="display:none; padding: 20px; text-align:center; background:#FEF2F2; color:#B91C1C; border-radius:8px;">
+                    <i class="fas fa-exclamation-triangle"></i> <span id="erro-msg"></span>
+                </div>
+                <div id="modal-container-img" style="display:none;">
+                    <img id="img-grafico" src="" alt="Gráfico" style="width:100%; border-radius:8px; border:1px solid var(--bo-border-light);">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:20px;">
+                        <div style="background:var(--bo-bg); padding:16px; border-radius:10px; text-align:center;">
+                            <span id="stat-bilhetes" style="display:block; font-size:1.5rem; font-weight:800; color:var(--bo-accent);">0</span>
+                            <span style="font-size:0.75rem; color:var(--bo-muted); text-transform:uppercase;">Bilhetes</span>
+                        </div>
+                        <div style="background:var(--bo-bg); padding:16px; border-radius:10px; text-align:center;">
+                            <span id="stat-receita" style="display:block; font-size:1.5rem; font-weight:800; color:var(--bo-success);">0.00 €</span>
+                            <span style="font-size:0.75rem; color:var(--bo-muted); text-transform:uppercase;">Receita</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bo-pagination" style="margin-top:28px;">
+        {% if total_paginas > 1 %}
+            {% for p in range(1, total_paginas + 1) %}
+            <a href="{{ url_for('backoffice.listar_eventos', pagina=p, q=filtros.q, data_de=filtros.data_de, data_ate=filtros.data_ate, cidade=filtros.cidade, ordem=filtros.ordem, dir=filtros.dir) }}"
+                class="{{ 'active' if p == pagina else '' }}">{{ p }}</a>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    {% else %}
+    <div class="bo-list-empty">
+        <div class="bo-list-empty__icon"><i class="fas fa-calendar-plus"></i></div>
+        <h3>Nenhum evento encontrado</h3>
+        <p>Crie o primeiro evento para começar a construir a sua agenda cultural.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const modal = document.getElementById('modal-grafico');
+    const loading = document.getElementById('modal-loading');
+    const containerImg = document.getElementById('modal-container-img');
+    const modalErro = document.getElementById('modal-erro');
+    const imgGrafico = document.getElementById('img-grafico');
+    const titulo = document.getElementById('modal-titulo');
+
+    function abrirGrafico(id, nome) {
+        titulo.innerText = `Vendas: ${nome}`;
+        modal.classList.add('bo-modal--open');
+        loading.style.display = 'block';
+        containerImg.style.display = 'none';
+        modalErro.style.display = 'none';
+
+        fetch(`/admin/evento/${id}/grafico`)
+            .then(res => res.json())
+            .then(data => {
+                loading.style.display = 'none';
+                if (data.erro) {
+                    modalErro.style.display = 'block';
+                    document.getElementById('erro-msg').innerText = data.erro;
+                } else {
+                    containerImg.style.display = 'block';
+                    imgGrafico.src = `data:image/png;base64,${data.imagem}`;
+                    document.getElementById('stat-bilhetes').innerText = data.total_inscricoes;
+                    document.getElementById('stat-receita').innerText = `${data.receita_total} €`;
+                }
+            })
+            .catch(() => {
+                loading.style.display = 'none';
+                modalErro.style.display = 'block';
+                document.getElementById('erro-msg').innerText = 'Erro de ligação ao servidor.';
+            });
+    }
+
+    function fecharModal() {
+        modal.classList.remove('bo-modal--open');
+    }
+
+    // Fechar ao clicar fora
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            fecharModal();
+        }
+    }
+</script>
+{% endblock %}

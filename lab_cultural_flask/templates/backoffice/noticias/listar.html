@@ -1,0 +1,98 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Notícias{% endblock %}
+{% block page_title %}Gestão de Notícias{% endblock %}
+
+{% block bo_content %}
+<div class="bo-list-section">
+
+    <div class="bo-list-header">
+        <div class="bo-list-header__left">
+            <div class="bo-list-header__icon"><i class="fas fa-newspaper"></i></div>
+            <h2>Notícias <span>({{ total }})</span></h2>
+        </div>
+        <a href="{{ url_for('backoffice.criar_noticia') }}" class="bo-btn bo-btn--primary">
+            <i class="fas fa-plus"></i> Nova Notícia
+        </a>
+    </div>
+    
+    <!-- FILTROS -->
+    <div class="bo-filters-card" style="margin-bottom: 2rem; background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--bo-border-light);">
+        <form method="GET" action="{{ url_for('backoffice.listar_noticias') }}" class="bo-filters-form" style="display: flex; gap: 1rem; align-items: end;">
+            <div class="bo-form-group" style="margin-bottom: 0; flex: 1;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Pesquisar Notícias</label>
+                <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="Título ou resumo..." style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+            </div>
+            <div style="display: flex; gap: 5px;">
+                <button type="submit" class="bo-btn bo-btn--primary" style="padding: 10px;">
+                    <i class="fas fa-filter"></i>
+                </button>
+                <a href="{{ url_for('backoffice.listar_noticias') }}" class="bo-btn bo-btn--outline" style="padding: 10px;" title="Limpar">
+                    <i class="fas fa-undo"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {% if noticias %}
+    <div class="bo-card-grid">
+        {% for n in noticias %}
+        <div class="bo-list-card">
+            <div class="bo-list-card__strip"></div>
+            <div class="bo-list-card__body">
+                {% if n.destaque %}
+                <div class="bo-list-card__featured" title="Destaque"><i class="fas fa-star"></i></div>
+                {% endif %}
+
+                <div class="bo-list-card__top">
+                    <h3 class="bo-list-card__title">{{ n.titulo }}</h3>
+                </div>
+
+                {% if n.resumo %}
+                <p class="bo-list-card__desc">{{ n.resumo[:140] }}{% if n.resumo|length > 140 %}…{% endif %}</p>
+                {% endif %}
+
+                <div class="bo-list-card__meta">
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-calendar"></i>
+                        {{ n.publicado_em.strftime('%d/%m/%Y') if n.publicado_em else '—' }}
+                    </div>
+                    {% if n.categoria_nome %}
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-tag"></i>
+                        {{ n.categoria_nome }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="bo-list-card__actions">
+                    <a href="{{ url_for('backoffice.editar_noticia', noticia_id=n.id) }}" class="bo-btn-edit" title="Editar">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <form method="POST" action="{{ url_for('backoffice.eliminar_noticia', noticia_id=n.id) }}"
+                        onsubmit="return confirm('Eliminar esta notícia?')" style="display:inline;">
+                        <button type="submit" class="bo-btn-delete" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="bo-pagination" style="margin-top:28px;">
+        {% if total_paginas > 1 %}
+            {% for p in range(1, total_paginas + 1) %}
+            <a href="{{ url_for('backoffice.listar_noticias', pagina=p) }}"
+                class="{{ 'active' if p == pagina else '' }}">{{ p }}</a>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    {% else %}
+    <div class="bo-list-empty">
+        <div class="bo-list-empty__icon"><i class="fas fa-newspaper"></i></div>
+        <h3>Nenhuma notícia publicada</h3>
+        <p>Publique a primeira notícia do portal cultural.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

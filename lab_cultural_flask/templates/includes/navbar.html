@@ -1,0 +1,224 @@
+<!-- HEADER / NAVIGATION (Official Institutional Replica) -->
+{% set is_hero_page = request.path == url_for('frontoffice.homepage') or request.path == url_for('frontoffice.index') %}
+<header id="main-institutional-nav" 
+        class="fixed transition-all duration-500 w-full inset-x-0 top-0 z-[100] {% if is_hero_page %}bg-transparent text-white{% else %}bg-white text-black border-b border-gray-100 shadow-sm{% endif %}">
+  
+  <nav class="w-full">
+    <!-- Desktop Top Utility Bar -->
+    <div id="top-utility-bar" 
+         class="hidden border-b lg:block transition-colors duration-500 {% if is_hero_page %}border-white border-opacity-10{% else %}border-gray-200{% endif %}">
+      <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10 flex items-center justify-between py-2.5">
+        <!-- Utility Links Left -->
+        <div class="text-sm font-light tracking-tight space-x-6 nav-utility-links">
+          <a href="https://inforestudante.ispgaya.pt" target="_blank" class="transition-opacity hover:opacity-80" rel="noindex nofollow">Inforestudante</a>
+          <a href="https://infordocente.ispgaya.pt" target="_blank" class="transition-opacity hover:opacity-80" rel="noindex nofollow">Infordocente</a>
+          <a href="https://outlook.office.com" target="_blank" class="transition-opacity hover:opacity-80" rel="noindex nofollow">Email</a>
+          <a href="https://horarios.ispgaya.pt/geral/" target="_blank" class="transition-opacity hover:opacity-80" rel="noindex nofollow">Horários</a>
+        </div>
+        <!-- Utility Links Right -->
+        <div class="flex items-center text-sm font-light tracking-tight space-x-6 nav-utility-links">
+          <div class="space-x-6">
+            <a href="https://ispgaya.pt/pt/perguntas-frequentes" class="transition-opacity hover:opacity-80">Perguntas Frequentes</a>
+            <a href="https://inforestudante.ispgaya.pt/nonio/security/preRegisto.do?origem=CANDIDATURAS" target="_blank" rel="noopener noreferrer" class="transition-opacity hover:opacity-80">Candidatura Online</a>
+            <a href="https://ispgaya.pt/pt/instituicao/contactos" class="transition-opacity hover:opacity-80">Contactos</a>
+          </div>
+          <div class="ml-14 space-x-1">
+            <a href="#" class="font-bold transition-opacity hover:opacity-80">PT</a>
+            <a href="#" class="transition-opacity hover:opacity-80 opacity-60">EN</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10 py-3">
+      <div class="relative flex items-center justify-between">
+        <!-- Logo -->
+        <div class="flex-1 flex items-center">
+          <a href="{{ url_for('frontoffice.homepage') }}" class="flex items-center">
+            <img id="main-logo" 
+                 class="w-32 h-12 md:w-44 md:h-14 block transition-all duration-500 {% if is_hero_page %}brightness-0 invert{% endif %}" 
+                 src="{{ url_for('static', filename='img/logo_ispgaya.png') }}" 
+                 alt="ISPGAYA" />
+          </a>
+        </div>
+        
+        <!-- Desktop Main Menu -->
+        <div class="hidden lg:flex items-center sm:ml-6">
+          <div class="flex items-center space-x-6 nav-main-links">
+            <a href="{{ url_for('frontoffice.homepage') }}" class="cursor-pointer hover:opacity-80 font-light">Início</a>
+            <span class="cursor-pointer hover:opacity-80 font-light">Vida Académica</span>
+            <span class="cursor-pointer hover:opacity-80 font-light">Instituição</span>
+            
+            <!-- Lab. Cultural Dropdown -->
+            <div class="group relative">
+              <span class="cursor-pointer hover:opacity-80 font-light flex items-center gap-1">
+                Lab. Cultural
+              </span>
+              <div class="inset-x-0 transition-all duration-300 transform opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible pt-2 absolute w-64 z-[101]">
+                <ul class="bg-white border border-gray-100 rounded shadow-lg px-4 py-3 space-y-3 font-medium text-black">
+                  <li class="hover:text-orange-400 hover:underline underline-offset-2 {% if request.path == url_for('frontoffice.index') %}text-orange-500 underline underline-offset-4{% endif %}">
+                    <a class="inline-block w-full" href="{{ url_for('frontoffice.index') }}">O Laboratório</a>
+                  </li>
+                  <li class="hover:text-orange-400 hover:underline underline-offset-2 {% if request.path == url_for('frontoffice.noticias') or 'noticia' in request.path %}text-orange-500 underline underline-offset-4{% endif %}">
+                    <a class="inline-block w-full" href="{{ url_for('frontoffice.noticias') }}">Notícias</a>
+                  </li>
+                  <li class="hover:text-orange-400 hover:underline underline-offset-2 {% if request.path == url_for('frontoffice.clube_leitura') or 'livro' in request.path %}text-orange-500 underline underline-offset-4{% endif %}">
+                    <a class="inline-block w-full" href="{{ url_for('frontoffice.clube_leitura') }}">Clube de Leitura</a>
+                  </li>
+                  <li class="hover:text-orange-400 hover:underline underline-offset-2 {% if request.path == url_for('frontoffice.clube_teatro') or 'espetaculo' in request.path %}text-orange-500 underline underline-offset-4{% endif %}">
+                    <a class="inline-block w-full" href="{{ url_for('frontoffice.clube_teatro') }}">Clube de Teatro</a>
+                  </li>
+                  <li class="hover:text-orange-400 hover:underline underline-offset-2 {% if request.path == url_for('frontoffice.clube_tuna') or '/tuna' in request.path %}text-orange-500 underline underline-offset-4{% endif %}">
+                    <a class="inline-block w-full" href="{{ url_for('frontoffice.clube_tuna') }}">Tuna Académica</a>
+                  </li>
+                  <li class="hover:text-orange-400 hover:underline underline-offset-2 {% if request.path == url_for('frontoffice.eventos') or 'evento' in request.path %}text-orange-500 underline underline-offset-4{% endif %}">
+                    <a class="inline-block w-full" href="{{ url_for('frontoffice.eventos') }}">Programação Cultural</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Burger Icon (Mobile) -->
+        <div class="lg:hidden flex items-center">
+            <button id="mobile-menu-button" class="p-2 focus:outline-none transition-colors duration-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path id="burger-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
+                </svg>
+            </button>
+        </div>
+      </div>
+    </section>
+  </nav>
+
+  <!-- Mobile Menu Overlay (Hidden by Default) -->
+  <div id="mobile-menu" class="hidden lg:hidden bg-white w-full overflow-hidden overflow-y-auto" style="height: calc(100vh - 70px);">
+    <div class="pb-8 text-black">
+      <div class="px-4 flex items-center justify-end space-x-2 py-4">
+        <a href="#" class="font-bold">PT</a>
+        <a href="#" class="text-gray-400">EN</a>
+      </div>
+      
+      <div class="pt-2 pb-3 space-y-1">
+        <a href="{{ url_for('frontoffice.homepage') }}" class="block px-4 py-4 font-medium border-b border-gray-50">Início</a>
+        <div class="px-4 py-4 font-medium border-b border-gray-50">Vida Académica</div>
+        <div class="px-4 py-4 font-medium border-b border-gray-50">Instituição</div>
+
+        <!-- Lab Cultural Mobile Accordion -->
+        <div class="px-4 py-2 border-b border-gray-50">
+          <div class="flex items-center justify-between font-medium py-2" onclick="document.getElementById('mobile-lab-submenu').classList.toggle('hidden')">
+            <span>Lab. Cultural</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <ul id="mobile-lab-submenu" class="hidden pl-4 py-2 space-y-4 text-sm text-gray-600">
+            <li><a href="{{ url_for('frontoffice.index') }}"> — Laboratório Cultural</a></li>
+            <li><a href="{{ url_for('frontoffice.noticias') }}"> — Notícias</a></li>
+            <li><a href="{{ url_for('frontoffice.clube_leitura') }}"> — Clube de Leitura</a></li>
+            <li><a href="{{ url_for('frontoffice.clube_teatro') }}"> — Clube de Teatro</a></li>
+            <li><a href="{{ url_for('frontoffice.clube_tuna') }}"> — Tuna Académica</a></li>
+            <li><a href="{{ url_for('frontoffice.eventos') }}"> — Programação Cultural</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Private Area / Interest Links (Mobile) -->
+      <div class="mt-4 px-4 py-6 bg-gray-50">
+        <div class="mb-8">
+          <h4 class="flex items-center text-gray-500 text-xs font-bold uppercase tracking-wide">
+            <i class="fas fa-lock mr-2"></i> Area Privada
+          </h4>
+          <ul class="mt-4 space-y-4 text-sm font-medium">
+            <li><a href="https://inforestudante.ispgaya.pt">Inforestudante</a></li>
+            <li><a href="https://infordocente.ispgaya.pt">Infordocente</a></li>
+            <li><a href="https://outlook.office.com">Email</a></li>
+            <li><a href="https://horarios.ispgaya.pt/geral/">Horários</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="flex items-center text-gray-500 text-xs font-bold uppercase tracking-wide">
+            <i class="fas fa-link mr-2"></i> Links de Interesse
+          </h4>
+          <ul class="mt-4 space-y-4 text-sm font-medium">
+            <li><a href="https://ispgaya.pt/pt/perguntas-frequentes">Perguntas Frequentes</a></li>
+            <li><a href="https://ispgaya.pt/pt/instituicao/contactos">Contactos</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  (function() {
+    const isHeroPage = "{{ 'true' if is_hero_page else 'false' }}" === 'true';
+    const header = document.getElementById('main-institutional-nav');
+    const utilityBar = document.getElementById('top-utility-bar');
+    const logo = document.getElementById('main-logo');
+    const mobileBtn = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const burgerPath = document.getElementById('burger-path');
+    
+    let isMenuOpen = false;
+
+    function updateHeader() {
+      const scrolled = window.scrollY > 10;
+      
+      if (isMenuOpen) {
+        header.classList.add('bg-white', 'text-black', 'h-screen', 'overflow-y-auto');
+        header.classList.remove('bg-transparent', 'text-white');
+        if (utilityBar) {
+            utilityBar.classList.add('border-gray-200');
+            utilityBar.classList.remove('border-white', 'border-opacity-10');
+        }
+        if (logo) logo.classList.remove('brightness-0', 'invert');
+        burgerPath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+        return;
+      }
+
+      header.classList.remove('h-screen', 'overflow-y-auto');
+      
+      if (scrolled) {
+        header.classList.remove('bg-transparent', 'text-white');
+        header.classList.add('bg-white', 'text-black', 'shadow-sm', 'border-b', 'border-gray-100');
+        if (utilityBar) {
+            utilityBar.classList.add('border-gray-200');
+            utilityBar.classList.remove('border-white', 'border-opacity-10');
+        }
+        if (logo) logo.classList.remove('brightness-0', 'invert');
+      } else {
+        if (isHeroPage) {
+          header.classList.add('bg-transparent', 'text-white');
+          header.classList.remove('bg-white', 'text-black', 'shadow-sm', 'border-b', 'border-gray-100');
+          if (utilityBar) {
+              utilityBar.classList.remove('border-gray-200');
+              utilityBar.classList.add('border-white', 'border-opacity-10');
+          }
+          if (logo) logo.classList.add('brightness-0', 'invert');
+        } else {
+          header.classList.add('bg-white', 'text-black', 'border-b', 'border-gray-100');
+          if (utilityBar) utilityBar.classList.add('border-gray-200');
+          if (logo) logo.classList.remove('brightness-0', 'invert');
+        }
+      }
+      burgerPath.setAttribute('d', 'M4 8h16M4 16h16');
+    }
+
+    if (mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            mobileMenu.classList.toggle('hidden', !isMenuOpen);
+            document.documentElement.classList.toggle('overflow-hidden', isMenuOpen);
+            updateHeader();
+        });
+    }
+
+    window.addEventListener('scroll', updateHeader);
+    updateHeader(); // Initial state
+  })();
+</script>
+
+

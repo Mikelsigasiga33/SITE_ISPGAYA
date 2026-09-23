@@ -1,0 +1,67 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}{{ 'Nova Categoria' if modo == 'criar' else 'Editar Categoria' }}{% endblock %}
+{% block page_title %}{{ 'Nova Categoria' if modo == 'criar' else 'Editar Categoria' }}{% endblock %}
+
+{% block bo_content %}
+<div class="bo-form-container">
+
+    <div class="bo-form-header">
+        <div class="bo-form-header__icon">
+            <i class="fas fa-tags"></i>
+        </div>
+        <div class="bo-form-header__text">
+            <h2>{{ 'Criar Nova Categoria' if modo == 'criar' else 'Editar Categoria' }}</h2>
+            <p>{{ 'Defina uma nova categoria para organizar eventos e notícias.' if modo == 'criar' else 'Atualize esta categoria.' }}</p>
+        </div>
+    </div>
+
+    <div class="bo-form-card">
+        <form method="POST" class="bo-form" novalidate>
+
+            <div class="bo-form-group">
+                <label for="nome">Nome *</label>
+                <input type="text" id="nome" name="nome" required maxlength="100"
+                    value="{{ dados.get('nome', '') }}" placeholder="Ex: Música">
+            </div>
+
+            <div class="bo-form__row--2">
+                <div class="bo-form-group">
+                    <label for="icone">Ícone (Emoji)</label>
+                    <input type="text" id="icone" name="icone" maxlength="10"
+                        value="{{ dados.get('icone', '🎭') }}"
+                        style="font-size: 1.3rem; max-width: 100px; text-align: center;">
+                </div>
+                <div class="bo-form-group">
+                    <label for="cor">Cor</label>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input type="color" id="cor-picker" value="{{ dados.get('cor', '#2563eb') }}"
+                            style="width:48px; height:42px; border:none; cursor:pointer; border-radius: 8px;">
+                        <input type="text" id="cor" name="cor" maxlength="20"
+                            value="{{ dados.get('cor', '#2563eb') }}" placeholder="#2563eb">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bo-form__actions">
+                <a href="{{ url_for('backoffice.listar_categorias') }}" class="bo-btn-cancel">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </a>
+                <button type="submit" class="bo-btn-submit">
+                    <i class="fas fa-save"></i> {{ 'Criar Categoria' if modo == 'criar' else 'Guardar Alterações' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('cor-picker').addEventListener('input', function () {
+        document.getElementById('cor').value = this.value;
+    });
+    document.getElementById('cor').addEventListener('input', function () {
+        if (/^#[0-9A-Fa-f]{6}$/.test(this.value)) {
+            document.getElementById('cor-picker').value = this.value;
+        }
+    });
+</script>
+{% endblock %}

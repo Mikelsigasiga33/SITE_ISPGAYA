@@ -1,0 +1,350 @@
+=== DATABASE SCHEMA ===
+
+--- Table: categorias ---
+CREATE TABLE categorias (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL UNIQUE,
+        icone TEXT DEFAULT '?',
+        cor TEXT DEFAULT '#2563eb',
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+Foreign Keys: None
+Indexes / Unique Constraints:
+  - Name: sqlite_autoindex_categorias_1, Unique: 1, Origin: u
+
+--- Table: clubes ---
+CREATE TABLE clubes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        slug TEXT NOT NULL UNIQUE,
+        descricao TEXT,
+        icone TEXT DEFAULT '?',
+        cor TEXT DEFAULT '#2563eb',
+        local_id INTEGER,
+        horario TEXT,
+        imagem TEXT,
+        ativo INTEGER DEFAULT 1,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (local_id) REFERENCES locais (id) ON DELETE SET NULL
+    )
+Foreign Keys:
+  - local_id -> locais.id
+Indexes / Unique Constraints:
+  - Name: sqlite_autoindex_clubes_1, Unique: 1, Origin: u
+
+--- Table: entidades_culturais ---
+CREATE TABLE entidades_culturais (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        bio TEXT,
+        tipo TEXT NOT NULL, -- enum('Autor','Ator','Encenador','Musico','Palestrante')
+        imagem TEXT,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+Foreign Keys: None
+Indexes: None
+
+--- Table: espetaculo_equipa ---
+CREATE TABLE espetaculo_equipa (
+        espetaculo_id INTEGER NOT NULL,
+        entidade_id INTEGER NOT NULL,
+        funcao TEXT DEFAULT 'Ator',
+        PRIMARY KEY (espetaculo_id, entidade_id),
+        FOREIGN KEY (espetaculo_id) REFERENCES espetaculos (id) ON DELETE CASCADE,
+        FOREIGN KEY (entidade_id) REFERENCES entidades_culturais (id) ON DELETE CASCADE
+    )
+Foreign Keys:
+  - entidade_id -> entidades_culturais.id
+  - espetaculo_id -> espetaculos.id
+Indexes / Unique Constraints:
+  - Name: sqlite_autoindex_espetaculo_equipa_1, Unique: 1, Origin: pk
+
+--- Table: espetaculos ---
+CREATE TABLE espetaculos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        categoria_id INTEGER,
+        tipo TEXT NOT NULL DEFAULT 'espetaculo', -- enum('espetaculo','ensaio','workshop')
+        descricao TEXT,
+        data_evento DATE NOT NULL,
+        hora TIME,
+        imagem TEXT,
+        entrada TEXT NOT NULL DEFAULT 'gratuita', -- enum('gratuita','pago','convite')
+        preco DECIMAL(6,2),
+        ativo INTEGER NOT NULL DEFAULT 1,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        duracao TEXT,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        limite_filas INTEGER DEFAULT 8,
+        data_publicacao DATETIME, destaque INTEGER DEFAULT 0,
+        FOREIGN KEY (categoria_id) REFERENCES categorias (id) ON DELETE SET NULL
+    )
+Foreign Keys:
+  - categoria_id -> categorias.id
+Indexes: None
+
+--- Table: eventos ---
+CREATE TABLE eventos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        descricao TEXT,
+        data_evento DATE NOT NULL,
+        hora TIME,
+        local_id INTEGER,
+        imagem TEXT,
+        link_externo TEXT,
+        link_bilheteira TEXT,
+        categoria_id INTEGER,
+        tipo TEXT NOT NULL DEFAULT 'interno', -- enum('interno','externo')
+        destaque INTEGER NOT NULL DEFAULT 0,
+        ativo INTEGER NOT NULL DEFAULT 1,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        data_publicacao DATETIME,
+        tipo_ingresso TEXT DEFAULT 'gratis', -- enum('gratis','pago')
+        preco DECIMAL(10,2) DEFAULT 0.00,
+        limite_bilhetes INTEGER,
+        FOREIGN KEY (local_id) REFERENCES locais (id) ON DELETE SET NULL,
+        FOREIGN KEY (categoria_id) REFERENCES categorias (id) ON DELETE SET NULL
+    )
+Foreign Keys:
+  - categoria_id -> categorias.id
+  - local_id -> locais.id
+Indexes: None
+
+--- Table: galeria_eventos ---
+CREATE TABLE galeria_eventos (id INTEGER PRIMARY KEY AUTOINCREMENT, evento_id INTEGER NOT NULL, titulo TEXT, imagem TEXT NOT NULL, ativo INTEGER DEFAULT 1, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (evento_id) REFERENCES eventos(id))
+Foreign Keys:
+  - evento_id -> eventos.id
+Indexes: None
+
+--- Table: galeria_teatro ---
+CREATE TABLE galeria_teatro (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        imagem TEXT NOT NULL,
+        legenda TEXT,
+        ordem INTEGER DEFAULT 0,
+        ativo INTEGER NOT NULL DEFAULT 1,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        espetaculo_id INTEGER,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (espetaculo_id) REFERENCES espetaculos (id) ON DELETE CASCADE
+    )
+Foreign Keys:
+  - espetaculo_id -> espetaculos.id
+Indexes: None
+
+--- Table: inscricoes_eventos ---
+CREATE TABLE inscricoes_eventos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        evento_id INTEGER NOT NULL,
+        nome TEXT NOT NULL,
+        email TEXT NOT NULL,
+        codigo TEXT NOT NULL,
+        valor_pago DECIMAL(8,2) DEFAULT 0.00,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (evento_id) REFERENCES eventos (id) ON DELETE CASCADE
+    )
+Foreign Keys:
+  - evento_id -> eventos.id
+Indexes: None
+
+--- Table: inscricoes_leitura ---
+CREATE TABLE inscricoes_leitura (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        utilizador_id INTEGER,
+        sessao_id INTEGER,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        nome TEXT,
+        email TEXT,
+        estado TEXT DEFAULT 'Pendente', -- enum('Pendente','Aceite','Recusado')
+        FOREIGN KEY (sessao_id) REFERENCES sessoes_leitura (id) ON DELETE CASCADE,
+        FOREIGN KEY (utilizador_id) REFERENCES utilizadores (id) ON DELETE CASCADE
+    )
+Foreign Keys:
+  - utilizador_id -> utilizadores.id
+  - sessao_id -> sessoes_leitura.id
+Indexes: None
+
+--- Table: inscricoes_teatro ---
+CREATE TABLE inscricoes_teatro (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        espetaculo_id INTEGER,
+        nome_aluno TEXT,
+        email_aluno TEXT,
+        codigo_inscricao TEXT UNIQUE,
+        data_inscricao DATETIME DEFAULT CURRENT_TIMESTAMP,
+        lugares TEXT,
+        FOREIGN KEY (espetaculo_id) REFERENCES espetaculos (id)
+    )
+Foreign Keys:
+  - espetaculo_id -> espetaculos.id
+Indexes / Unique Constraints:
+  - Name: sqlite_autoindex_inscricoes_teatro_1, Unique: 1, Origin: u
+
+--- Table: livro_autores ---
+CREATE TABLE livro_autores (
+        livro_id INTEGER NOT NULL,
+        entidade_id INTEGER NOT NULL,
+        PRIMARY KEY (livro_id, entidade_id),
+        FOREIGN KEY (livro_id) REFERENCES livros (id) ON DELETE CASCADE,
+        FOREIGN KEY (entidade_id) REFERENCES entidades_culturais (id) ON DELETE CASCADE
+    )
+Foreign Keys:
+  - entidade_id -> entidades_culturais.id
+  - livro_id -> livros.id
+Indexes / Unique Constraints:
+  - Name: sqlite_autoindex_livro_autores_1, Unique: 1, Origin: pk
+
+--- Table: livros ---
+CREATE TABLE livros (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        autor TEXT,
+        categoria_id INTEGER,
+        sinopse TEXT,
+        imagem TEXT,
+        ano INTEGER,
+        genero TEXT,
+        destaque INTEGER NOT NULL DEFAULT 0,
+        mes_selecao TEXT,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        url_biblioteca TEXT,
+        esta_disponivel INTEGER DEFAULT 1,
+        FOREIGN KEY (categoria_id) REFERENCES categorias (id) ON DELETE SET NULL
+    )
+Foreign Keys:
+  - categoria_id -> categorias.id
+Indexes: None
+
+--- Table: locais ---
+CREATE TABLE locais (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        morada TEXT,
+        cidade TEXT DEFAULT 'Vila Nova de Gaia',
+        capacidade INTEGER,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+Foreign Keys: None
+Indexes: None
+
+--- Table: membros_leitura ---
+CREATE TABLE membros_leitura (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        email TEXT NOT NULL,
+        estado TEXT DEFAULT 'Pendente',
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+Foreign Keys: None
+Indexes: None
+
+--- Table: membros_teatro ---
+CREATE TABLE membros_teatro (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        email TEXT NOT NULL,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        estado TEXT DEFAULT 'Pendente'
+    )
+Foreign Keys: None
+Indexes: None
+
+--- Table: mensagens_contacto ---
+CREATE TABLE mensagens_contacto (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    email TEXT NOT NULL,
+    assunto TEXT,
+    mensagem TEXT NOT NULL,
+    lida INTEGER DEFAULT 0,
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+Foreign Keys: None
+Indexes: None
+
+--- Table: noticias ---
+CREATE TABLE noticias (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        conteudo TEXT NOT NULL,
+        resumo TEXT,
+        imagem TEXT,
+        categoria_id INTEGER,
+        destaque INTEGER NOT NULL DEFAULT 0,
+        ativo INTEGER NOT NULL DEFAULT 1,
+        publicado_em DATE DEFAULT CURRENT_DATE,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (categoria_id) REFERENCES categorias (id) ON DELETE SET NULL
+    )
+Foreign Keys:
+  - categoria_id -> categorias.id
+Indexes: None
+
+--- Table: requisicoes_livros ---
+CREATE TABLE requisicoes_livros (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        livro_id INTEGER,
+        nome_aluno TEXT,
+        email_aluno TEXT,
+        codigo_requisicao TEXT UNIQUE,
+        data_requisicao DATETIME DEFAULT CURRENT_TIMESTAMP,
+        estado TEXT DEFAULT 'Pendente', data_entrega_limite DATETIME, data_aprovacao DATETIME, data_levantamento DATETIME,
+        FOREIGN KEY (livro_id) REFERENCES livros (id)
+    )
+Foreign Keys:
+  - livro_id -> livros.id
+Indexes / Unique Constraints:
+  - Name: sqlite_autoindex_requisicoes_livros_1, Unique: 1, Origin: u
+
+--- Table: sessoes_leitura ---
+CREATE TABLE sessoes_leitura (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        livro_id INTEGER,
+        clube_id INTEGER,
+        data_sessao DATE NOT NULL,
+        hora TIME DEFAULT '18:30:00',
+        local_id INTEGER,
+        tema TEXT,
+        descricao TEXT,
+        vagas INTEGER,
+        ativo INTEGER NOT NULL DEFAULT 1,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (livro_id) REFERENCES livros (id) ON DELETE SET NULL,
+        FOREIGN KEY (local_id) REFERENCES locais (id) ON DELETE SET NULL,
+        FOREIGN KEY (clube_id) REFERENCES clubes (id) ON DELETE CASCADE
+    )
+Foreign Keys:
+  - clube_id -> clubes.id
+  - local_id -> locais.id
+  - livro_id -> livros.id
+Indexes: None
+
+--- Table: utilizadores ---
+CREATE TABLE utilizadores (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        nome TEXT NOT NULL,
+        ativo INTEGER NOT NULL DEFAULT 1,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        role TEXT NOT NULL DEFAULT 'admin',
+        clube_id INTEGER,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (clube_id) REFERENCES clubes (id) ON DELETE SET NULL
+    )
+Foreign Keys:
+  - clube_id -> clubes.id
+Indexes / Unique Constraints:
+  - Name: sqlite_autoindex_utilizadores_2, Unique: 1, Origin: u
+  - Name: sqlite_autoindex_utilizadores_1, Unique: 1, Origin: u

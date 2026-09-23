@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ espetaculo.titulo }} — Clube de Teatro — ISPGAYA</title>
+
+  <!-- Fonts (Matches ispgaya.pt) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+</head>
+
+<body class="antialiased bg-white text-black font-sans">
+  <div id="app" class="h-full min-h-screen flex flex-col items-stretch">
+
+    <!-- HEADER / NAVIGATION -->
+    {% include 'includes/navbar.html' %}
+
+    <main class="h-full mt-24 md:mt-32">
+      <section class="max-w-4xl mx-auto px-4 pb-20 sm:px-6 lg:px-0">
+
+        <!-- Back Link (ISPGAYA Style) -->
+        <a href="{{ url_for('frontoffice.clube_teatro') }}"
+          class="inline-flex items-center text-[11px] font-bold uppercase tracking-widest text-gray-400 hover:text-orange-500 transition-colors group">
+          <i class="fas fa-chevron-left mr-2 text-[10px] transition-transform group-hover:-translate-x-1"></i>
+          Voltar
+        </a>
+
+        <article class="mt-10">
+          <div class="mb-8">
+
+
+            <h1 class="text-4xl lg:text-5xl font-serif font-bold leading-tight mb-8 text-[#1a1a1a]">
+              {{ espetaculo.titulo }}
+            </h1>
+
+            <div class="flex flex-wrap items-center gap-x-8 gap-y-4 text-sm font-medium text-gray-500">
+              {% if espetaculo.data_evento %}
+              <div class="flex items-center">
+                <i class="far fa-calendar-alt mr-2 text-gray-400"></i>
+                <span class="capitalize">{{ espetaculo.data_evento.strftime('%d %B, %Y') }}</span>
+              </div>
+              {% endif %}
+
+              {% if espetaculo.hora %}
+              <div class="flex items-center">
+                <i class="far fa-clock mr-2 text-gray-400"></i>
+                <span>{{ espetaculo.hora }}</span>
+              </div>
+              {% endif %}
+
+              <div class="flex items-center">
+                <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+                <span>{{ espetaculo.local or 'Local a definir' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Featured Image (Sharp Corners) -->
+          <div class="my-10">
+            {% if espetaculo.imagem %}
+            <img class="w-full aspect-video object-cover" src="{{ url_for('static', filename=espetaculo.imagem) }}"
+              alt="{{ espetaculo.titulo }}" />
+            {% else %}
+            <img class="w-full aspect-video object-cover" src="{{ url_for('static', filename=random_image('teatro')) }}"
+              alt="{{ espetaculo.titulo }}" />
+            {% endif %}
+          </div>
+
+          <!-- Galeria de Fotos (Se existirem mais de uma) -->
+          {% if fotos|length > 1 %}
+          <div class="mb-16">
+            <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-orange-500 mb-6">Galeria do Espetáculo</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {% for f in fotos %}
+              {% set img_path = f.imagem.replace('/static/', '').replace('static/', '') if f.imagem else '' %}
+              <div class="aspect-square overflow-hidden group bg-gray-100 cursor-pointer" onclick="openLightbox('{{ url_for('static', filename=img_path) }}')">
+                <img src="{{ url_for('static', filename=img_path) }}"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  alt="{{ f.titulo or espetaculo.titulo }}">
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Simple Lightbox -->
+          <div id="lightbox" class="fixed inset-0 bg-black/90 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm" onclick="this.classList.add('hidden')">
+            <img id="lightbox-img" src="" class="max-w-full max-h-full shadow-2xl border-4 border-white/10" alt="Gallery image">
+            <button class="absolute top-8 right-8 text-white text-3xl hover:text-orange-500 transition-colors"><i class="fas fa-times"></i></button>
+          </div>
+
+          <script>
+            function openLightbox(src) {
+              document.getElementById('lightbox-img').src = src;
+              document.getElementById('lightbox').classList.remove('hidden');
+              document.getElementById('lightbox').classList.add('flex');
+            }
+          </script>
+          {% endif %}
+
+          <!-- Body -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div class="lg:col-span-8">
+              <div class="prose max-w-none prose-lg prose-headings:font-sans">
+                  {% if espetaculo.data_evento and espetaculo.data_evento < hoje %} 
+                  <h2 class="text-3xl font-bold mb-8 text-[#1a1a1a]">Sobre o Espetáculo</h2>
+                  <div class="whitespace-pre-line text-gray-700 leading-relaxed text-lg mb-12">
+                    {{ espetaculo.descricao or 'Memórias de uma experiência teatral única produzida pelos nossos
+                    alunos.' }}
+                  </div>
+                  {% else %}
+                  <h2 class="text-3xl font-bold mb-8 text-[#1a1a1a]">Sinopse</h2>
+                  <div class="whitespace-pre-line text-gray-700 leading-relaxed text-lg mb-12">
+                    {{ espetaculo.descricao or 'Prepara-te para uma experiência teatral única produzida pelos nossos
+                    alunos.' }}
+                  </div>
+                  {% endif %}
+
+                  {% if espetaculo.encenacao or espetaculo.elenco %}
+                  <div class="bg-gray-50 p-8 shadow-sm border border-gray-100 my-10">
+                    <h3 class="text-xl font-bold mb-6 uppercase tracking-wider border-b border-gray-200 pb-2">Ficha
+                      Artística</h3>
+                    {% if espetaculo.encenacao %}
+                    <p class="mb-4"><strong>Encenação:</strong> <span class="text-gray-600">{{ espetaculo.encenacao
+                        }}</span></p>
+                    {% endif %}
+                    {% if espetaculo.elenco %}
+                    <p class="mb-0"><strong>Participantes:</strong> <span class="text-gray-600 whitespace-pre-line">{{
+                        espetaculo.elenco }}</span></p>
+                    {% endif %}
+                  </div>
+                  {% endif %}
+
+                  <!-- Bilheteira (Apenas se não tiver passado) -->
+                  {% if not espetaculo.data_evento or espetaculo.data_evento >= hoje %}
+                  <div class="mt-12 flex flex-wrap gap-4">
+                    <a href="{{ url_for('frontoffice.inscrever_teatro_form', esp_id=espetaculo.id) }}"
+                      class="bg-[#f97316] text-white font-medium text-lg px-7 py-2 rounded-[5px] hover:bg-[#ea580c] transition-colors no-underline flex items-center">
+                      Inscrever-me Agora <i class="fas fa-id-card ml-3"></i>
+                    </a>
+                  </div>
+
+
+                  <!-- Calendar Section -->
+                  <div class="mt-10 border-t border-gray-100 pt-8">
+                    <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-6">Adicionar ao Calendário</p>
+                    <div class="flex flex-wrap gap-3">
+                      <button onclick="addToGoogleCalendar()"
+                        class="bg-white border border-gray-200 text-gray-600 font-medium text-sm px-5 py-2 rounded-[5px] hover:border-orange-500 hover:text-orange-500 transition-all flex items-center gap-2">
+                        <i class="fab fa-google text-xs"></i> Google Calendar
+                      </button>
+                      <a href="{{ url_for('frontoffice.export_calendar', tipo='espetaculo', item_id=espetaculo.id) }}"
+                        class="bg-white border border-gray-200 text-gray-600 font-medium text-sm px-5 py-2 rounded-[5px] hover:border-orange-500 hover:text-orange-500 transition-all flex items-center gap-2 no-underline">
+                        <i class="fas fa-file-download text-xs"></i> Outlook / Apple
+                      </a>
+                    </div>
+                  </div>
+
+                  <!-- Share Section (ISPGAYA Style) -->
+                  <div class="mt-12 pt-8 border-t border-gray-100 flex items-center gap-6">
+                    <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">Partilhar</span>
+                    <div class="flex gap-4">
+                      <a href="#" class="text-gray-400 hover:text-[#3b5998] transition-colors text-lg"><i class="fab fa-facebook-f"></i></a>
+                      <a href="#" class="text-gray-400 hover:text-[#1da1f2] transition-colors text-lg"><i class="fab fa-twitter"></i></a>
+                      <a href="#" class="text-gray-400 hover:text-[#0077b5] transition-colors text-lg"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#" class="text-gray-400 hover:text-[#25d366] transition-colors text-lg"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                  </div>
+
+                  <script>
+                    function addToGoogleCalendar() {
+                      const title = {{ espetaculo.titulo| tojson
+                    }};
+                    const location = {{ (espetaculo.local or 'Auditório ISPGAYA')| tojson }};
+                    const details = {{ (espetaculo.descricao or '')| tojson }}.substring(0, 500);
+
+                    const dateStr = "{{ espetaculo.data_evento.strftime('%Y%m%d') }}";
+                    const timeStr = "{{ (espetaculo.hora|string).replace(':', '') if espetaculo.hora else '000000' }}";
+
+                    const start = dateStr + 'T' + (timeStr.length === 4 ? timeStr + '00' : timeStr);
+                    const end = dateStr + 'T' + String(parseInt(timeStr.substring(0, 2)) + 2).padStart(2, '0') + timeStr.substring(2);
+
+                    const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${end}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}&sf=true&output=xml`;
+
+                    window.open(url, '_blank');
+                    }
+
+                    // --- Real-time Theater Availability Polling ---
+                    const ESPETACULO_ID = {{ espetaculo.id }};
+
+                    async function checkTheaterAvailability() {
+                      try {
+                        const response = await fetch(`/api/v1/teatro/${ESPETACULO_ID}/disponibilidade`);
+                        const data = await response.json();
+
+                        if (data.error) return;
+
+                        const sidebarVal = document.getElementById('theater-availability-value');
+                        if (sidebarVal) {
+                          const newValue = data.disponivel ? `${data.vagas_restantes} lugares` : "Esgotado";
+                          if (sidebarVal.innerText !== String(newValue)) {
+                            sidebarVal.innerText = newValue;
+                            sidebarVal.classList.add('scale-110', 'text-orange-500');
+                            setTimeout(() => sidebarVal.classList.remove('scale-110', 'text-orange-500'), 1000);
+
+                            if (!data.disponivel) {
+                              sidebarVal.classList.add('text-red-500', 'font-bold');
+                            } else {
+                              sidebarVal.classList.remove('text-red-500', 'font-bold');
+                            }
+                          }
+                        }
+                      } catch (err) {
+                        console.error("Erro ao verificar disponibilidade teatro:", err);
+                      }
+                    }
+
+                    // Inicial e intervalo
+                    checkTheaterAvailability();
+                    setInterval(checkTheaterAvailability, 10000);
+                  </script>
+                  {% endif %}
+              </div>
+            </div>
+
+            <!-- Detail Sidebar inside Article -->
+            <div class="lg:col-span-4 space-y-6">
+              <div class="bg-white border border-gray-100 p-6 rounded-sm shadow-lg sticky top-32">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 border-b pb-2">Informações
+                </h3>
+                <ul class="space-y-4 text-sm">
+                  <li class="flex justify-between border-b border-gray-50 pb-2 text-gray-600">
+                    <span class="font-bold">Duração</span>
+                    <span>{{ espetaculo.duracao or '60 min' }}</span>
+                  </li>
+                  {% if not espetaculo.data_evento or espetaculo.data_evento >= hoje %}
+                  <li class="flex justify-between border-b border-gray-50 pb-2 text-gray-600">
+                    <span class="font-bold">Preço</span>
+                    <span class="text-orange-500 font-bold">
+                      {% if espetaculo.entrada == 'gratuita' %}Gratuito
+                      {% elif espetaculo.entrada == 'pago' %}€{{ espetaculo.preco }}
+                      {% else %}Convite{% endif %}
+                    </span>
+                  </li>
+                  <li class="flex justify-between border-b border-gray-50 pb-2 text-gray-600">
+                    <span class="font-bold">Disponibilidade</span>
+                    <span id="theater-availability-value" class="transition-all duration-500">
+                      Verificando...
+                    </span>
+                  </li>
+                  {% else %}
+                  <li class="py-4 text-center">
+                    <span
+                      class="inline-flex items-center text-xs font-bold uppercase tracking-widest text-orange-500 bg-orange-50 px-4 py-2">
+                      Evento Concluído
+                    </span>
+                  </li>
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Related Content -->
+          {% if relacionados %}
+          <div class="mt-32">
+            <h3 class="font-bold font-serif text-3xl mb-10 border-b-2 border-orange-100 pb-4">Próximos Espetáculos</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {% for outro in relacionados %}
+              <div class="group">
+                <div class="aspect-video rounded-sm overflow-hidden shadow-xl mb-4">
+                  <a href="{{ url_for('frontoffice.espetaculo_detalhe', esp_id=outro.id) }}">
+                    <img
+                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                      src="{{ url_for('static', filename=outro.imagem or random_image('teatro')) }}"
+                      alt="{{ outro.titulo }}" />
+                  </a>
+                </div>
+                <h4 class="font-bold text-xl leading-tight mb-2 group-hover:text-orange-500 transition-colors">
+                  <a href="{{ url_for('frontoffice.espetaculo_detalhe', esp_id=outro.id) }}">{{ outro.titulo }}</a>
+                </h4>
+                <div class="text-xs font-bold uppercase tracking-wider text-gray-400">
+                  {{ outro.data_evento.strftime('%d %b %Y') if outro.data_evento else '' }}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+        </article>
+      </section>
+    </main>
+
+    {% include 'includes/footer.html' %}
+  </div>
+</body>
+
+</html>

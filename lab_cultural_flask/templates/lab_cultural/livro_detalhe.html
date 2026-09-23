@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ livro.titulo }} — Clube de Leitura — ISPGAYA</title>
+
+  <!-- Fonts (Matches ispgaya.pt) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+
+  <style>
+    .triangle-pattern {
+        position: absolute;
+        width: 400px;
+        height: 600px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M0 30 L15 0 L30 30 Z' fill='%23e2e8f0'/%3E%3C/svg%3E");
+        background-size: 30px 30px;
+        opacity: 0.4;
+        z-index: -1;
+        pointer-events: none;
+    }
+    .triangle-pattern--right { top: 5%; right: -200px; transform: rotate(15deg); }
+    .triangle-pattern--left { top: 35%; left: -250px; transform: rotate(-15deg); opacity: 0.5; }
+    .triangle-pattern--mid { top: 60%; right: -180px; transform: rotate(45deg); opacity: 0.45; }
+  </style>
+</head>
+
+<body class="antialiased bg-white text-black font-sans">
+  <div id="app" class="h-full min-h-screen flex flex-col items-stretch">
+    
+    {% include 'includes/navbar.html' %}
+
+    <main class="h-full mt-24 md:mt-32 relative overflow-x-hidden">
+      <!-- Ornamentos de Triângulos -->
+      <div class="triangle-pattern triangle-pattern--right"></div>
+      <div class="triangle-pattern triangle-pattern--left"></div>
+      <div class="triangle-pattern triangle-pattern--mid"></div>
+      <section class="max-w-4xl mx-auto px-4 pb-20 sm:px-6 lg:px-0">
+        
+        <!-- Back Link (ISPGAYA Style) -->
+        <a href="{{ url_for('frontoffice.clube_leitura') }}" class="inline-flex items-center text-[11px] font-bold uppercase tracking-widest text-gray-400 hover:text-orange-500 transition-colors group">
+          <i class="fas fa-chevron-left mr-2 text-[10px] transition-transform group-hover:-translate-x-1"></i>
+          Voltar ao Clube de Leitura
+        </a>
+
+        <article class="mt-10">
+          <div class="mb-10">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="px-2 py-0.5 bg-black text-white text-[10px] font-bold uppercase tracking-widest rounded-sm">
+                Literatura
+              </span>
+              <span class="px-2 py-0.5 bg-orange-50 text-orange-600 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+                {{ livro.genero or 'Clube de Leitura' }}
+              </span>
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight mb-4">
+              {{ livro.titulo }}
+            </h1>
+            <p class="text-2xl text-gray-400 font-medium italic mb-8">{{ livro.autor }}</p>
+
+            <div class="flex items-center text-sm font-medium text-gray-500">
+              <i class="far fa-calendar-check text-orange-400 mr-2"></i>
+              <span>Seleção de {{ livro.mes_selecao or 'Mês atual' }}</span>
+              <span class="mx-3 text-gray-300">|</span>
+              <i class="fas fa-book-open text-gray-400 mr-2"></i>
+              <span>{{ livro.ano or 'Edição Recente' }}</span>
+            </div>
+          </div>
+
+          <!-- Book Cover -->
+          <div class="my-12 flex justify-center">
+            <div class="relative group max-w-sm">
+              {% if livro.imagem %}
+              <img class="w-full rounded-sm shadow-[20px_20px_60px_rgba(0,0,0,0.2)] transition-transform duration-500 group-hover:scale-[1.02]" src="{{ url_for('static', filename=livro.imagem) }}" alt="{{ livro.titulo }}" />
+              {% else %}
+              <img class="w-full rounded-sm shadow-[20px_20px_60px_rgba(0,0,0,0.2)] transition-transform duration-500 group-hover:scale-[1.02]" src="{{ url_for('static', filename=random_image('leitura')) }}" alt="{{ livro.titulo }}" />
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="max-w-3xl mx-auto">
+            <div class="prose max-w-none prose-lg prose-headings:font-serif prose-a:text-orange-500">
+              <h2 class="text-3xl font-serif font-bold mb-8 border-b pb-4">Sinopse</h2>
+              <p class="whitespace-pre-line text-gray-700 leading-relaxed text-xl">
+                {{ livro.sinopse or 'Esta obra foi selecionada pelos nossos curadores para estimular o debate e a reflexão crítica no nosso Clube de Leitura.' }}
+              </p>
+
+              <div class="my-10 p-6 bg-gray-50 rounded-sm border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Estado na Biblioteca</h4>
+                    {% if livro.esta_disponivel %}
+                    <p class="text-green-600 font-bold flex items-center gap-2 text-xl">
+                        <i class="fas fa-check-circle"></i> Disponível para Requisição
+                    </p>
+                    {% else %}
+                    <div class="flex flex-col gap-1">
+                        <p class="text-red-600 font-bold flex items-center gap-2 text-xl">
+                            <i class="fas fa-clock"></i> Requisitado / Indisponível
+                        </p>
+                        {% if requisicao_ativa %}
+                            {% if requisicao_ativa.estado == 'Levantado' and requisicao_ativa.dias_restantes is not none %}
+                            <p class="text-orange-600 font-semibold text-sm flex items-center gap-2">
+                                <i class="fas fa-hourglass-half"></i> 
+                                {% if requisicao_ativa.dias_restantes < 0 %}
+                                    Entrega em atraso
+                                {% elif requisicao_ativa.dias_restantes == 0 %}
+                                    Deve ser entregue hoje
+                                {% elif requisicao_ativa.dias_restantes == 1 %}
+                                    Previsão: disponível amanhã
+                                {% else %}
+                                    Previsão: disponível em {{ requisicao_ativa.dias_restantes }} dias
+                                {% endif %}
+                            </p>
+                            {% elif requisicao_ativa.estado == 'Aceite' %}
+                            <p class="text-blue-600 font-semibold text-sm flex items-center gap-2">
+                                <i class="fas fa-hand-paper"></i> Aguarda levantamento na biblioteca
+                            </p>
+                            {% elif requisicao_ativa.estado == 'Pendente' %}
+                            <p class="text-amber-600 font-semibold text-sm flex items-center gap-2">
+                                <i class="fas fa-hourglass-start"></i> Aguarda aprovação
+                            </p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                 {% if livro.url_biblioteca %}
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <a href="{{ livro.url_biblioteca }}" target="_blank" class="bg-[#abbcc7] text-white px-6 py-2 font-medium text-sm hover:bg-[#96a9b5] transition-all rounded-[5px] shadow-sm no-underline text-center flex items-center">
+                        Catálogo <i class="fas fa-external-link-alt ml-2 text-xs opacity-70"></i>
+                    </a>
+                    {% if livro.esta_disponivel %}
+                    <a href="{{ url_for('frontoffice.requisitar_livro_form', livro_id=livro.id) }}" class="bg-[#f97316] text-white px-8 py-2 font-medium text-sm hover:bg-[#ea580c] transition-all rounded-[5px] shadow-md no-underline text-center flex items-center">
+                        Requisitar Obra <i class="fas fa-bookmark ml-2 text-xs opacity-70"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                {% elif livro.esta_disponivel %}
+                <a href="{{ url_for('frontoffice.requisitar_livro_form', livro_id=livro.id) }}" class="bg-[#f97316] text-white px-8 py-2 font-medium text-sm hover:bg-[#ea580c] transition-all rounded-[5px] shadow-md no-underline flex items-center">
+                    Requisitar Obra <i class="fas fa-bookmark ml-2 text-xs opacity-70"></i>
+                </a>
+                {% endif %}
+              </div>
+
+              <div class="mt-16 pt-10 border-t border-gray-100 italic text-gray-500">
+                "A leitura de todos os bons livros é como uma conversa com as melhores mentes dos séculos passados." — René Descartes
+              </div>
+            </div>
+
+            <!-- Share (ISPGAYA Style) -->
+            <div class="mt-16 pt-10 border-t border-gray-100 flex items-center justify-center gap-6">
+              <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">Partilhar</span>
+              <div class="flex gap-4">
+                <a href="#" class="text-gray-400 hover:text-[#3b5998] transition-colors text-lg"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="text-gray-400 hover:text-[#1da1f2] transition-colors text-lg"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-gray-400 hover:text-[#0077b5] transition-colors text-lg"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" class="text-gray-400 hover:text-[#25d366] transition-colors text-lg"><i class="fab fa-whatsapp"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Related -->
+          {% if relacionados %}
+          <div class="mt-32">
+            <h3 class="font-bold font-serif text-3xl mb-12 text-center">Outras Leituras Recomendadas</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+              {% for outro in relacionados %}
+              <div class="group text-center">
+                <div class="aspect-[3/4] rounded-sm overflow-hidden shadow-xl mb-6 max-w-[200px] mx-auto">
+                  <a href="{{ url_for('frontoffice.livro_detalhe', livro_id=outro.id) }}">
+                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                         src="{{ url_for('static', filename=outro.imagem or random_image('leitura')) }}" 
+                         alt="{{ outro.titulo }}" />
+                  </a>
+                </div>
+                <h4 class="font-bold text-lg leading-tight group-hover:text-orange-500 transition-colors">
+                  <a href="{{ url_for('frontoffice.livro_detalhe', livro_id=outro.id) }}">{{ outro.titulo }}</a>
+                </h4>
+                <p class="text-sm text-gray-400 mt-1">{{ outro.autor }}</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+        </article>
+      </section>
+    </main>
+
+    {% include 'includes/footer.html' %}
+  </div>
+</body>
+</html>

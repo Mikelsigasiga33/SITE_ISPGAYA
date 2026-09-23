@@ -1,0 +1,60 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Categorias{% endblock %}
+{% block page_title %}Gestão de Categorias{% endblock %}
+
+{% block bo_content %}
+<div class="bo-list-section">
+
+    <div class="bo-list-header">
+        <div class="bo-list-header__left">
+            <div class="bo-list-header__icon"><i class="fas fa-tags"></i></div>
+            <h2>Categorias <span>({{ categorias|length }})</span></h2>
+        </div>
+        <a href="{{ url_for('backoffice.criar_categoria') }}" class="bo-btn bo-btn--primary">
+            <i class="fas fa-plus"></i> Nova Categoria
+        </a>
+    </div>
+
+    {% if categorias %}
+    <div class="bo-card-grid">
+        {% for cat in categorias %}
+        <div class="bo-list-card">
+            <div class="bo-list-card__strip" style="background: {{ cat.cor }};"></div>
+            <div class="bo-list-card__body">
+
+                <div class="bo-list-card__top">
+                    <h3 class="bo-list-card__title">
+                        <span style="font-size:1.3rem; margin-right:8px;">{{ cat.icone }}</span>
+                        {{ cat.nome }}
+                    </h3>
+                </div>
+
+                <div class="bo-list-card__meta">
+                    <div class="bo-list-card__meta-item">
+                        <span class="bo-color-dot" style="background: {{ cat.cor }};"></span>
+                        {{ cat.cor }}
+                    </div>
+                </div>
+
+                <div class="bo-list-card__actions">
+                    <a href="{{ url_for('backoffice.editar_categoria', cat_id=cat.id) }}" class="bo-btn-edit" title="Editar">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <form method="POST" action="{{ url_for('backoffice.eliminar_categoria', cat_id=cat.id) }}"
+                        onsubmit="return confirm('Eliminar esta categoria?')" style="display:inline;">
+                        <button type="submit" class="bo-btn-delete" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bo-list-empty">
+        <div class="bo-list-empty__icon"><i class="fas fa-tags"></i></div>
+        <h3>Nenhuma categoria criada</h3>
+        <p>Crie categorias para organizar os eventos e notícias.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

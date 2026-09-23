@@ -1,0 +1,310 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Gestão de Requisições{% endblock %}
+{% block page_title %}Requisições de Livros{% endblock %}
+
+{% block bo_content %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<!-- Dashboard de Insights Rápidos -->
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2.5rem;">
+    
+    <!-- Insight 1: Atividade -->
+    <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #edf2f7; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <span style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Atividade Mensal</span>
+            <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 5px;">
+                <h2 id="val-total-req" style="font-size: 28px; font-weight: 800; color: #1e293b; margin: 0;">--</h2>
+                <span style="font-size: 12px; color: #10b981; font-weight: 600;"><i class="fas fa-arrow-up"></i> Recentes</span>
+            </div>
+        </div>
+        <div style="height: 40px; margin-top: 15px;">
+            <canvas id="sparklineReq"></canvas>
+        </div>
+    </div>
+
+    <!-- Insight 2: Estados -->
+    <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #edf2f7; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <span style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Estado da Operação</span>
+        <div id="stats-progress-container" style="margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span id="label-aceite" style="font-size: 12px; font-weight: 600; color: #1e293b;">Aceites: --</span>
+                <span id="label-pendente" style="font-size: 12px; font-weight: 600; color: #f59e0b;">Pendentes: --</span>
+            </div>
+            <div style="height: 8px; background: #f1f5f9; border-radius: 10px; overflow: hidden; display: flex;">
+                <div id="bar-aceite" style="height: 100%; background: #10b981; width: 0%; transition: width 1s;"></div>
+                <div id="bar-pendente" style="height: 100%; background: #f59e0b; width: 0%; transition: width 1s;"></div>
+                <div id="bar-outros" style="height: 100%; background: #94a3b8; width: 0%; transition: width 1s;"></div>
+            </div>
+            <p style="font-size: 10px; color: #64748b; margin-top: 10px; display: flex; align-items: center; gap: 5px;">
+                <i class="fas fa-circle" style="color: #10b981; font-size: 6px;"></i> Sucesso 
+                <i class="fas fa-circle" style="color: #f59e0b; font-size: 6px; margin-left: 5px;"></i> Atenção
+            </p>
+        </div>
+    </div>
+
+    <!-- Insight 3: Top Livro -->
+    <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #edf2f7; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; align-items: center; gap: 15px;">
+        <div style="width: 45px; height: 45px; background: #fff7ed; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i class="fas fa-trophy" style="color: #f97316; font-size: 20px;"></i>
+        </div>
+        <div style="overflow: hidden;">
+            <span style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Destaque de Requisição</span>
+            <h4 id="val-top-livro" style="font-size: 14px; font-weight: 700; color: #1e293b; margin: 5px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--</h4>
+            <span id="val-top-count" style="font-size: 11px; color: #f97316; font-weight: 600;">-- requisições</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+(async function() {
+    try {
+        const res = await fetch('/api/v1/backoffice/requisicoes/stats');
+        const data = await res.json();
+
+        const totalReq = data.por_dia.reduce((sum, d) => sum + d.total, 0);
+        document.getElementById('val-total-req').innerText = totalReq;
+        
+        if(data.top_livros && data.top_livros.length > 0) {
+            document.getElementById('val-top-livro').innerText = data.top_livros[0].titulo;
+            document.getElementById('val-top-count').innerText = data.top_livros[0].total + ' requisições';
+        }
+
+        const ctxSpark = document.getElementById('sparklineReq').getContext('2d');
+        new Chart(ctxSpark, {
+            type: 'line',
+            data: {
+                labels: data.por_dia.map(d => d.dia),
+                datasets: [{
+                    data: data.por_dia.map(d => d.total),
+                    borderColor: '#f97316',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
+
+        const total = data.por_estado.reduce((sum, e) => sum + e.total, 0);
+        const aceite = data.por_estado.find(e => e.estado === 'Aceite')?.total || 0;
+        const pendente = data.por_estado.find(e => e.estado === 'Pendente')?.total || 0;
+        const outros = total - (aceite + pendente);
+
+        document.getElementById('label-aceite').innerText = `Aceites: ${aceite}`;
+        document.getElementById('label-pendente').innerText = `Pendentes: ${pendente}`;
+        
+        document.getElementById('bar-aceite').style.width = (total > 0 ? (aceite/total)*100 : 0) + '%';
+        document.getElementById('bar-pendente').style.width = (total > 0 ? (pendente/total)*100 : 0) + '%';
+        document.getElementById('bar-outros').style.width = (total > 0 ? (outros/total)*100 : 0) + '%';
+
+    } catch(err) {
+        console.error('Erro ao carregar insights:', err);
+    }
+})();
+</script>
+
+<!-- Barra de Ação Rápida: Confirmar Levantamento -->
+<div class="bo-card" style="margin-bottom: 2.5rem; background: linear-gradient(to right, #ffffff, #fffcf9); border-left: 4px solid var(--bo-accent); overflow: hidden;">
+    <div class="bo-card-body" style="padding: 1.25rem 2rem;">
+        <form action="{{ url_for('backoffice.confirmar_levantamento') }}" method="POST" style="display: flex; align-items: center; gap: 2rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 42px; height: 42px; background: var(--bo-accent-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--bo-accent);">
+                    <i class="fas fa-barcode" style="font-size: 1.2rem;"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0; font-size: 0.9rem; font-weight: 700; color: var(--bo-text);">Acesso Rápido</h4>
+                    <p style="margin: 2px 0 0; font-size: 0.75rem; color: var(--bo-muted); font-weight: 500;">Confirmar levantamento por código</p>
+                </div>
+            </div>
+            
+            <div style="flex: 1; position: relative;">
+                <input type="text" name="codigo" placeholder="EX: REQ-XXXX-XXXX" required
+                       style="width: 100%; padding: 12px 18px; border: 1.5px solid var(--bo-border); border-radius: 8px; font-size: 1rem; font-family: var(--font), monospace; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; background: #fff; transition: all 0.2s; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);"
+                       onfocus="this.style.borderColor='var(--bo-accent)'; this.style.boxShadow='0 0 0 4px var(--bo-accent-light)'" 
+                       onblur="this.style.borderColor='var(--bo-border)'; this.style.boxShadow='none'">
+            </div>
+            
+            <button type="submit" class="bo-btn bo-btn--leitura" style="height: 48px; padding: 0 32px; font-weight: 800; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; border-radius: 8px; display: flex; align-items: center; gap: 10px; transition: all 0.2s;">
+                <span>Validar Código</span>
+                <i class="fas fa-arrow-right" style="font-size: 0.8rem;"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Filtros de Pesquisa -->
+<div class="bo-card" style="margin-bottom: 2rem;">
+    <div class="bo-card-header">
+        <h3><i class="fas fa-filter"></i> Filtros de Pesquisa</h3>
+    </div>
+    <div class="bo-card-body">
+        <form action="{{ url_for('backoffice.listar_requisicoes') }}" method="GET" class="bo-filters-form" style="display: flex; gap: 1rem; align-items: flex-end;">
+            <div style="flex: 2;">
+                <label style="display:block; font-size:11px; font-weight:700; color: var(--bo-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Pesquisar</label>
+                <input type="text" name="q" value="{{ filtros.get('q', '') }}" placeholder="Aluno ou Título..." 
+                       style="width:100%; padding: 10px 14px; border: 1.5px solid var(--bo-border); border-radius: 6px; font-size: 0.9rem; font-family: var(--font), sans-serif; background: #fff; transition: all 0.2s;">
+            </div>
+            <div style="flex: 1;">
+                <label style="display:block; font-size:11px; font-weight:700; color: var(--bo-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Estado</label>
+                <select name="estado" 
+                        style="width:100%; padding: 10px 14px; border: 1.5px solid var(--bo-border); border-radius: 6px; font-size: 0.9rem; font-family: var(--font), sans-serif; background: #fff; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 14px top 50%; background-size: 10px auto;">
+                    <option value="">Todos os Estados</option>
+                    <option value="Pendente" {% if filtros.get('estado') == 'Pendente' %}selected{% endif %}>Pendente</option>
+                    <option value="Aceite" {% if filtros.get('estado') == 'Aceite' %}selected{% endif %}>Aguarda Levantamento</option>
+                    <option value="Levantado" {% if filtros.get('estado') == 'Levantado' %}selected{% endif %}>Levantado</option>
+                    <option value="Concluido" {% if filtros.get('estado') == 'Concluido' %}selected{% endif %}>Devolvido</option>
+                    <option value="Recusado" {% if filtros.get('estado') == 'Recusado' %}selected{% endif %}>Recusado</option>
+                    <option value="Expirado" {% if filtros.get('estado') == 'Expirado' %}selected{% endif %}>Expirado</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button type="submit" class="bo-btn bo-btn--leitura" style="padding: 10px 20px; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 1px;">Filtrar</button>
+                <a href="{{ url_for('backoffice.listar_requisicoes') }}" class="bo-btn bo-btn--outline" style="padding: 10px 14px;" title="Limpar">
+                    <i class="fas fa-undo"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="bo-list-section">
+    <div class="bo-card">
+        <div class="bo-card-header">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <h3><i class="fas fa-list"></i> Todas as Requisições</h3>
+                <span class="bo-badge bo-badge--leitura">Total: {{ total }}</span>
+            </div>
+        </div>
+        
+        <div class="bo-card-body p-0">
+            <div class="bo-table-container">
+                <table class="bo-table">
+                    <thead>
+                        <tr>
+                            <th>Capa</th>
+                            <th>Obra</th>
+                            <th>Requisitante</th>
+                            <th>Estado</th>
+                            <th>Prazo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in requisicoes %}
+                        <tr>
+                            <td style="width: 50px;">
+                                {% if r.livro_imagem %}
+                                <img src="{{ url_for('static', filename=r.livro_imagem) }}" style="width: 40px; height: 60px; object-fit: cover; border-radius: 2px;">
+                                {% else %}
+                                <div style="width: 40px; height: 60px; background: #eee; border-radius: 2px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-book text-gray-300"></i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <strong>{{ r.livro_titulo }}</strong><br>
+                                <small style="color: #f97316; font-family: monospace;">{{ r.codigo_requisicao }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ r.nome_aluno }}</strong><br>
+                                <span style="font-size: 11px; color: #64748b;">{{ r.email_aluno }}</span>
+                            </td>
+                            <td>
+                                {% if r.estado == 'Pendente' %}
+                                <span class="bo-badge bo-badge--warning">Pendente</span>
+                                {% elif r.estado == 'Aceite' %}
+                                <span class="bo-badge" style="background: #dbeafe; color: #1d4ed8;">Aguarda Levantamento</span>
+                                {% elif r.estado == 'Levantado' %}
+                                <span class="bo-badge bo-badge--success">Levantado</span>
+                                {% elif r.estado == 'Concluido' %}
+                                <span class="bo-badge bo-badge--leitura">Devolvido</span>
+                                {% elif r.estado == 'Expirado' %}
+                                <span class="bo-badge" style="background: #fef3c7; color: #92400e;">Expirado</span>
+                                {% else %}
+                                <span class="bo-badge bo-badge--error">{{ r.estado }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if r.estado == 'Levantado' %}
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <span style="font-size: 11px; font-weight: 600; color: #1e293b;">
+                                            {{ (r.data_entrega_limite|string)[:10] if r.data_entrega_limite else 'N/A' }}
+                                        </span>
+                                        {% if r.dias_restantes is not none %}
+                                            {% if r.dias_restantes < 0 %}
+                                                <span class="bo-badge bo-badge--error" style="font-size: 9px;">Atrasado ({{ r.dias_restantes|abs }}d)</span>
+                                            {% elif r.dias_restantes <= 1 %}
+                                                <span class="bo-badge bo-badge--warning" style="font-size: 9px;">Último dia</span>
+                                            {% else %}
+                                                <span class="bo-badge bo-badge--success" style="font-size: 9px;">{{ r.dias_restantes }} dias restantes</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                {% elif r.estado == 'Aceite' %}
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <span style="font-size: 10px; font-weight: 600; color: #1d4ed8;">Código válido 24h</span>
+                                        <span style="font-size: 10px; color: #64748b;">
+                                            Aprovado: {{ (r.data_aprovacao|string)[:16] if r.data_aprovacao else 'N/A' }}
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    <span style="color: #94a3b8; font-size: 11px;">{{ (r.data_requisicao|string)[:10] if r.data_requisicao else 'N/A' }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    {% if r.estado == 'Pendente' %}
+                                    <form action="{{ url_for('backoffice.atualizar_requisicao_estado', req_id=r.id) }}" method="POST">
+                                        <input type="hidden" name="novo_estado" value="Aceite">
+                                        <button type="submit" class="bo-btn bo-btn--success bo-btn--sm" title="Aprovar (envia código ao aluno)">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{{ url_for('backoffice.atualizar_requisicao_estado', req_id=r.id) }}" method="POST">
+                                        <input type="hidden" name="novo_estado" value="Recusado">
+                                        <button type="submit" class="bo-btn bo-btn--error bo-btn--sm" title="Recusar">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                    {% elif r.estado == 'Levantado' %}
+                                    <form action="{{ url_for('backoffice.atualizar_requisicao_estado', req_id=r.id) }}" method="POST">
+                                        <input type="hidden" name="novo_estado" value="Concluido">
+                                        <button type="submit" class="bo-btn bo-btn--outline bo-btn--sm" title="Marcar como devolvido">
+                                            <i class="fas fa-undo"></i> Devolver
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    <a href="{{ url_for('backoffice.requisicoes_livro', livro_id=r.livro_id) }}" class="bo-btn bo-btn--outline bo-btn--sm" title="Ver Histórico do Livro">
+                                        <i class="fas fa-history"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 3rem;">Nenhuma requisição encontrada.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="bo-pagination" style="padding: 1.5rem; border-top: 1px solid var(--bo-border);">
+                {% if total_paginas > 1 %}
+                    {% for p in range(1, total_paginas + 1) %}
+                    <a href="{{ url_for('backoffice.listar_requisicoes', pagina=p, **filtros) }}" class="bo-pagination__link {% if p == pagina %}active{% endif %}">{{ p }}</a>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

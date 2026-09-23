@@ -1,0 +1,144 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Requisições - {{ livro.titulo }}{% endblock %}
+{% block page_title %}Requisições de Livro{% endblock %}
+
+{% block bo_content %}
+<div class="bo-card" style="margin-bottom: 2rem;">
+    <div class="bo-card-header">
+        <h3><i class="fas fa-book"></i> Detalhes da Obra: {{ livro.titulo }}</h3>
+        <a href="{{ url_for('backoffice.listar_livros') }}" class="bo-btn bo-btn--outline">Voltar</a>
+    </div>
+    <div class="bo-card-body">
+        <div style="display: flex; gap: 2rem; align-items: flex-start;">
+            <div style="width: 120px; flex-shrink: 0;">
+                {% if livro.imagem %}
+                <img src="{{ url_for('static', filename=livro.imagem) }}" style="width: 100%; border-radius: 4px; shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="Capa">
+                {% else %}
+                <div style="width: 100%; height: 160px; background: #f3f4f6; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-book text-gray-300 text-3xl"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div>
+                <p><strong>Autor:</strong> {{ livro.autor }}</p>
+                <p><strong>Género:</strong> {{ livro.genero or 'Não definido' }}</p>
+                <p><strong>Estado Atual:</strong> 
+                    {% if livro.esta_disponivel %}
+                    <span class="bo-badge bo-badge--success">Disponível</span>
+                    {% else %}
+                    <span class="bo-badge bo-badge--error">Indisponível</span>
+                    {% endif %}
+                </p>
+                <p style="margin-top: 1rem; font-size: 14px; color: #64748b;">{{ livro.sinopse|truncate(200) }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bo-card" style="margin-bottom: 2rem;">
+    <div class="bo-card-header">
+        <h3><i class="fas fa-list"></i> Histórico de Requisições</h3>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <span class="bo-badge bo-badge--leitura">Total: {{ requisicoes|length }}</span>
+            <button onclick="document.getElementById('form-presencial').style.display = document.getElementById('form-presencial').style.display === 'none' ? 'block' : 'none'" class="bo-btn bo-btn--primary">
+                <i class="fas fa-user-plus"></i> Requisição Presencial
+            </button>
+        </div>
+    </div>
+
+    <!-- Formulário Requisição Presencial (escondido por defeito) -->
+    <div id="form-presencial" style="display: none; background: #f0fdf4; border-bottom: 1px solid var(--bo-border-light); padding: 1.5rem;">
+        <h4 style="margin-bottom: 1rem; font-weight: 700; font-size: 0.9rem;">
+            <i class="fas fa-user-check" style="color: #10b981; margin-right: 6px;"></i>
+            Registar Requisição Presencial
+        </h4>
+        <form method="POST" action="{{ url_for('backoffice.requisicao_presencial', livro_id=livro.id) }}"
+              style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
+            <div>
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted); display: block; margin-bottom: 4px;">Nome do Aluno</label>
+                <input type="text" name="nome" placeholder="Nome completo" required
+                       style="padding: 10px 14px; border: 1px solid var(--bo-border-light); border-radius: 6px; width: 100%;">
+            </div>
+            <div>
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted); display: block; margin-bottom: 4px;">Email do Aluno</label>
+                <input type="email" name="email" placeholder="email@exemplo.com" required
+                       style="padding: 10px 14px; border: 1px solid var(--bo-border-light); border-radius: 6px; width: 100%;">
+            </div>
+            <button type="submit" class="bo-btn bo-btn--success" style="padding: 12px 20px;">
+                <i class="fas fa-check"></i> Registar
+            </button>
+        </form>
+        <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.75rem;">
+            <i class="fas fa-info-circle"></i> 
+            A requisição será registada como <strong>Aceite</strong> automaticamente. Não é necessário email institucional.
+        </p>
+    </div>
+    
+    <div class="bo-card-body p-0">
+        <div class="bo-table-container">
+            <table class="bo-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Código</th>
+                        <th>Estado</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in requisicoes %}
+                    <tr>
+                        <td>#{{ r.id }}</td>
+                        <td><strong>{{ r.nome_aluno }}</strong></td>
+                        <td>{{ r.email_aluno }}</td>
+                        <td><span style="font-family: monospace; font-weight: bold; color: #f97316;">{{ r.codigo_requisicao }}</span></td>
+                        <td>
+                            {% if r.estado == 'Pendente' %}
+                            <span class="bo-badge bo-badge--warning">{{ r.estado }}</span>
+                            {% elif r.estado == 'Aceite' %}
+                            <span class="bo-badge bo-badge--success">{{ r.estado }}</span>
+                            {% else %}
+                            <span class="bo-badge bo-badge--error">{{ r.estado }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ r.data_requisicao.strftime('%d/%m/%Y %H:%M') if r.data_requisicao else 'N/A' }}</td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem;">
+                                {% if r.estado == 'Pendente' %}
+                                <form action="{{ url_for('backoffice.atualizar_requisicao_estado', req_id=r.id) }}" method="POST">
+                                    <input type="hidden" name="novo_estado" value="Aceite">
+                                    <button type="submit" class="bo-btn bo-btn--success bo-btn--sm" title="Aceitar Requisição">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                                <form action="{{ url_for('backoffice.atualizar_requisicao_estado', req_id=r.id) }}" method="POST">
+                                    <input type="hidden" name="novo_estado" value="Recusado">
+                                    <button type="submit" class="bo-btn bo-btn--error bo-btn--sm" title="Recusar Requisição">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </form>
+                                {% elif r.estado == 'Aceite' %}
+                                <form action="{{ url_for('backoffice.atualizar_requisicao_estado', req_id=r.id) }}" method="POST">
+                                    <input type="hidden" name="novo_estado" value="Concluido">
+                                    <button type="submit" class="bo-btn bo-btn--outline bo-btn--sm" title="Marcar como Entregue">
+                                        <i class="fas fa-undo"></i> Entregar
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem;">Nenhuma requisição efetuada para este livro.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

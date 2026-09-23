@@ -1,0 +1,211 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}{{ 'Novo Espetáculo' if modo == 'criar' else 'Editar Espetáculo' }}{% endblock %}
+{% block page_title %}{{ 'Novo Espetáculo' if modo == 'criar' else 'Editar Espetáculo' }}{% endblock %}
+
+{% block bo_content %}
+<div class="bo-form-container">
+
+    <div class="bo-form-header">
+        <div class="bo-form-header__icon">
+            <i class="fas fa-theater-masks"></i>
+        </div>
+        <div class="bo-form-header__text">
+            <h2>{{ 'Agendar Novo Espetáculo' if modo == 'criar' else 'Editar Espetáculo' }}</h2>
+            <p>{{ 'Adicione um novo espetáculo, ensaio ou workshop à agenda.' if modo == 'criar' else 'Atualize as
+                informações deste espetáculo.' }}</p>
+        </div>
+    </div>
+
+    <div class="bo-form-card">
+        {% if erros %}
+        <div class="bo-flash bo-flash--error" style="margin-bottom:1.5rem;">
+            <i class="fas fa-exclamation-circle"></i>
+            {% for e in erros %}{{ e }} {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="bo-form" enctype="multipart/form-data" novalidate>
+
+            <div class="bo-form-group">
+                <label for="titulo">Título *</label>
+                <input type="text" id="titulo" name="titulo" required maxlength="250"
+                    value="{{ dados.get('titulo', '') }}" placeholder="Nome do espetáculo">
+            </div>
+
+            <div class="bo-form__section"><i class="fas fa-clock"></i> Agenda</div>
+
+            <div class="bo-form__row--3">
+                <div class="bo-form-group">
+                    <label for="tipo">Tipo *</label>
+                    <select id="tipo" name="tipo">
+                        <option value="espetaculo" {% if dados.get('tipo')=='espetaculo' %}selected{% endif %}>
+                            Espetáculo</option>
+                        <option value="ensaio" {% if dados.get('tipo')=='ensaio' %}selected{% endif %}>Ensaio Aberto
+                        </option>
+                        <option value="workshop" {% if dados.get('tipo')=='workshop' %}selected{% endif %}>Workshop
+                        </option>
+                    </select>
+                </div>
+                <div class="bo-form-group">
+                    <label for="data_evento">Data *</label>
+                    <input type="date" id="data_evento" name="data_evento" required
+                        value="{{ dados.get('data_evento', '')|string }}">
+                </div>
+                <div class="bo-form-group">
+                    <label for="hora">Hora *</label>
+                    <input type="time" id="hora" name="hora" required value="{{ dados.get('hora', '') }}">
+                </div>
+            </div>
+
+            <div class="bo-form__row--1">
+                <div class="bo-form-group">
+                    <label class="bo-checkbox-label">
+                        <input type="checkbox" id="toggle_agendamento" name="usar_agendamento" value="1" {% if
+                            dados.get('data_publicacao') %}checked{% endif %}
+                            onchange="document.getElementById('container_data_pub').style.display = this.checked ? 'block' : 'none'">
+                        Agendar publicação para uma data específica?
+                    </label>
+                </div>
+            </div>
+
+            <div class="bo-form__row--2" id="container_data_pub"
+                style="{% if not dados.get('data_publicacao') %}display:none;{% endif %}">
+                <div class="bo-form-group">
+                    <label for="data_publicacao">Data e Hora de Publicação</label>
+                    <input type="datetime-local" id="data_publicacao" name="data_publicacao"
+                        value="{{ dados.get('data_publicacao', '')|string|replace(' ', 'T')|truncate(16, True, '') if dados.get('data_publicacao') else '' }}">
+                    <small style="display:block; margin-top:4px; font-size:11px; opacity:0.8; color: #f97316;">
+                        <i class="fas fa-clock"></i> Hora atual do servidor: <strong>{{ agora_server.strftime('%H:%M')
+                            }}</strong>.
+                    </small>
+                </div>
+            </div>
+
+            <div class="bo-form__row--2">
+                <div class="bo-form-group">
+                    <label>Localização (Fixa)</label>
+                    <div
+                        style="background-color: var(--bo-bg); border: 1.5px solid var(--bo-border-light); border-radius: var(--radius); padding: 12px 16px; color: var(--bo-muted); font-size: 0.95rem; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-map-marker-alt" style="color: var(--bo-accent);"></i>
+                        <strong>ISPGAYA</strong> (Vila Nova de Gaia)
+                    </div>
+                </div>
+                <div class="bo-form-group">
+                    <label for="entrada">Tipo de Entrada</label>
+                    <select id="entrada" name="entrada" onchange="togglePreco()">
+                        <option value="gratuita" {% if dados.get('entrada')=='gratuita' %}selected{% endif %}>Gratuita
+                        </option>
+                        <option value="pago" {% if dados.get('entrada')=='pago' %}selected{% endif %}>Pago</option>
+                        <option value="convite" {% if dados.get('entrada')=='convite' %}selected{% endif %}>Convite
+                        </option>
+                    </select>
+                </div>
+                <div class="bo-form-group" id="div_preco" style="display: none;">
+                    <label for="preco">Preço (€)</label>
+                    <input type="number" step="0.01" min="0" id="preco" name="preco"
+                        value="{{ dados.get('preco', '') }}" placeholder="Ex: 5.00">
+                </div>
+            </div>
+
+            <div class="bo-form__section"><i class="fas fa-info-circle"></i> Detalhes Adicionais</div>
+
+            <div class="bo-form__row--2">
+                <div class="bo-form-group">
+                    <label for="duracao">Duração</label>
+                    <input type="text" id="duracao" name="duracao"
+                        value="{{ dados.get('duracao') if dados.get('duracao') and dados.get('duracao') != 'None' else '' }}"
+                        placeholder="Ex: 90 minutos">
+                </div>
+
+                <div class="bo-form-group">
+                    <label for="limite_filas">Lotação / Capacidade Máxima</label>
+                    <select id="limite_filas" name="limite_filas">
+                        <option value="1" {% if dados.get('limite_filas')==1 %}selected{% endif %}>12 lugares</option>
+                        <option value="2" {% if dados.get('limite_filas')==2 %}selected{% endif %}>24 lugares</option>
+                        <option value="3" {% if dados.get('limite_filas')==3 %}selected{% endif %}>36 lugares</option>
+                        <option value="4" {% if dados.get('limite_filas')==4 %}selected{% endif %}>48 lugares</option>
+                        <option value="5" {% if dados.get('limite_filas')==5 %}selected{% endif %}>60 lugares</option>
+                        <option value="6" {% if dados.get('limite_filas')==6 %}selected{% endif %}>72 lugares</option>
+                        <option value="7" {% if dados.get('limite_filas')==7 %}selected{% endif %}>84 lugares</option>
+                        <option value="8" {% if dados.get('limite_filas', 8)==8 %}selected{% endif %}>96 lugares
+                        </option>
+                    </select>
+                    <p style="font-size: 11px; color: var(--bo-muted); margin-top: 5px;">Define a lotação máxima para as
+                        inscrições deste espetáculo.</p>
+                </div>
+            </div>
+
+            <div class="bo-form__row--2">
+                <div class="bo-form-group">
+                    <label for="encenacao">Encenação</label>
+                    <input type="text" id="encenacao" name="encenacao"
+                        value="{{ dados.get('encenacao') if dados.get('encenacao') and dados.get('encenacao') != 'None' else '' }}"
+                        placeholder="Nome do Encenador">
+                </div>
+                <div class="bo-form-group">
+                    <label for="elenco">Elenco</label>
+                    <textarea id="elenco" name="elenco" rows="2"
+                        placeholder="Nomes dos Atores...">{{ dados.get('elenco') if dados.get('elenco') and dados.get('elenco') != 'None' else '' }}</textarea>
+                </div>
+            </div>
+
+            <div class="bo-form__section"><i class="fas fa-align-left"></i> Conteúdo</div>
+
+            <div class="bo-form-group">
+                <label for="descricao">Descrição *</label>
+                <textarea id="descricao" name="descricao" rows="4" required
+                    placeholder="Descreva o espetáculo...">{{ dados.get('descricao') if dados.get('descricao') and dados.get('descricao') != 'None' else '' }}</textarea>
+            </div>
+
+            <div class="bo-form-group">
+                <label for="imagem_ficheiro">Imagem do Espetáculo {% if modo == 'criar' %}*{% endif %}</label>
+                <input type="file" id="imagem_ficheiro" name="imagem_ficheiro" accept="image/*" {% if modo=='criar'
+                    %}required{% endif %}>
+                {% if dados.get('imagem') %}
+                <div class="bo-form-preview">
+                    <img src="{{ url_for('static', filename=dados.get('imagem')) }}" alt="Preview"
+                        style="max-height: 100px;">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="bo-form-group">
+                <label class="bo-checkbox-label">
+                    <input type="checkbox" name="destaque" value="1" {% if dados.get('destaque') %}checked{% endif %}>
+                    Marcar como Destaque (estrela na listagem)
+                </label>
+            </div>
+
+            <div class="bo-form__actions">
+                <a href="{{ url_for('backoffice.listar_espetaculos') }}" class="bo-btn-cancel">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </a>
+                <button type="submit" class="bo-btn-submit">
+                    <i class="fas fa-save"></i> {{ 'Criar Espetáculo' if modo == 'criar' else 'Guardar Alterações' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+<script>
+    function togglePreco() {
+        const entrada = document.getElementById('entrada').value;
+        const divPreco = document.getElementById('div_preco');
+        const inputPreco = document.getElementById('preco');
+
+        if (entrada === 'pago') {
+            divPreco.style.display = 'block';
+            inputPreco.required = true;
+        } else {
+            divPreco.style.display = 'none';
+            inputPreco.required = false;
+            inputPreco.value = '';
+        }
+    }
+
+    // Executar no carregamento da página
+    document.addEventListener('DOMContentLoaded', togglePreco);
+</script>
+{% endblock %}

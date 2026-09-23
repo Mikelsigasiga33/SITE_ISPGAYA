@@ -1,0 +1,92 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Galeria — {{ espetaculo.titulo }}{% endblock %}
+{% block page_title %}Galeria de Fotos - Tuna{% endblock %}
+
+{% block bo_content %}
+<div class="bo-list-section">
+
+    <div class="bo-list-header">
+        <div class="bo-list-header__left">
+            <div class="bo-list-header__icon"><i class="fas fa-images"></i></div>
+            <h2>{{ espetaculo.titulo }} <span>({{ fotos|length }} fotos)</span></h2>
+        </div>
+        <a href="{{ url_for('backoffice.listar_espetaculos_tuna') }}" class="bo-btn bo-btn--outline">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <!-- Upload Form -->
+    <div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--bo-border-light); margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 1rem; font-weight: 700; font-size: 1rem;">
+            <i class="fas fa-upload" style="color: #10b981; margin-right: 8px;"></i>
+            Adicionar Nova Foto
+        </h3>
+        <form method="POST" action="{{ url_for('backoffice.adicionar_foto_tuna', esp_id=espetaculo.id) }}" enctype="multipart/form-data"
+              style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
+            
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Legenda da Foto</label>
+                <input type="text" name="titulo" placeholder="Ex: Atuação no Festival" value="{{ espetaculo.titulo }}"
+                       style="padding: 10px 14px; border: 1px solid var(--bo-border-light); border-radius: 6px; width: 100%;">
+            </div>
+
+            <div class="bo-form-group" style="margin-bottom: 0;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Imagem</label>
+                <input type="file" name="imagem_ficheiro" accept="image/*" required
+                       style="padding: 8px 14px; border: 1px solid var(--bo-border-light); border-radius: 6px; width: 100%;">
+            </div>
+
+            <button type="submit" class="bo-btn bo-btn--primary" style="padding: 12px 20px;">
+                <i class="fas fa-plus"></i> Adicionar
+            </button>
+        </form>
+    </div>
+
+    <!-- Existing Photos Grid -->
+    {% if fotos %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+        {% for foto in fotos %}
+        <div style="background: white; border-radius: 8px; overflow: hidden; border: 1px solid var(--bo-border-light); transition: box-shadow 0.3s;">
+            <div style="aspect-ratio: 16/9; overflow: hidden; background: #f3f4f6;">
+                {% set img_path = foto.imagem or '' %}
+                {% set clean_path = img_path.replace('/static/', '').replace('static/', '') %}
+                {% if clean_path %}
+                <img src="{{ url_for('static', filename=clean_path) }}" 
+                     style="width: 100%; height: 100%; object-fit: cover;" 
+                     alt="{{ foto.titulo }}">
+                {% else %}
+                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#ccc;">
+                    <i class="fas fa-image fa-3x"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div style="padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-weight: 600; font-size: 0.85rem; margin: 0;">{{ foto.titulo or 'Sem legenda' }}</p>
+                    <p style="font-size: 0.75rem; color: var(--bo-muted); margin: 4px 0 0;">
+                        {% if foto.criado_em %}
+                            {% if foto.criado_em is string %}{{ foto.criado_em }}{% else %}{{ foto.criado_em.strftime('%d/%m/%Y') }}{% endif %}
+                        {% endif %}
+                    </p>
+                </div>
+                <form method="POST" action="{{ url_for('backoffice.eliminar_foto_tuna', foto_id=foto.id) }}"
+                      onsubmit="return confirm('Remover esta foto da galeria?')">
+                    <input type="hidden" name="esp_id" value="{{ espetaculo.id }}">
+                    <button type="submit" class="bo-btn-delete" title="Remover" style="padding: 6px 10px;">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bo-list-empty">
+        <div class="bo-list-empty__icon"><i class="fas fa-camera-retro"></i></div>
+        <h3>Ainda sem fotos</h3>
+        <p>Utilize o formulário acima para adicionar fotos da atuação à galeria pública.</p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

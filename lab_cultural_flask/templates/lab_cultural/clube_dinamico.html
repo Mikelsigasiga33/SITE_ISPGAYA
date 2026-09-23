@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{{ clube.nome }}{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="lc-page-hero"
+    style="{% if clube.imagem %}background-image: url('{{ url_for('static', filename=clube.imagem) }}');{% else %}background-image: url('{{ url_for('static', filename='img/backgrounds/ger1.jpg') }}');{% endif %} --hero-accent: {{ clube.cor or '#2563eb' }};">
+    <div class="lc-page-hero__overlay"
+        style="background: linear-gradient(135deg, {{ clube.cor or '#2563eb' }}dd 0%, #0f172acc 100%);"></div>
+    <div class="lc-page-hero__content">
+        <h1><span style="font-size:1.2em;">{{ clube.icone }}</span> {{ clube.nome }}</h1>
+        <p>{{ clube.descricao[:160] if clube.descricao else 'Um espaço de partilha e criatividade na comunidade
+            ISPGAYA.' }}{{ '…' if clube.descricao and clube.descricao|length > 160 else '' }}</p>
+    </div>
+</section>
+
+<!-- Sobre o Clube -->
+<section class="lc-club-sobre">
+    <div class="container">
+        <div class="lc-club-sobre__grid fade-in">
+            <div class="lc-club-sobre__text">
+                <div class="section-header__tag">Sobre o Clube</div>
+                <h2>{{ clube.nome }}</h2>
+                {% if clube.descricao %}
+                <div class="lc-sobre__text" style="white-space: pre-line; margin-bottom: 30px;">
+                    {{ clube.descricao }}
+                </div>
+                {% else %}
+                <p class="lc-sobre__text">
+                    O {{ clube.nome }} do ISPGAYA é um espaço dedicado à comunidade académica,
+                    onde estudantes, docentes e funcionários podem partilhar interesses comuns,
+                    desenvolver competências e criar laços de amizade.
+                </p>
+                {% endif %}
+                <div class="lc-club-stats">
+                    <div class="lc-stat" style="--stat-color: {{ clube.cor or '#2563eb' }};">
+                        <span class="lc-stat__num" style="font-size:2rem;">{{ clube.icone }}</span>
+                        <span class="lc-stat__label">Clube</span>
+                    </div>
+                    {% if clube.horario %}
+                    <div class="lc-stat" style="--stat-color: {{ clube.cor or '#2563eb' }};">
+                        <span class="lc-stat__num">{{ clube.horario.split(',')[0] if ',' in (clube.horario or '') else
+                            clube.horario }}</span>
+                        <span class="lc-stat__label">Horário</span>
+                    </div>
+                    {% endif %}
+                    <div class="lc-stat" style="--stat-color: {{ clube.cor or '#2563eb' }};">
+                        <span class="lc-stat__num">Comunidade</span>
+                        <span class="lc-stat__label">Público</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lc-club-sobre__info">
+                <div class="lc-info-card" style="border-top: 4px solid {{ clube.cor or '#2563eb' }}; overflow: hidden;">
+                    <div style="padding: 30px;">
+                        <h3 style="margin-top:0;"><span style="font-size:1.2em;">{{ clube.icone }}</span> Informações
+                        </h3>
+                        <ul class="lc-info-list" style="list-style: none; padding: 0; margin: 20px 0;">
+                            {% if clube.horario %}
+                            <li style="margin-bottom: 12px;"><i class="fas fa-clock"
+                                    style="color: {{ clube.cor or '#2563eb' }}; margin-right: 10px;"></i>
+                                <strong>Horário:</strong> {{ clube.horario }}
+                            </li>
+                            {% endif %}
+                            {% if clube.local_reuniao %}
+                            <li style="margin-bottom: 12px;"><i class="fas fa-map-marker-alt"
+                                    style="color: {{ clube.cor or '#2563eb' }}; margin-right: 10px;"></i>
+                                <strong>Local:</strong> {{ clube.local_reuniao }}
+                            </li>
+                            {% endif %}
+                            <li style="margin-bottom: 12px;"><i class="fas fa-users"
+                                    style="color: {{ clube.cor or '#2563eb' }}; margin-right: 10px;"></i>
+                                <strong>Público:</strong> Comunidade ISPGAYA
+                            </li>
+                            <li style="margin-bottom: 12px;"><i class="fas fa-certificate"
+                                    style="color: {{ clube.cor or '#2563eb' }}; margin-right: 10px;"></i>
+                                <strong>Participação:</strong> Gratuita
+                            </li>
+                        </ul>
+                        <a href="mailto:info@ispgaya.pt" class="btn-primary"
+                            style="width: 100%; justify-content: center; background: {{ clube.cor or '#2563eb' }}; border-color: {{ clube.cor or '#2563eb' }};">
+                            <i class="fas fa-envelope"></i> Quero Juntar-me
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

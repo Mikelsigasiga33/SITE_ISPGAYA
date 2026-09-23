@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clube de Leitura — ISPGAYA</title>
+  <meta name="description"
+    content="O Clube de Leitura do ISPGAYA é um espaço de partilha, debate e amor pela literatura aberto a toda a comunidade académica." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+
+  <style>
+    /* Navbar transition */
+    .main-nav {
+      transition: all 0.3s ease-in-out;
+    }
+
+    .main-nav.scrolled {
+      background-color: white;
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      border-bottom: 1px solid rgb(243 244 246);
+    }
+
+    /* Hero dots pattern */
+    .hero-dots-pattern::before {
+      content: "";
+      position: absolute;
+      top: -20px;
+      right: 0;
+      width: 150px;
+      height: 150px;
+      background-image: radial-gradient(#fb923c 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.2;
+      z-index: -1;
+    }
+
+    /* Book shadows */
+    .book-shadow {
+      box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+
+<body class="antialiased bg-white text-black font-sans">
+  <div id="app" class="min-h-screen flex flex-col items-stretch">
+    
+    {% include 'includes/navbar.html' %}
+
+    <main class="flex-grow pt-24 md:pt-28 lg:pt-40">
+      <!-- Flash Messages Container -->
+      <div class="container mx-auto px-4 sm:px-6 xl:px-8 mb-6">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="p-4 rounded-sm border text-sm font-medium animate-bounce shadow-sm
+                {% if category == 'success' %}bg-green-50 border-green-200 text-green-800
+                {% elif category == 'error' %}bg-red-50 border-red-200 text-red-800
+                {% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %}">
+                <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} mr-2"></i>
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+      
+      <!-- HERO & BREADCRUMBS -->
+      <div class="relative hero-triangles hero-dots-pattern">
+        <!-- Ornamentos ISPGAYA -->
+        <div class="dot-pattern dot-pattern--lg dot-pattern--behind" style="top: -20px; right: 40px; opacity: 0.15;"></div>
+        <div class="dot-pattern dot-pattern--sm dot-pattern--behind" style="top: 150px; left: 20px;"></div>
+
+        <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10">
+          <nav class="flex relative z-10" aria-label="Breadcrumb">
+            <ol role="list" class="flex pl-1 items-center space-x-2">
+              <li>
+                <div class="flex items-center text-gray-500 hover:text-gray-600">
+                  <a href="{{ url_for('frontoffice.index') }}" class="text-sm">Lab. Cultural</a>
+                  <span class="ml-2">/</span>
+                </div>
+              </li>
+              <li>
+                <div class="flex items-center font-semibold text-black">
+                  <span class="text-sm">Clube de Leitura</span>
+                </div>
+              </li>
+            </ol>
+          </nav>
+          
+          <div class="mt-8 prose 2xl:prose-lg prose-headings:font-serif xl:max-w-3xl 2xl:max-w-4xl">
+            <h1 class="font-serif text-4xl md:text-5xl font-bold mb-4">Clube de Leitura</h1>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Um espaço de partilha, debate e amor pela literatura. No Clube de Leitura do ISPGAYA, as histórias ganham vida através das vozes da nossa comunidade.
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <!-- MAIN CONTENT AREA -->
+      <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10 mb-20 mt-10 xl:mt-16">
+        <div class="relative grid grid-cols-12 gap-x-12 items-start">
+          
+          <!-- LEFT CONTENT (8/12) -->
+          <div class="col-span-12 lg:col-span-8">
+            
+            <!-- Sobre o Clube Card -->
+            <div class="bg-gray-50 rounded-sm p-8 mb-12 border border-gray-100 shadow-sm relative overflow-hidden">
+                <!-- Matriz 21x11 Estratégica -->
+                <div class="dot-matrix-21-11" style="top: -60px; right: -40px; opacity: 0.1;"></div>
+                <!-- Ornamentos ISPGAYA -->
+                <div class="dot-pattern dot-pattern--sm dot-pattern--behind" style="bottom: -10px; right: -10px;"></div>
+              
+              <h2 class="font-serif text-3xl font-bold mb-6">O Nosso Clube</h2>
+              <div class="prose text-gray-600 max-w-none">
+                <p class="mb-4">
+                  O Clube de Leitura do ISPGAYA reúne mensalmente leitores de todos os cursos e áreas, aproveitando o poder da literatura para estimular o pensamento crítico, a empatia e a troca de perspetivas.
+                </p>
+                <p>
+                  As sessões são abertas a toda a comunidade académica — estudantes, docentes e funcionários. Cada mês escolhemos um novo livro, proporcionando uma viagem descontraída por mundos e ideias diferentes.
+                </p>
+              </div>
+
+              <!-- Stats Row -->
+              <div class="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-gray-200">
+                <div class="text-center">
+                  <p class="text-3xl font-bold text-orange-400">{{ todos_livros|length }}+</p>
+                  <p class="text-xs uppercase tracking-wider font-semibold text-gray-500 mt-1">Livros Lidos</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-3xl font-bold text-orange-400">Mensal</p>
+                  <p class="text-xs uppercase tracking-wider font-semibold text-gray-500 mt-1">Sessões</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-3xl font-bold text-orange-400">Grátis</p>
+                  <p class="text-xs uppercase tracking-wider font-semibold text-gray-500 mt-1">Custo</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- LIVROS EM DESTAQUE SECTIONS (Like the provided grid) -->
+            {% if livros_destaque %}
+            <div class="mb-16">
+              <h2 class="font-serif text-3xl font-bold mb-8 flex items-center gap-3">
+                <i class="fas fa-star text-orange-400 text-2xl"></i> Seleção do Clube
+              </h2>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {% for livro in livros_destaque %}
+                <div class="group">
+                  <div class="flex gap-4">
+                    <div class="shrink-0 w-24 h-36 overflow-hidden rounded-sm shadow-lg book-shadow transition-transform group-hover:scale-105">
+                      <a href="{{ url_for('frontoffice.livro_detalhe', livro_id=livro.id) }}" class="block w-full h-full">
+                        {% if livro.imagem %}
+                        <img src="{{ url_for('static', filename=livro.imagem) }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0" alt="{{ livro.titulo }}">
+                        {% else %}
+                        <img src="{{ url_for('static', filename=random_image('leitura')) }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 grayscale group-hover:grayscale-0" alt="{{ livro.titulo }}">
+                        {% endif %}
+                      </a>
+                    </div>
+                    <div>
+                      <span class="inline-block px-2 py-0.5 bg-orange-100 text-orange-600 text-xs uppercase font-bold rounded-sm mb-2">
+                        {% if livro.destaque %}Livro do Mês{% else %}{{ livro.genero or 'Leitura' }}{% endif %}
+                      </span>
+                      <a href="{{ url_for('frontoffice.livro_detalhe', livro_id=livro.id) }}">
+                        <h3 class="text-xl font-bold font-serif group-hover:text-orange-500 transition-colors leading-tight mb-1">
+                          {{ livro.titulo }}
+                        </h3>
+                      </a>
+                      <p class="text-sm text-gray-500 font-medium mb-2">{{ livro.autor }}</p>
+                      <p class="text-base text-gray-600 line-clamp-2">
+                        {{ livro.sinopse or 'Uma obra fundamental selecionada para os nossos debates literários.' }}
+                      </p>
+                      <div class="mt-3">
+                        {% if livro.esta_disponivel %}
+                        <span class="inline-flex items-center gap-1 text-sm font-bold text-green-600 uppercase tracking-tighter">
+                            <i class="fas fa-check-circle"></i> Disponível
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 text-sm font-bold text-red-500 uppercase tracking-tighter">
+                            <i class="fas fa-clock"></i> Requisitado
+                        </span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+
+              <!-- BOTÃO VER TODOS (Pedido pelo utilizador) -->
+              <div class="mt-12 text-center">
+                <a href="{{ url_for('frontoffice.biblioteca') }}" class="inline-flex items-center gap-2 bg-white border-2 border-black text-black px-8 py-3 font-bold uppercase tracking-widest text-[10px] hover:bg-black hover:text-white transition-all rounded-[5px] shadow-sm no-underline">
+                  Ver Catálogo Completo <i class="fas fa-book-open text-[11px]"></i>
+                </a>
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- PRÓXIMAS SESSÕES (Calendar items) -->
+            {% if calendario %}
+            <div>
+              <h2 class="font-serif text-3xl font-bold mb-8 flex items-center gap-3">
+                <i class="fas fa-calendar-alt text-orange-400 text-2xl"></i> Próximas Sessões
+              </h2>
+              
+              <div class="space-y-6">
+                {% for sessao in calendario %}
+                <div class="flex items-center gap-6 p-6 rounded-sm border border-gray-100 hover:border-orange-200 hover:bg-orange-50/30 transition-all shadow-sm hover:shadow-md">
+                  <!-- Date Circle -->
+                  <div class="shrink-0 w-16 h-16 bg-white border-2 border-orange-400 rounded-full flex flex-col items-center justify-center text-orange-500">
+                    <span class="text-xl font-bold leading-none">{{ sessao.data_sessao.strftime('%d') if sessao.data_sessao else '--' }}</span>
+                    <span class="text-[10px] font-bold uppercase">{{ sessao.data_sessao.strftime('%b') if sessao.data_sessao else '' }}</span>
+                  </div>
+                  
+                  <!-- Info -->
+                  <div class="flex-1">
+                    <h4 class="text-lg font-bold">{{ sessao.tema }}</h4>
+                    <p class="text-sm text-gray-600 mt-1">
+                      <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i> {{ sessao.local }}
+                      <span class="mx-2">•</span>
+                      <i class="fas fa-clock text-gray-400 mr-1"></i> {{ sessao.hora or '18:00' }}
+                    </p>
+                    {% if sessao.livro_titulo %}
+                    <p class="text-sm font-medium text-orange-400 mt-2">
+                      <i class="fas fa-book mr-1"></i> {{ sessao.livro_titulo }}
+                    </p>
+                    {% endif %}
+                  </div>
+                  
+                  <div class="hidden md:block">
+                    <a href="{{ url_for('frontoffice.inscrever_sessao_form', sessao_id=sessao.id) }}" class="bg-orange-400 text-white rounded-sm shadow-lg px-5 py-2 font-bold uppercase tracking-wider text-xs hover:bg-orange-500 hover:shadow-xl transition-all">
+                      Inscrever-me
+                    </a>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+          </div>
+
+          <div class="hidden lg:block col-span-4 sticky top-40">
+            <div class="bg-gray-50 rounded-sm p-8 border border-gray-100 shadow-lg text-center">
+              <img class="w-full h-auto mb-8 mx-auto" src="https://ispgaya.pt/images/illustrations/ispgaya-page-map.svg" alt="Ilustração" />
+              <h3 class="font-serif text-2xl font-bold mb-4">Queres participar?</h3>
+              <p class="text-gray-600 text-sm mb-6">
+                O Clube de Leitura é gratuito e aberto a todos. Não precisas de ler o livro todo para aparecer e ouvir!
+              </p>
+              <a href="{{ url_for('frontoffice.juntar_clube_leitura_form') }}" class="block w-full py-3 bg-orange-400 text-white font-bold rounded-sm shadow-lg hover:bg-orange-500 hover:scale-[1.02] transition-all">
+                Queres Participar?
+              </a>
+              <div class="mt-6 flex justify-center gap-4 text-gray-400">
+                <i class="fab fa-facebook-f hover:text-orange-400 cursor-pointer"></i>
+                <i class="fab fa-instagram hover:text-orange-400 cursor-pointer"></i>
+                <i class="fab fa-linkedin-in hover:text-orange-400 cursor-pointer"></i>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    {% include 'includes/footer.html' %}
+  </div>
+
+</body>
+</html>

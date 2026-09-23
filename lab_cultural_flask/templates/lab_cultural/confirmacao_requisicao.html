@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Requisição Confirmada — {{ livro.titulo }} — ISPGAYA</title>
+
+  <!-- Fonts (Matches ispgaya.pt) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+</head>
+
+<body class="antialiased bg-[#f8f9fa] text-black font-sans flex flex-col min-h-screen">
+  
+  {% include 'includes/navbar.html' %}
+
+  <!-- BREADCRUMB (ISPGAYA Style) -->
+  <nav class="bg-white border-b border-gray-200 py-3 mt-16 md:mt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center text-[11px] font-bold uppercase tracking-widest text-gray-500">
+        <a href="{{ url_for('frontoffice.index') }}" class="hover:text-orange-500 transition-colors">Início</a>
+        <span class="mx-3 text-gray-300">/</span>
+        <a href="{{ url_for('frontoffice.clube_leitura') }}" class="hover:text-orange-500 transition-colors">Clube de Leitura</a>
+        <span class="mx-3 text-gray-300">/</span>
+        <span class="text-black">Requisição Efetuada</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow py-12 px-4">
+    <div class="max-w-2xl mx-auto">
+      
+      <div class="bg-white shadow-2xl rounded-sm border border-gray-100 overflow-hidden">
+          
+          <!-- Header -->
+          <div class="bg-orange-500 p-12 text-center text-white relative">
+              <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/30 backdrop-blur-sm">
+                  <i class="fas fa-check text-2xl"></i>
+              </div>
+              <h1 class="text-3xl font-serif font-bold mb-2">Requisição Efetuada!</h1>
+              <p class="text-white/80 text-sm">O seu pedido foi registado com sucesso.</p>
+          </div>
+
+          <!-- Content -->
+          <div class="p-10 text-center">
+              <p class="text-gray-600 mb-8">
+                  Olá <strong class="text-black">{{ nome }}</strong>, a tua requisição para o livro <strong>{{ livro.titulo }}</strong> foi processada. Um e-mail de confirmação foi enviado para <span class="text-orange-500 font-medium">{{ email }}</span>.
+              </p>
+
+              {% if codigo %}
+              <div class="bg-gray-50 border-2 border-dashed border-gray-200 p-8 rounded-sm mb-10 relative">
+                  <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Código de Levantamento</span>
+                  <p class="text-4xl font-mono font-bold text-orange-600 tracking-[0.2em]">
+                      {{ codigo }}
+                  </p>
+              </div>
+
+              <div class="flex flex-col items-center gap-6">
+                  <div class="flex items-start gap-4 text-left bg-blue-50 p-4 rounded-sm border border-blue-100 max-w-md">
+                      <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                      <p class="text-xs text-blue-700 leading-relaxed">
+                          <strong>Próximos passos:</strong> Apresenta este código na Biblioteca do ISPGAYA para efetuar o levantamento da obra. A requisição é válida por 48 horas.
+                      </p>
+                  </div>
+              {% else %}
+              <div class="bg-amber-50 border-2 border-dashed border-amber-200 p-8 rounded-sm mb-10 relative">
+                  <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Estado do Pedido</span>
+                  <div class="flex items-center justify-center gap-3">
+                      <i class="fas fa-hourglass-half text-2xl text-amber-500 animate-pulse"></i>
+                      <p class="text-2xl font-bold text-amber-600">
+                          Aguarda Aprovação
+                      </p>
+                  </div>
+              </div>
+
+              <div class="flex flex-col items-center gap-6">
+                  <div class="flex items-start gap-4 text-left bg-blue-50 p-4 rounded-sm border border-blue-100 max-w-md">
+                      <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                      <p class="text-xs text-blue-700 leading-relaxed">
+                          <strong>Próximos passos:</strong> O teu pedido será analisado pela equipa da biblioteca. Receberás um e-mail com o <strong>código de levantamento</strong> assim que a requisição for aprovada.
+                      </p>
+                  </div>
+              {% endif %}
+
+                  <div class="flex w-full justify-center">
+                       <a href="{{ url_for('frontoffice.clube_leitura') }}" class="bg-[#f97316] text-white px-8 py-3 font-bold uppercase tracking-widest text-[10px] hover:bg-[#ea580c] transition-all rounded-[5px] shadow-sm no-underline text-center">
+                          Voltar ao Clube
+                      </a>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="bg-gray-50 border-t border-gray-100 p-6 flex items-center justify-center gap-8">
+                <img src="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" class="h-6 grayscale opacity-30" alt="Logo">
+                <p class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter">Laboratório Cultural • ISPGAYA 2026</p>
+          </div>
+      </div>
+
+    </div>
+  </main>
+
+  {% include 'includes/footer.html' %}
+
+</body>
+</html>

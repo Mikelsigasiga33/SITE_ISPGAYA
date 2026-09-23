@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notícias — ISPGAYA</title>
+  <meta name="description"
+    content="Acompanhe as últimas novidades, anúncios e atividades da nossa comunidade." />
+
+  <!-- Fonts (Matches ispgaya.pt) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+
+  <style>
+    body {
+      background-color: #ffffff;
+      color: #000000;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .event-title-link:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
+    }
+
+    .cat-pill {
+      padding: 10px 24px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.75rem;
+      transition: all 0.2s ease;
+    }
+
+    .cat-pill.active {
+      background-color: #f97316;
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+    }
+
+    .cat-pill:not(.active) {
+      color: #94a3b8;
+    }
+
+    .cat-pill:not(.active):hover {
+      color: #f97316;
+      background-color: rgba(249, 115, 22, 0.05);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 2px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #f97316;
+      border-radius: 10px;
+    }
+
+    .triangle-pattern {
+      position: absolute;
+      width: 400px;
+      height: 600px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M0 30 L15 0 L30 30 Z' fill='%23e2e8f0'/%3E%3C/svg%3E");
+      background-size: 30px 30px;
+      opacity: 0.4;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .triangle-pattern--right {
+      top: 5%;
+      right: -200px;
+      transform: rotate(15deg);
+    }
+
+    .triangle-pattern--left {
+      top: 35%;
+      left: -250px;
+      transform: rotate(-15deg);
+      opacity: 0.5;
+    }
+
+    .triangle-pattern--mid {
+      top: 60%;
+      right: -180px;
+      transform: rotate(45deg);
+      opacity: 0.45;
+    }
+
+    .triangle-pattern--bottom {
+      bottom: 5%;
+      left: -200px;
+      transform: rotate(10deg);
+      opacity: 0.4;
+    }
+
+    /* Autocomplete Styles */
+    .autocomplete-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #f1f5f9;
+      border-top: none;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      max-height: 300px;
+      overflow-y: auto;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .autocomplete-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .autocomplete-item:hover {
+      background-color: #f8fafc;
+    }
+
+    .autocomplete-item i {
+      color: #cbd5e1;
+      font-size: 0.875rem;
+    }
+
+    .autocomplete-item .title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #1e293b;
+    }
+
+    .autocomplete-item .type {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #f97316;
+      margin-left: auto;
+    }
+  </style>
+</head>
+
+<body class="antialiased font-sans" id="content-start">
+  <div id="app" class="h-full min-h-screen flex flex-col items-stretch">
+
+    {% include 'includes/navbar.html' %}
+
+    <main class="h-full mt-24 md:mt-28 lg:mt-40 relative overflow-x-hidden">
+      <!-- Ornamentos de Triângulos (Espalhados pela página) -->
+      <div class="triangle-pattern triangle-pattern--right"></div>
+      <div class="triangle-pattern triangle-pattern--left"></div>
+      <div class="triangle-pattern triangle-pattern--mid"></div>
+      <div class="triangle-pattern triangle-pattern--bottom"></div>
+
+      <!-- HERO & BREADCRUMBS -->
+      <div class="relative">
+        <!-- Ornamentos ISPGAYA -->
+        <div class="dot-pattern dot-pattern--lg dot-pattern--behind" style="top: -40px; left: 40px; opacity: 0.15;">
+        </div>
+        <div class="dot-pattern dot-pattern--sm dot-pattern--behind" style="top: 100px; right: 20px; opacity: 0.1;">
+        </div>
+
+        <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 pt-12 pb-8">
+          <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+            <a href="{{ url_for('frontoffice.index') }}" class="hover:text-black transition-colors">Lab. Cultural</a>
+            <span class="mx-2 text-gray-300"> / </span>
+            <span class="text-black font-medium"> Notícias </span>
+          </nav>
+
+          <h1 class="text-4xl lg:text-5xl font-bold font-serif mb-4 tracking-tight text-gray-900">Notícias
+          </h1>
+          <p class="text-xl text-gray-600 leading-relaxed max-w-3xl">
+            A nossa agenda pretende contribuir para o desenvolvimento pessoal e cultural. Fica a conhecer as notícias e
+            participa connosco.
+          </p>
+        </section>
+      </div>
+
+      <!-- FILTERS (Modern & Minimalist) -->
+      <section class="border-b border-gray-100 py-6 bg-white sticky top-[70px] z-50 shadow-sm">
+        <div class="container mx-auto px-4 sm:px-6 xl:px-8">
+          <form id="filter-form" class="space-y-6">
+            <!-- Top Row: Search & Categories -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div class="flex-1 overflow-x-auto custom-scrollbar">
+                <div class="flex items-center space-x-6 whitespace-nowrap pb-2">
+                  <button type="button" data-cat=""
+                    class="cat-pill transition-all {{ 'active' if not filtros_ativos.get('categoria_id') }}">
+                    Todos
+                  </button>
+                  {% for cat in categorias %}
+                  <button type="button" data-cat="{{ cat.id }}"
+                    class="cat-pill transition-all {{ 'active' if filtros_ativos.get('categoria_id')|string == cat.id|string }}">
+                    {{ cat.nome }}
+                  </button>
+                  {% endfor %}
+                </div>
+                <input type="hidden" name="categoria_id" id="categoria_id_input"
+                  value="{{ filtros_ativos.get('categoria_id', '') }}">
+              </div>
+
+              <div class="relative w-full lg:w-80 group">
+                <input type="text" name="q" id="q_input" value="{{ filtros_ativos.get('q', '') }}"
+                  placeholder="Procurar notícia..." autocomplete="off"
+                  class="w-full border-b-2 border-gray-100 py-2 text-sm font-medium focus:border-orange-500 outline-none transition-all placeholder:text-gray-300 bg-transparent">
+                <i class="fas fa-search absolute right-0 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-orange-500 transition-colors"></i>
+                
+                <!-- Sugestões -->
+                <div id="autocomplete-results" class="autocomplete-results hidden"></div>
+              </div>
+            </div>
+
+            <!-- Bottom Row: Advanced Filters -->
+            <div class="flex justify-end pt-2">
+              <div class="w-full lg:w-1/4">
+
+              <!-- Datas -->
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 w-1/2 bg-gray-50 rounded-lg px-3">
+                  <span class="text-xs uppercase font-black text-orange-500">De</span>
+                  <input type="date" name="data_de" 
+                         class="w-full bg-transparent border-none py-2.5 text-xs font-bold text-gray-600 focus:ring-0 outline-none transition-all">
+                </div>
+                <div class="flex items-center gap-2 w-1/2 bg-gray-50 rounded-lg px-3">
+                  <span class="text-xs uppercase font-black text-orange-500">Até</span>
+                  <input type="date" name="data_ate" 
+                         class="w-full bg-transparent border-none py-2.5 text-xs font-bold text-gray-600 focus:ring-0 outline-none transition-all">
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- EVENTS LIST -->
+      <section class="container mx-auto px-4 sm:px-6 xl:px-8 py-16 lg:py-28">
+        <div id="results-wrapper" class="transition-opacity duration-300">
+
+          <div id="events-container" class="grid grid-cols-1 gap-16 lg:gap-20">
+            {% if noticias %}
+            {% for noticia in noticias %}
+            <article class="group relative">
+              <div class="flex flex-col gap-10 lg:flex-row lg:items-start">
+                <!-- Texto (Lado Esquerdo no Desktop) -->
+                <div class="flex-1 order-2 lg:order-1">
+                  <div class="space-y-4">
+                    <div class="flex items-center space-x-3 text-orange-500 font-medium text-sm">
+                      <span>#{{ (noticia.categoria.nome if noticia.categoria else 'noticia')|upper|replace(' ', '')
+                        }}</span>
+                      {% if noticia.tipo == 'interno' %}
+                      <span>#ISPGAYA</span>
+                      {% endif %}
+                    </div>
+
+                    <h2 class="text-2xl lg:text-3xl font-bold tracking-tight font-serif">
+                      <a href="{{ url_for('frontoffice.noticia_detalhe', noticia_id=noticia.id) }}"
+                        class="event-title-link transition-colors text-black leading-[1.15]">
+                        {{ noticia.titulo }}
+                      </a>
+                    </h2>
+
+                    <div class="text-gray-500 font-medium italic text-sm">
+                      {{ noticia.publicado_em.strftime('%d de %B, %Y') if noticia.publicado_em else '' }}
+                    </div>
+
+                    <p class="text-gray-600 leading-relaxed text-base max-w-2xl">
+                      {{ noticia.descricao|truncate(220) if noticia.descricao else 'Descobre mais sobre esta notícia e
+                      participa na vida académica do ISPGAYA.' }}
+                    </p>
+
+                    <a href="{{ url_for('frontoffice.noticia_detalhe', noticia_id=noticia.id) }}"
+                      class="ler-mais inline-flex items-center text-[#f97316] font-medium text-sm transition-all group">
+                      <span class="mr-1">Ler Mais</span>
+                      <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Imagem (Lado Direito no Desktop) -->
+                <div class="lg:w-4/12 order-1 lg:order-2">
+                  <div class="relative overflow-hidden shadow-sm group-hover:shadow-2xl transition-all duration-500">
+                    <a href="{{ url_for('frontoffice.noticia_detalhe', noticia_id=noticia.id) }}">
+                      {% if noticia.imagem %}
+                      {% set img_url = noticia.imagem|trim %}
+                      {% if img_url.lower().startswith('http') %}
+                      <img src="{{ img_url }}"
+                        class="w-full aspect-[16/8] object-cover transition-transform duration-700 group-hover:scale-105"
+                        alt="{{ noticia.titulo }}">
+                      {% elif img_url.lower().startswith('photo-') %}
+                      <img src="https://images.unsplash.com/{{ img_url }}?auto=format&fit=crop&w=800&q=80"
+                        class="w-full aspect-[16/8] object-cover transition-transform duration-700 group-hover:scale-105"
+                        alt="{{ noticia.titulo }}">
+                      {% else %}
+                      <img src="{{ url_for('static', filename=img_url) }}"
+                        class="w-full aspect-[16/8] object-cover transition-transform duration-700 group-hover:scale-105"
+                        alt="{{ noticia.titulo }}">
+                      {% endif %}
+                      {% else %}
+                      <img src="{{ url_for('static', filename='img/teatro/teatro1.jpg') }}"
+                        class="w-full aspect-[16/8] object-cover transition-transform duration-700 group-hover:scale-105"
+                        alt="{{ noticia.titulo }}">
+                      {% endif %}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </article>
+            {% endfor %}
+            {% else %}
+            <div class="py-32 text-center border-2 border-dashed border-gray-100">
+              <p class="text-gray-300 uppercase tracking-[0.3em] font-black text-xs">Sem notícias disponíveis</p>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Pagination (ISPGAYA Style) -->
+          <div id="pagination-container" class="mt-32 flex justify-center">
+            {% if total_paginas > 1 %}
+            <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+              <!-- Anterior -->
+              <a href="{{ url_for('frontoffice.noticias', pagina=pagina-1, **filtros_ativos) if pagina > 1 else '#' }}"
+                 class="relative inline-flex items-center px-3 py-2 rounded-l border border-gray-200 bg-white text-sm font-medium transition-all {{ 'text-gray-200 pointer-events-none' if pagina == 1 else 'text-gray-500 hover:bg-gray-50 hover:text-orange-500' }}">
+                <i class="fas fa-chevron-left text-[10px]"></i>
+              </a>
+
+              <!-- Números -->
+              {% for p in range(1, total_paginas + 1) %}
+              <a href="{{ url_for('frontoffice.noticias', pagina=p, **filtros_ativos) }}"
+                 class="relative inline-flex items-center px-4 py-2 border border-gray-200 bg-white text-sm transition-all {{ 'text-orange-500 font-bold z-10 border-orange-200' if p == pagina else 'text-gray-600 hover:bg-gray-50 hover:text-orange-500' }}">
+                {{ p }}
+              </a>
+              {% endfor %}
+
+              <!-- Próximo -->
+              <a href="{{ url_for('frontoffice.noticias', pagina=pagina+1, **filtros_ativos) if pagina < total_paginas else '#' }}"
+                 class="relative inline-flex items-center px-3 py-2 rounded-r border border-gray-200 bg-white text-sm font-medium transition-all {{ 'text-gray-200 pointer-events-none' if pagina == total_paginas else 'text-gray-500 hover:bg-gray-50 hover:text-orange-500' }}">
+                <i class="fas fa-chevron-right text-[10px]"></i>
+              </a>
+            </nav>
+            {% endif %}
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    {% include 'includes/footer.html' %}
+  </div>
+
+  <!-- AJAX Logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const filterForm = document.getElementById('filter-form');
+      const eventsContainer = document.getElementById('events-container');
+      const paginationContainer = document.getElementById('pagination-container');
+      const resultsWrapper = document.getElementById('results-wrapper');
+      const BASE_STATIC_URL = "{{ url_for('static', filename='') }}";
+      const BASE_EVENTO_URL = "{{ url_for('frontoffice.noticia_detalhe', noticia_id=0) }}".replace('0', '');
+
+
+
+      function renderNoticiaCard(noticia) {
+        const dataEv = new Date(noticia.publicado_em);
+        const dataFormatada = dataEv.toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' });
+        const hashtags = (noticia.categoria_nome || 'noticia').toUpperCase().replace(/\s/g, '');
+        const imgRaw = (noticia.imagem || '').trim();
+        let imgPath = BASE_STATIC_URL + 'img/teatro/teatro1.jpg';
+        if (imgRaw) {
+          if (imgRaw.toLowerCase().startsWith('http')) {
+            imgPath = imgRaw;
+          } else if (imgRaw.toLowerCase().startsWith('photo-')) {
+            imgPath = `https://images.unsplash.com/${imgRaw}?auto=format&fit=crop&w=800&q=80`;
+          } else {
+            imgPath = BASE_STATIC_URL + imgRaw;
+          }
+        }
+
+        return `
+          <article class="group relative">
+            <div class="flex flex-col gap-10 lg:flex-row lg:items-start">
+              <div class="flex-1 order-2 lg:order-1">
+                <div class="space-y-4">
+                  <div class="flex items-center space-x-3 text-orange-500 font-medium text-sm">
+                    <span>#${hashtags}</span>
+                  </div>
+                  <h2 class="text-2xl lg:text-3xl font-bold tracking-tight font-serif">
+                    <a href="${BASE_EVENTO_URL}${noticia.id}" class="event-title-link transition-colors text-black leading-[1.15]">${noticia.titulo}</a>
+                  </h2>
+                  <div class="text-gray-500 font-medium italic text-sm">${dataFormatada}</div>
+                  <p class="text-gray-600 leading-relaxed text-base max-w-2xl">${noticia.resumo || ''}</p>
+                  <a href="${BASE_EVENTO_URL}${noticia.id}" class="ler-mais inline-flex items-center text-[#f97316] font-medium text-sm transition-all group">
+                    <span class="mr-1">Ler Mais</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              <div class="lg:w-4/12 order-1 lg:order-2">
+                <div class="relative overflow-hidden shadow-sm group-hover:shadow-2xl transition-all duration-500">
+                  <img src="${imgPath}" class="w-full aspect-[16/8] object-cover transition-transform duration-700 group-hover:scale-105" alt="${noticia.titulo}">
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+      function renderPagination(total, current) {
+        if (total <= 1) return '';
+        let html = `
+          <div class="mt-32 flex justify-center">
+            <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+              <a href="#" data-page="${current - 1}" 
+                 class="relative inline-flex items-center px-3 py-2 rounded-l border border-gray-200 bg-white text-sm font-medium transition-all ${current === 1 ? 'text-gray-200 pointer-events-none' : 'text-gray-500 hover:bg-gray-50 hover:text-orange-500'}">
+                <i class="fas fa-chevron-left text-[10px]"></i>
+              </a>
+        `;
+        for (let p = 1; p <= total; p++) {
+          html += `
+            <a href="#" data-page="${p}" 
+               class="relative inline-flex items-center px-4 py-2 border border-gray-200 bg-white text-sm transition-all ${p === current ? 'text-orange-500 font-bold z-10 border-orange-200' : 'text-gray-600 hover:bg-gray-50 hover:text-orange-500'}">
+              ${p}
+            </a>
+          `;
+        }
+        html += `
+              <a href="#" data-page="${current + 1}" 
+                 class="relative inline-flex items-center px-3 py-2 rounded-r border border-gray-200 bg-white text-sm font-medium transition-all ${current === total ? 'text-gray-200 pointer-events-none' : 'text-gray-500 hover:bg-gray-50 hover:text-orange-500'}">
+                <i class="fas fa-chevron-right text-[10px]"></i>
+              </a>
+            </nav>
+          </div>
+        `;
+        return html;
+      }
+
+      async function updateResults(url, pushState = true) {
+        resultsWrapper.style.opacity = '0.5';
+        const params = new URLSearchParams(new FormData(filterForm));
+        // Manter a página se estiver na URL
+        const urlObj = new URL(url, window.location.origin);
+        if (urlObj.searchParams.has('pagina')) {
+          params.set('pagina', urlObj.searchParams.get('pagina'));
+        }
+
+        try {
+          const res = await fetch(`/api/v1/noticias?${params.toString()}`);
+          const data = await res.json();
+          
+          if (data.noticias && data.noticias.length > 0) {
+            eventsContainer.innerHTML = data.noticias.map(ev => renderNoticiaCard(ev)).join('');
+          } else {
+            eventsContainer.innerHTML = `
+              <div class="py-32 text-center border-2 border-dashed border-gray-100 w-full">
+                <p class="text-gray-300 uppercase tracking-[0.3em] font-black text-xs">Sem notícias para estes filtros</p>
+              </div>
+            `;
+          }
+          
+          if (paginationContainer) {
+            paginationContainer.innerHTML = renderPagination(data.total_paginas, data.pagina);
+          }
+          
+          if (pushState) {
+            window.history.pushState({}, '', window.location.pathname + '?' + params.toString());
+          }
+        } catch (e) { console.error(e); }
+        finally { resultsWrapper.style.opacity = '1'; }
+      }
+
+      // Listeners para cliques em categorias
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.onclick = () => {
+          document.getElementById('categoria_id_input').value = btn.dataset.cat;
+          document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active', 'text-black'));
+          document.querySelectorAll('.cat-pill').forEach(b => b.classList.add('text-gray-400'));
+          btn.classList.add('active', 'text-black');
+          btn.classList.remove('text-gray-400');
+          updateResults(window.location.pathname);
+        };
+      });
+
+      // Listeners para selects e datas
+      filterForm.querySelectorAll('select, input[type="date"]').forEach(el => {
+        el.onchange = () => updateResults(window.location.pathname);
+      });
+
+      // Listener para pesquisa (com autocomplete)
+      let qTimer;
+      const qInput = document.getElementById('q_input');
+      const suggestions = document.getElementById('autocomplete-results');
+
+      qInput.oninput = () => {
+        clearTimeout(qTimer);
+        const query = qInput.value.trim();
+
+        if (query.length < 2) {
+          suggestions.classList.add('hidden');
+          updateResults(window.location.pathname);
+          return;
+        }
+
+        qTimer = setTimeout(async () => {
+          // 1. Atualizar resultados principais
+          updateResults(window.location.pathname);
+
+          // 2. Procurar sugestões
+          try {
+            const res = await fetch(`/api/v1/autocomplete?q=${encodeURIComponent(query)}&tipo=noticia`);
+            const data = await res.json();
+            
+          if (data.length > 0) {
+              suggestions.innerHTML = data.map(item => `
+                <div class="autocomplete-item" onclick="selectSuggestion('${item.titulo.replace(/'/g, "\\'")}')">
+                  <i class="fas ${item.tipo === 'livro' ? 'fa-book' : 'fa-calendar'}"></i>
+                  <span class="title">${item.titulo}</span>
+                  <span class="type">${item.tipo}</span>
+                </div>
+              `).join('');
+              suggestions.classList.remove('hidden');
+            } else {
+              suggestions.classList.add('hidden');
+            }
+          } catch (e) { console.error(e); }
+        }, 400);
+      };
+
+      window.selectSuggestion = function(titulo) {
+        qInput.value = titulo;
+        suggestions.classList.add('hidden');
+        updateResults(window.location.pathname);
+      };
+
+      // Fechar sugestões ao clicar fora
+      document.addEventListener('click', (e) => {
+        if (!qInput.contains(e.target) && !suggestions.contains(e.target)) {
+          suggestions.classList.add('hidden');
+        }
+      });
+
+      // Paginação
+      if (paginationContainer) {
+        paginationContainer.addEventListener('click', (e) => {
+          const link = e.target.closest('a[data-page]');
+          if (link) {
+            e.preventDefault();
+            const page = link.dataset.page;
+            updateResults(window.location.pathname + '?pagina=' + page);
+            window.scrollTo({ top: document.getElementById('content-start').offsetTop - 100, behavior: 'smooth' });
+          }
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tuna Académica — ISPGAYA</title>
+  <meta name="description"
+    content="A Atuna Bira Copos é a Tuna Académica Mista do ISPGAYA, fundada em 1993. Tradição, música e espírito académico." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+
+  <style>
+    .main-nav { transition: all 0.3s ease-in-out; }
+    .main-nav.scrolled { background-color: white; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); border-bottom: 1px solid rgb(243 244 246); }
+    .hero-dots-pattern::before { content: ""; position: absolute; top: -20px; right: 0; width: 150px; height: 150px; background-image: radial-gradient(#fb923c 1px, transparent 1px); background-size: 20px 20px; opacity: 0.2; z-index: -1; }
+  </style>
+</head>
+
+<body class="antialiased bg-white text-black font-sans">
+  <div id="app" class="min-h-screen flex flex-col items-stretch">
+    
+    {% include 'includes/navbar.html' %}
+
+    <main class="flex-grow pt-24 md:pt-28 lg:pt-40">
+      
+      <!-- HERO & BREADCRUMBS -->
+      <div class="relative hero-dots-pattern">
+        <div class="dot-pattern dot-pattern--lg dot-pattern--behind" style="top: -20px; right: 40px; opacity: 0.15;"></div>
+        <div class="dot-pattern dot-pattern--sm dot-pattern--behind" style="top: 150px; left: 20px;"></div>
+
+        <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10">
+          <nav class="flex relative z-10" aria-label="Breadcrumb">
+            <ol role="list" class="flex pl-1 items-center space-x-2">
+              <li>
+                <div class="flex items-center text-gray-500 hover:text-gray-600">
+                  <a href="{{ url_for('frontoffice.index') }}" class="text-sm">Lab. Cultural</a>
+                  <span class="ml-2">/</span>
+                </div>
+              </li>
+              <li>
+                <div class="flex items-center font-semibold text-black">
+                  <span class="text-sm">Tuna Académica</span>
+                </div>
+              </li>
+            </ol>
+          </nav>
+          
+          <div class="mt-8 prose 2xl:prose-lg prose-headings:font-serif xl:max-w-3xl 2xl:max-w-4xl">
+            <h1 class="font-serif text-4xl md:text-5xl font-bold mb-4">Tuna Académica</h1>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              A <strong>Atuna Bira Copos</strong> é a Tuna Académica Mista do ISPGAYA — tradição, música e espírito académico desde 1993.
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <!-- MAIN CONTENT -->
+      <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10 mb-20 mt-10 xl:mt-16">
+        <div class="relative grid grid-cols-12 gap-x-12 items-start">
+          
+          <!-- LEFT CONTENT (8/12) -->
+          <div class="col-span-12 lg:col-span-8">
+            
+            <!-- Sobre a Tuna Card -->
+            <div class="bg-gray-50 rounded-sm p-8 mb-12 border border-gray-100 shadow-sm relative overflow-hidden">
+              <div class="dot-pattern dot-pattern--sm dot-pattern--behind" style="bottom: -10px; right: -10px;"></div>
+              
+              <h2 class="font-serif text-3xl font-bold mb-6">A Nossa Tuna</h2>
+              <div class="prose text-gray-600 max-w-none">
+                <p class="mb-4">
+                  A <strong>Atuna Bira Copos</strong> é a Tuna Académica Mista do Instituto Superior Politécnico Gaya (ISPGAYA), fundada em <strong>1993</strong> por um grupo de estudantes entusiastas pela música e pelo espírito académico português.
+                </p>
+                <p class="mb-4">
+                  Ao longo de mais de três décadas de existência, a tuna tem representado o ISPGAYA em diversos palcos, participando em festivais de tunas académicas, eventos institucionais e cerimónias oficiais, levando o nome da instituição a todo o país.
+                </p>
+                <p>
+                  Aberta a todos os alunos, a Atuna Bira Copos é muito mais do que um grupo musical — é uma família que cultiva a camaradagem, a tradição académica e o amor pela música, proporcionando aos seus membros momentos inesquecíveis de convívio e crescimento pessoal.
+                </p>
+              </div>
+
+              <!-- Stats Row -->
+              <div class="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-gray-200">
+                <div class="text-center">
+                  <p class="text-3xl font-bold text-orange-400">1993</p>
+                  <p class="text-xs uppercase tracking-wider font-semibold text-gray-500 mt-1">Fundação</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-3xl font-bold text-orange-400">Mista</p>
+                  <p class="text-xs uppercase tracking-wider font-semibold text-gray-500 mt-1">Natureza</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-3xl font-bold text-orange-400">30+</p>
+                  <p class="text-xs uppercase tracking-wider font-semibold text-gray-500 mt-1">Anos de Tradição</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- O que fazemos -->
+            <div class="mb-12">
+              <h2 class="font-serif text-3xl font-bold mb-8 flex items-center gap-3">
+                <i class="fas fa-music text-orange-400 text-2xl"></i> O que fazemos
+              </h2>
+              
+              <div class="space-y-6">
+                <!-- Item 1 -->
+                <div class="flex items-start gap-6 p-6 rounded-sm border border-gray-100 hover:border-orange-200 hover:bg-orange-50/30 transition-all shadow-sm hover:shadow-md">
+                  <div class="shrink-0 w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center text-orange-500">
+                    <i class="fas fa-guitar text-xl"></i>
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="text-lg font-bold">Ensaios Regulares</h4>
+                    <p class="text-sm text-gray-600 mt-1">
+                      Ensaios semanais onde se preparam repertórios que vão do fado académico à música popular portuguesa, passando por temas internacionais adaptados ao estilo tunante.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="flex items-start gap-6 p-6 rounded-sm border border-gray-100 hover:border-orange-200 hover:bg-orange-50/30 transition-all shadow-sm hover:shadow-md">
+                  <div class="shrink-0 w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center text-orange-500">
+                    <i class="fas fa-trophy text-xl"></i>
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="text-lg font-bold">Festivais e Encontros de Tunas</h4>
+                    <p class="text-sm text-gray-600 mt-1">
+                      Participação ativa em festivais de tunas a nível nacional e internacional, incluindo o nosso próprio festival — o <strong>First Mixed Bira</strong> — que reúne tunas de todo o país no ISPGAYA.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="flex items-start gap-6 p-6 rounded-sm border border-gray-100 hover:border-orange-200 hover:bg-orange-50/30 transition-all shadow-sm hover:shadow-md">
+                  <div class="shrink-0 w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center text-orange-500">
+                    <i class="fas fa-university text-xl"></i>
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="text-lg font-bold">Eventos Institucionais</h4>
+                    <p class="text-sm text-gray-600 mt-1">
+                      Presença em cerimónias de abertura do ano letivo, formaturas, receções a caloiros, jantares de gala e outros eventos que marcam a vida académica do ISPGAYA.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="flex items-start gap-6 p-6 rounded-sm border border-gray-100 hover:border-orange-200 hover:bg-orange-50/30 transition-all shadow-sm hover:shadow-md">
+                  <div class="shrink-0 w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center text-orange-500">
+                    <i class="fas fa-heart text-xl"></i>
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="text-lg font-bold">Solidariedade e Comunidade</h4>
+                    <p class="text-sm text-gray-600 mt-1">
+                      Participação em eventos solidários e de beneficência, levando a música a lares, hospitais e instituições sociais da região de Vila Nova de Gaia.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instrumentos -->
+            <div class="mb-12">
+              <h2 class="font-serif text-3xl font-bold mb-8 flex items-center gap-3">
+                <i class="fas fa-compact-disc text-orange-400 text-2xl"></i> Os Nossos Instrumentos
+              </h2>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-gray-50 rounded-sm p-5 text-center border border-gray-100 hover:border-orange-200 transition-all">
+                  <i class="fas fa-guitar text-3xl text-orange-400 mb-3"></i>
+                  <p class="text-sm font-bold">Guitarra</p>
+                </div>
+                <div class="bg-gray-50 rounded-sm p-5 text-center border border-gray-100 hover:border-orange-200 transition-all">
+                  <i class="fas fa-drum text-3xl text-orange-400 mb-3"></i>
+                  <p class="text-sm font-bold">Percussão</p>
+                </div>
+                <div class="bg-gray-50 rounded-sm p-5 text-center border border-gray-100 hover:border-orange-200 transition-all">
+                  <i class="fas fa-music text-3xl text-orange-400 mb-3"></i>
+                  <p class="text-sm font-bold">Bandolim</p>
+                </div>
+                <div class="bg-gray-50 rounded-sm p-5 text-center border border-gray-100 hover:border-orange-200 transition-all">
+                  <i class="fas fa-microphone-alt text-3xl text-orange-400 mb-3"></i>
+                  <p class="text-sm font-bold">Voz</p>
+                </div>
+                <div class="bg-gray-50 rounded-sm p-5 text-center border border-gray-100 hover:border-orange-200 transition-all">
+                  <i class="fas fa-music text-3xl text-orange-400 mb-3"></i>
+                  <p class="text-sm font-bold">Cavaquinho</p>
+                </div>
+                <div class="bg-gray-50 rounded-sm p-5 text-center border border-gray-100 hover:border-orange-200 transition-all">
+                  <i class="fas fa-music text-3xl text-orange-400 mb-3"></i>
+                  <p class="text-sm font-bold">Acordeão</p>
+                </div>
+                <div class="bg-gray-50 rounded-sm p-5 text-center border border-gray-100 hover:border-orange-200 transition-all">
+                  <i class="fas fa-music text-3xl text-orange-400 mb-3"></i>
+                  <p class="text-sm font-bold">Flauta</p>
+                </div>
+                <div class="bg-gray-50 rounded-sm p-5 text-center border border-gray-100 hover:border-orange-200 transition-all">
+                  <i class="fas fa-music text-3xl text-orange-400 mb-3"></i>
+                  <p class="text-sm font-bold">Pandeireta</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- A Tradição Académica -->
+            <div class="mb-12">
+              <h2 class="font-serif text-3xl font-bold mb-6 flex items-center gap-3">
+                <i class="fas fa-graduation-cap text-orange-400 text-2xl"></i> A Tradição Académica
+              </h2>
+              <div class="prose text-gray-600 max-w-none">
+                <p class="mb-4">
+                  A tradição tunante é um dos pilares mais ricos e emblemáticos da cultura académica portuguesa. Nascida nas universidades medievais, a prática de grupos de estudantes que percorrem as ruas a tocar e cantar mantém-se viva e vibrante no ISPGAYA.
+                </p>
+                <p class="mb-4">
+                  A Atuna Bira Copos orgulha-se de cultivar valores como o <strong>companheirismo</strong>, a <strong>disciplina musical</strong>, o <strong>respeito pelas tradições</strong> e o <strong>espírito de corpo</strong> que une gerações de estudantes do instituto.
+                </p>
+                <p>
+                  Cada membro da tuna usa com orgulho o <strong>traje académico</strong>, símbolo da sua pertença à comunidade estudantil, enriquecido com fitas e insígnias que contam a história das vivências, viagens e encontros partilhados.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT SIDEBAR (4/12) -->
+          <div class="hidden lg:block col-span-4 sticky top-40">
+            
+            <!-- CTA Card -->
+            <div class="bg-gray-50 rounded-sm p-8 border border-gray-100 shadow-lg text-center mb-6">
+              <div class="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-music text-3xl text-orange-500"></i>
+              </div>
+              <h3 class="font-serif text-2xl font-bold mb-4">Queres juntar-te?</h3>
+              <p class="text-gray-600 text-sm mb-6">
+                A Tuna está aberta a todos os alunos do ISPGAYA, sem necessidade de experiência musical prévia. Traz a tua energia e vontade de aprender!
+              </p>
+              <a href="{{ url_for('frontoffice.juntar_tuna_form') }}" class="block w-full py-3 bg-orange-400 text-white font-bold rounded-sm shadow-lg hover:bg-orange-500 hover:scale-[1.02] transition-all no-underline">
+                Quero Participar
+              </a>
+              <div class="mt-6 flex justify-center gap-4 text-gray-400">
+                <i class="fab fa-facebook-f hover:text-orange-400 cursor-pointer transition-colors"></i>
+                <i class="fab fa-instagram hover:text-orange-400 cursor-pointer transition-colors"></i>
+                <i class="fab fa-youtube hover:text-orange-400 cursor-pointer transition-colors"></i>
+              </div>
+            </div>
+
+            <!-- Info Card -->
+            <div class="bg-gray-50 rounded-sm p-6 border border-gray-100 shadow-sm mb-6">
+              <h4 class="text-sm font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-info-circle text-orange-500 mr-2"></i> Informações
+              </h4>
+              <div class="space-y-4 text-sm text-gray-600">
+                <div class="flex items-start">
+                  <i class="fas fa-tag w-5 mt-0.5 text-gray-400"></i>
+                  <div class="ml-2">
+                    <span class="font-bold text-gray-800">Nome</span><br>
+                    Atuna Bira Copos
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <i class="fas fa-calendar w-5 mt-0.5 text-gray-400"></i>
+                  <div class="ml-2">
+                    <span class="font-bold text-gray-800">Fundação</span><br>
+                    1993
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <i class="fas fa-users w-5 mt-0.5 text-gray-400"></i>
+                  <div class="ml-2">
+                    <span class="font-bold text-gray-800">Tipo</span><br>
+                    Tuna Académica Mista
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <i class="fas fa-map-marker-alt w-5 mt-0.5 text-gray-400"></i>
+                  <div class="ml-2">
+                    <span class="font-bold text-gray-800">Sede</span><br>
+                    ISPGAYA — Vila Nova de Gaia
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <i class="fas fa-envelope w-5 mt-0.5 text-gray-400"></i>
+                  <div class="ml-2">
+                    <span class="font-bold text-gray-800">Contacto</span><br>
+                    <a href="mailto:tuna@ispgaya.pt" class="text-orange-500 hover:underline">tuna@ispgaya.pt</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Festival Card -->
+            <div class="bg-black rounded-sm p-6 text-white shadow-lg relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-20 h-20 bg-orange-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+              <div class="absolute bottom-0 left-0 w-16 h-16 bg-orange-500/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+              <h4 class="font-serif text-lg font-bold mb-3 relative z-10">
+                <i class="fas fa-star text-orange-400 mr-2"></i> First Mixed Bira
+              </h4>
+              <p class="text-sm text-gray-400 leading-relaxed relative z-10">
+                O festival organizado pela nossa tuna, que reúne tunas académicas mistas de todo o país no ISPGAYA. Uma celebração única da música e tradição académica.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- QUOTE BANNER -->
+      <section class="bg-gray-900 py-16">
+        <div class="container mx-auto px-4 sm:px-6 xl:px-8 text-center">
+          <blockquote class="max-w-2xl mx-auto">
+            <p class="text-2xl md:text-3xl font-serif font-bold text-white italic mb-6">
+              "A música é a linguagem universal que une corações e perpetua tradições."
+            </p>
+            <footer class="text-sm text-gray-400 uppercase tracking-widest font-bold">
+              <span class="text-orange-400">—</span> Atuna Bira Copos, desde 1993
+            </footer>
+          </blockquote>
+        </div>
+      </section>
+
+    </main>
+
+    {% include 'includes/footer.html' %}
+  </div>
+</body>
+</html>

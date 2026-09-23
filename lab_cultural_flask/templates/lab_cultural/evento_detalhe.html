@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ evento.titulo }} — ISPGAYA</title>
+  <meta name="description" content="{{ evento.descricao or '' }}" />
+
+  <!-- Fonts (Matches ispgaya.pt) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+
+  <style>
+    .main-nav {
+      transition: all 0.3s ease-in-out;
+    }
+
+    .main-nav.scrolled {
+      background-color: white;
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      border-bottom: 1px solid rgb(243 244 246);
+    }
+  </style>
+</head>
+
+<body class="antialiased bg-white text-black font-sans">
+  <div id="app" class="h-full min-h-screen flex flex-col items-stretch">
+
+    {% include 'includes/navbar.html' %}
+
+    <main class="h-full mt-20 md:mt-24 lg:mt-32">
+      <section class="max-w-4xl mx-auto px-4 z-10 pb-10 sm:px-6 lg:px-0">
+
+        <!-- Back Link (Simple Style) -->
+        <a href="{{ url_for('frontoffice.eventos') }}"
+          class="flex items-center text-sm font-medium text-gray-400 hover:text-black transition-colors group">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          Voltar
+        </a>
+
+        <article class="mt-10">
+          <div class="mb-8">
+            <h1 class="text-4xl lg:text-5xl font-serif font-bold leading-tight mb-8 text-[#1a1a1a]">
+              {{ evento.titulo }}
+            </h1>
+
+            <div class="flex flex-wrap items-center gap-x-8 gap-y-4 text-sm font-medium text-gray-500">
+              {% if evento.data_evento %}
+              <div class="flex items-center">
+                <i class="far fa-calendar-alt mr-2 text-gray-400"></i>
+                <span class="capitalize">{{ evento.data_evento.strftime('%d %B, %Y') }}</span>
+              </div>
+              {% endif %}
+
+              {% if evento.hora %}
+              <div class="flex items-center">
+                <i class="far fa-clock mr-2 text-gray-400"></i>
+                <span>{{ evento.hora }}</span>
+              </div>
+              {% endif %}
+
+              <div class="flex items-center">
+                <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+                <span>{{ evento.local or evento.cidade }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Featured Image (Sharp Corners) -->
+          <div class="my-10">
+            {% if evento.imagem %}
+            {% set img_path = evento.imagem|trim %}
+            {% if img_path.lower().startswith('http') %}
+            <img class="w-full aspect-video object-cover" src="{{ img_path }}" alt="{{ evento.titulo }}" />
+            {% else %}
+            <img class="w-full aspect-video object-cover" src="{{ url_for('static', filename=img_path) }}"
+              alt="{{ evento.titulo }}" />
+            {% endif %}
+            {% else %}
+            <img class="w-full aspect-video object-cover"
+              src="{{ url_for('static', filename=random_image('leitura' if 'leitura' in (evento.categoria_nome|lower or '') else 'teatro')) }}"
+              alt="{{ evento.titulo }}" />
+            {% endif %}
+          </div>
+
+          <!-- Galeria de Fotos (Se existirem mais de uma) -->
+          {% if fotos|length > 1 %}
+          <div class="mb-16">
+            <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-orange-500 mb-6">Galeria do Evento</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {% for f in fotos %}
+              <div class="aspect-square overflow-hidden group bg-gray-100 cursor-pointer" onclick="openLightbox('{{ url_for('static', filename=f.imagem) }}')">
+                <img src="{{ url_for('static', filename=f.imagem) }}"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  alt="{{ f.titulo or evento.titulo }}">
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Simple Lightbox -->
+          <div id="lightbox" class="fixed inset-0 bg-black/90 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm" onclick="this.classList.add('hidden')">
+            <img id="lightbox-img" src="" class="max-w-full max-h-full shadow-2xl border-4 border-white/10" alt="Gallery image">
+            <button class="absolute top-8 right-8 text-white text-3xl hover:text-orange-500 transition-colors"><i class="fas fa-times"></i></button>
+          </div>
+
+          <script>
+            function openLightbox(src) {
+              document.getElementById('lightbox-img').src = src;
+              document.getElementById('lightbox').classList.remove('hidden');
+              document.getElementById('lightbox').classList.add('flex');
+            }
+          </script>
+          {% endif %}
+
+          <!-- Body -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div class="lg:col-span-8">
+              <div class="prose max-w-none prose-lg prose-headings:font-serif">
+                <h2 class="text-3xl font-serif font-bold mb-8 text-[#1a1a1a]">Sobre o Evento</h2>
+                <div class="whitespace-pre-line text-gray-700 leading-relaxed text-lg mb-12">
+                  {{ evento.descricao or 'Sem descrição disponível para este evento.' }}
+                </div>
+
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="my-6 p-4 rounded-sm border text-sm font-medium
+                      {% if category == 'success' %}bg-green-50 border-green-200 text-green-800
+                      {% elif category == 'error' %}bg-red-50 border-red-200 text-red-800
+                      {% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %}">
+                  <i
+                    class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} mr-2"></i>
+                  {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <!-- Bilheteira / Inscrição -->
+                {% if evento.tipo == 'interno' %}
+                <div id="registration-action-container"
+                  class="mt-12 bg-gray-50 p-8 rounded-sm shadow-sm border border-gray-100">
+                  <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-500 mb-4">Inscrição Exclusiva
+                    ISPGAYA</p>
+                  <h3 class="text-2xl font-serif font-bold mb-6">Garante o teu lugar neste evento</h3>
+
+                  <div id="registration-button-wrapper">
+                    {% if bilhetes_disponiveis is none or bilhetes_disponiveis > 0 %}
+                    <a href="{{ url_for('frontoffice.inscrever_evento_form', evento_id=evento.id) }}"
+                      class="inline-flex items-center bg-orange-500 text-white font-bold uppercase tracking-widest text-sm px-10 py-5 rounded-sm shadow-xl hover:bg-orange-600 hover:-translate-y-1 transition-all no-underline">
+                      Inscrever-me Agora <i class="fas fa-id-card ml-3"></i>
+                    </a>
+                    {% else %}
+                    <div
+                      class="inline-flex items-center bg-gray-200 text-gray-500 font-bold uppercase tracking-widest text-sm px-10 py-5 rounded-sm">
+                      Esgotado <i class="fas fa-ban ml-3"></i>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+                {% else %}
+                <div class="mt-12 flex flex-wrap gap-4">
+                  {% if evento.link_bilheteira %}
+                  <a href="{{ evento.link_bilheteira }}" target="_blank"
+                    class="inline-flex items-center bg-orange-500 text-white font-bold uppercase tracking-widest text-sm px-10 py-5 rounded-sm shadow-xl hover:bg-orange-600 hover:-translate-y-1 transition-all no-underline">
+                    Comprar Bilhete <i class="fas fa-ticket-alt ml-3"></i>
+                  </a>
+                  {% endif %}
+                  {% if evento.link_externo %}
+                  <a href="{{ evento.link_externo }}" target="_blank"
+                    class="inline-flex items-center bg-white border-2 border-gray-100 text-gray-700 font-bold uppercase tracking-widest text-sm px-10 py-5 rounded-sm shadow-sm hover:border-orange-400 hover:text-orange-500 transition-all no-underline">
+                    Saber Mais <i class="fas fa-info-circle ml-3"></i>
+                  </a>
+                  {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Calendar Section -->
+                <div class="mt-10 border-t border-gray-200 pt-6">
+                  <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">Adicionar ao Calendário
+                  </p>
+                  <div class="flex flex-wrap gap-3">
+                    <button onclick="addToGoogleCalendar()" style="border-radius: 0;"
+                      class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 text-sm font-semibold px-5 py-2.5 hover:border-orange-500 hover:text-orange-500 transition-colors bg-white uppercase tracking-wider">
+                      <i class="fab fa-google text-xs"></i> Google Calendar
+                    </button>
+                    <a href="{{ url_for('frontoffice.export_calendar', tipo='evento', item_id=evento.id) }}"
+                      style="border-radius: 0;"
+                      class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 text-sm font-semibold px-5 py-2.5 hover:border-orange-500 hover:text-orange-500 transition-colors bg-white uppercase tracking-wider no-underline">
+                      <i class="fas fa-file-download text-xs"></i> Outlook / Apple
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Detail Sidebar -->
+            <div class="lg:col-span-4 space-y-6">
+              <div class="bg-white border border-gray-100 p-6 rounded-sm shadow-lg sticky top-32">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 border-b pb-2">Informações
+                </h3>
+                <ul class="space-y-4 text-sm">
+                  <li class="flex flex-col border-b border-gray-50 pb-2 text-gray-600">
+                    <span class="font-bold">Localização</span>
+                    <span class="mt-1">{{ evento.local or evento.cidade }}</span>
+                    {% if evento.local_morada %}
+                    <span class="text-[10px] text-gray-400 font-medium uppercase tracking-tight mt-1">{{
+                      evento.local_morada }}</span>
+                    {% endif %}
+                  </li>
+
+                  <li class="flex justify-between border-b border-gray-50 pb-2 text-gray-600">
+                    <span class="font-bold">Preço</span>
+                    <span class="text-orange-500 font-bold">
+                      {% if evento.tipo_ingresso != 'pago' %}Gratuito
+                      {% else %}€{{ "%.2f"|format(evento.preco|float) }}{% endif %}
+                    </span>
+                  </li>
+
+                  {% if evento.local_capacidade %}
+                  <li class="flex justify-between border-b border-gray-50 pb-2 text-gray-600">
+                    <span class="font-bold">Capacidade</span>
+                    <span>{{ evento.local_capacidade }} lugares</span>
+                  </li>
+                  {% endif %}
+
+                  {% if bilhetes_disponiveis is not none %}
+                  <li class="flex justify-between border-b border-gray-50 pb-2 text-gray-600">
+                    <span class="font-bold">Disponibilidade</span>
+                    <span id="sidebar-availability-value"
+                      class="transition-all duration-500 {% if bilhetes_disponiveis == 0 %}text-red-500 font-bold{% endif %}">
+                      {{ bilhetes_disponiveis if bilhetes_disponiveis > 0 else "Esgotado" }}{% if bilhetes_disponiveis >
+                      0 %} vagas{% endif %}
+                    </span>
+                  </li>
+                  {% endif %}
+                </ul>
+
+                <div class="mt-8">
+                  <p class="text-[10px] uppercase font-bold text-gray-400 mb-4 tracking-tighter">Partilhar evento</p>
+                  <div class="flex gap-4">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url|urlencode }}" target="_blank"
+                      class="w-10 h-10 flex items-center justify-center rounded-sm bg-gray-50 text-gray-400 hover:bg-black hover:text-white transition-all"><i
+                        class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/intent/tweet?url={{ request.url|urlencode }}&text={{ evento.titulo|urlencode }}"
+                      target="_blank"
+                      class="w-10 h-10 flex items-center justify-center rounded-sm bg-gray-50 text-gray-400 hover:bg-black hover:text-white transition-all"><i
+                        class="fab fa-twitter"></i></a>
+                    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url|urlencode }}"
+                      target="_blank"
+                      class="w-10 h-10 flex items-center justify-center rounded-sm bg-gray-50 text-gray-400 hover:bg-black hover:text-white transition-all"><i
+                        class="fab fa-linkedin-in"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Related Content -->
+          {% if outros_eventos %}
+          <div class="mt-32">
+            <h3 class="font-bold font-serif text-3xl mb-10 border-b-2 border-orange-100 pb-4">Outros Eventos</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {% for outro in outros_eventos %}
+              <div class="group">
+                <div class="aspect-video rounded-sm overflow-hidden shadow-xl mb-4">
+                  <a href="{{ url_for('frontoffice.evento_detalhe', evento_id=outro.id) }}">
+                    {% if outro.imagem %}
+                    {% set o_img_path = outro.imagem|trim %}
+                    <img
+                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                      src="{{ o_img_path if o_img_path.lower().startswith('http') else url_for('static', filename=o_img_path) }}"
+                      alt="{{ outro.titulo }}" />
+                    {% else %}
+                    <img
+                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                      src="{{ url_for('static', filename=random_image('leitura' if 'leitura' in (outro.categoria_nome|lower or '') else 'teatro')) }}"
+                      alt="{{ outro.titulo }}" />
+                    {% endif %}
+                  </a>
+                </div>
+                <h4 class="font-bold text-xl leading-tight mb-2 group-hover:text-orange-500 transition-colors">
+                  <a href="{{ url_for('frontoffice.evento_detalhe', evento_id=outro.id) }}">{{ outro.titulo }}</a>
+                </h4>
+                <div class="text-xs font-bold uppercase tracking-wider text-gray-400">
+                  {{ outro.data_evento.strftime('%d %b %Y') if outro.data_evento else '' }}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+        </article>
+
+        <script>
+          function addToGoogleCalendar() {
+            const title = "{{ evento.titulo|e }}";
+            const location = "{{ (evento.local or evento.cidade or '')|e }}";
+            const details = "{{ (evento.descricao or '')|e }}".substring(0, 500);
+
+            // Formatação de data robusta
+            const dateStr = "{{ evento.data_evento.strftime('%Y-%m-%d') if evento.data_evento else '' }}";
+            const timeStr = "{{ evento.hora or '00:00' }}";
+
+            if (!dateStr) return;
+
+            const startDt = new Date(dateStr + 'T' + timeStr);
+            const endDt = new Date(startDt.getTime() + (2 * 60 * 60 * 1000)); // +2 horas
+
+            const formatICS = (date) => date.toISOString().replace(/-|:|\.\d+/g, '');
+
+            const start = formatICS(startDt);
+            const end = formatICS(endDt);
+
+            const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${end}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}&sf=true&output=xml`;
+
+            window.open(url, '_blank');
+          }
+
+          // --- Real-time Availability Polling ---
+          {% if evento.tipo == 'interno' and evento.limite_bilhetes is not none %}
+          const EVENTO_ID = {{ evento.id }};
+          const INSCRICAO_URL = "{{ url_for('frontoffice.inscrever_evento_form', evento_id=evento.id) }}";
+
+          async function checkAvailability() {
+            try {
+              const response = await fetch(`/api/v1/eventos/${EVENTO_ID}/disponibilidade`);
+              const data = await response.json();
+
+              if (data.error) return;
+
+              // Atualizar Sidebar
+              const sidebarVal = document.getElementById('sidebar-availability-value');
+              if (sidebarVal) {
+                const newValue = data.disponivel ? `${data.vagas_restantes} vagas` : "Esgotado";
+                if (sidebarVal.innerText !== String(newValue)) {
+                  sidebarVal.innerText = newValue;
+                  sidebarVal.classList.add('scale-110', 'text-orange-500');
+                  setTimeout(() => sidebarVal.classList.remove('scale-110', 'text-orange-500'), 1000);
+
+                  if (!data.disponivel) {
+                    sidebarVal.classList.add('text-red-500', 'font-bold');
+                  } else {
+                    sidebarVal.classList.remove('text-red-500', 'font-bold');
+                  }
+                }
+              }
+
+              // Atualizar Botão de Inscrição
+              const btnWrapper = document.getElementById('registration-button-wrapper');
+              if (btnWrapper) {
+                const currentlyEsgotado = btnWrapper.innerText.includes('Esgotado');
+
+                if (data.disponivel && currentlyEsgotado) {
+                  // Voltou a ter vagas!
+                  btnWrapper.innerHTML = `
+                    <a href="${INSCRICAO_URL}" class="inline-flex items-center bg-orange-500 text-white font-bold uppercase tracking-widest text-sm px-10 py-5 rounded-sm shadow-xl hover:bg-orange-600 hover:-translate-y-1 transition-all no-underline">
+                      Inscrever-me Agora <i class="fas fa-id-card ml-3"></i>
+                    </a>`;
+                } else if (!data.disponivel && !currentlyEsgotado) {
+                  // Acabou de esgotar!
+                  btnWrapper.innerHTML = `
+                    <div class="inline-flex items-center bg-gray-200 text-gray-500 font-bold uppercase tracking-widest text-sm px-10 py-5 rounded-sm">
+                      Esgotado <i class="fas fa-ban ml-3"></i>
+                    </div>`;
+                }
+              }
+            } catch (err) {
+              console.error("Erro ao verificar disponibilidade:", err);
+            }
+          }
+
+          // Verificar a cada 10 segundos
+          setInterval(checkAvailability, 10000);
+          {% endif %}
+        </script>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    {% include 'includes/footer.html' %}
+  </div>
+</body>
+
+</html>

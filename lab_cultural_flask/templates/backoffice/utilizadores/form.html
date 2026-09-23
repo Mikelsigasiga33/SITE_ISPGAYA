@@ -1,0 +1,441 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}{{ 'Editar' if modo == 'editar' else 'Novo' }} Utilizador{% endblock %}
+{% block page_title %}{{ 'Editar' if modo == 'editar' else 'Novo' }} Utilizador{% endblock %}
+
+{% block bo_content %}
+<div class="bo-form-container">
+
+    <div class="bo-form-header">
+        <div class="bo-form-header__icon">
+            <i class="fas fa-user-plus"></i>
+        </div>
+        <div class="bo-form-header__text">
+            <h2>{{ 'Editar Utilizador' if modo == 'editar' else 'Criar Novo Utilizador' }}</h2>
+            <p>{{ 'Atualize os dados deste utilizador.' if modo == 'editar' else 'Adicione um novo administrador ou gestor ao backoffice.' }}</p>
+        </div>
+    </div>
+
+    <div class="bo-form-card">
+        {% if erros %}
+        <div class="bo-flash bo-flash--error" style="margin-bottom:1.5rem;">
+            <i class="fas fa-exclamation-circle"></i>
+            {% for erro in erros %}{{ erro }}<br>{% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="bo-form" autocomplete="off">
+            <!-- Dummy inputs to prevent Chrome/Windows autofill -->
+            <input type="text" style="display:none;" name="dummy_username">
+            <input type="password" style="display:none;" name="dummy_password">
+
+            <div class="bo-form__group">
+                <label for="nome">Nome Completo *</label>
+                <input type="text" id="nome" name="nome" value="{{ dados.get('nome', '') }}" required
+                    placeholder="Ex: João Silva">
+            </div>
+
+            <div class="bo-form__section"><i class="fas fa-key"></i> Credenciais</div>
+
+            <div class="bo-form__row">
+                <div class="bo-form__group">
+                    <label for="username">Username *</label>
+                    <input type="text" id="username" name="username" value="{{ dados.get('username', '') }}" required
+                        placeholder="Ex: joao.silva">
+                </div>
+                <div class="bo-form__group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" value="{{ dados.get('email', '') }}" required
+                        placeholder="Ex: joao@ispgaya.pt">
+                </div>
+            </div>
+
+            <style>
+            /* CSS para o Validador de Password Premium */
+            .password-input-wrapper {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
+            .password-input-wrapper input {
+                width: 100%;
+                padding-right: 45px !important;
+            }
+
+            .toggle-password-btn {
+                position: absolute;
+                right: 12px;
+                background: none;
+                border: none;
+                color: #94a3b8;
+                cursor: pointer;
+                font-size: 1.1rem;
+                padding: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: color 0.2s, transform 0.1s;
+                outline: none;
+                z-index: 10;
+            }
+
+            .toggle-password-btn:hover {
+                color: #2563eb;
+            }
+
+            .toggle-password-btn:active {
+                transform: scale(0.9);
+            }
+
+            .password-strength-container {
+                margin-top: 10px;
+                padding: 12px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+                animation: fadeIn 0.2s ease;
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-5px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .password-strength-bar {
+                height: 6px;
+                background: #e2e8f0;
+                border-radius: 3px;
+                overflow: hidden;
+                margin-bottom: 8px;
+            }
+
+            .password-strength-bar-progress {
+                height: 100%;
+                width: 0%;
+                border-radius: 3px;
+                transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+            }
+
+            .password-strength-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.85rem;
+                color: #475569;
+                margin-bottom: 8px;
+            }
+
+            .password-strength-label strong {
+                font-weight: 700;
+                transition: color 0.3s;
+            }
+
+            .password-score-label {
+                font-weight: 600;
+                color: #64748b;
+            }
+
+            .password-problems-list {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                font-size: 0.8rem;
+                color: #ef4444;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .password-problems-list li {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                animation: slideIn 0.2s ease;
+            }
+
+            @keyframes slideIn {
+                from { opacity: 0; transform: translateX(-5px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+
+            .password-problems-list li i {
+                font-size: 0.85rem;
+                flex-shrink: 0;
+            }
+
+            /* Classes dinâmicas para a barra e texto */
+            .strength-fraca {
+                background-color: #ef4444 !important;
+            }
+            .strength-media {
+                background-color: #f59e0b !important;
+            }
+            .strength-forte {
+                background-color: #10b981 !important;
+            }
+            .strength-muito-forte {
+                background-color: #059669 !important;
+            }
+
+            .text-fraca {
+                color: #ef4444;
+            }
+            .text-media {
+                color: #d97706;
+            }
+            .text-forte {
+                color: #10b981;
+            }
+            .text-muito-forte {
+                color: #059669;
+            }
+            </style>
+
+            <div class="bo-form__group">
+                <label for="password">Password {{ '(deixar vazio para manter)' if modo == 'editar' else '*' }}</label>
+                <div class="password-input-wrapper">
+                    <input type="text" id="password" name="password"
+                        {{ 'required' if modo == 'criar' else '' }}
+                        autocomplete="off"
+                        style="-webkit-text-security: disc; text-security: disc;"
+                        placeholder="{{ '••••••••' if modo == 'editar' else 'Min. 8 caracteres' }}">
+                    <button type="button" id="toggle-password-visibility" class="toggle-password-btn" title="Mostrar/Ocultar password">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+                
+                <!-- Password Strength Meter -->
+                <div class="password-strength-container" id="password-strength-container" style="display: none;">
+                    <div class="password-strength-bar">
+                        <div class="password-strength-bar-progress" id="password-strength-progress"></div>
+                    </div>
+                    <div class="password-strength-header">
+                        <span class="password-strength-label">Força da password: <strong id="password-strength-text" class="text-fraca">Fraca</strong></span>
+                        <span class="password-score-label"><span id="password-score-number">0</span>/6</span>
+                    </div>
+                    <ul class="password-problems-list" id="password-problems-list">
+                        <!-- Problems will be dynamically listed here -->
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bo-form__section"><i class="fas fa-shield-alt"></i> Permissões</div>
+
+            <div class="bo-form__row">
+                <div class="bo-form__group">
+                    <label for="role">Perfil / Role *</label>
+                    <select id="role" name="role" required onchange="toggleClubeField()">
+                        <option value="admin" {{ 'selected' if dados.get('role') == 'admin' }}>🛡️ Admin Global</option>
+                        <option value="conteudo" {{ 'selected' if dados.get('role') == 'conteudo' }}>📝 Gestor de Conteúdo</option>
+                        <option value="noticias" {{ 'selected' if dados.get('role') == 'noticias' }}>📰 Gestor de Notícias</option>
+                        <option value="leitura" {{ 'selected' if dados.get('role') == 'leitura' }}>📚 Clube de Leitura</option>
+                        <option value="teatro" {{ 'selected' if dados.get('role') == 'teatro' }}>🎭 Clube de Teatro</option>
+                        <option value="tuna" {{ 'selected' if dados.get('role') == 'tuna' }}>🎵 Tuna Académica</option>
+                    </select>
+                </div>
+                <div class="bo-form__group" id="clube-field" style="display:none;">
+                    <label for="clube_id">Clube Associado</label>
+                    <select id="clube_id" name="clube_id">
+                        <option value="">— Nenhum —</option>
+                        {% for c in clubes %}
+                        <option value="{{ c.id }}" {{ 'selected' if dados.get('clube_id') == c.id }}>
+                            {{ c.icone }} {{ c.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="bo-form__actions">
+                <a href="{{ url_for('backoffice.listar_utilizadores') }}" class="bo-btn-cancel">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </a>
+                <button type="submit" class="bo-btn-submit">
+                    <i class="fas fa-save"></i> {{ 'Guardar Alterações' if modo == 'editar' else 'Criar Utilizador' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleClubeField() {
+    const roleSelect = document.getElementById('role');
+    const clubeField = document.getElementById('clube-field');
+    if (roleSelect && clubeField) {
+        const role = roleSelect.value;
+        if (['leitura', 'teatro', 'tuna'].includes(role)) {
+            clubeField.style.display = 'block';
+        } else {
+            clubeField.style.display = 'none';
+            const clubeSelect = document.getElementById('clube_id');
+            if (clubeSelect) clubeSelect.value = '';
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar o campo do clube
+    toggleClubeField();
+
+    // Password evaluation logic
+    const passwordInput = document.getElementById('password');
+    const toggleBtn = document.getElementById('toggle-password-visibility');
+    const container = document.getElementById('password-strength-container');
+    const progressBar = document.getElementById('password-strength-progress');
+    const labelText = document.getElementById('password-strength-text');
+    const scoreNumber = document.getElementById('password-score-number');
+    const problemsList = document.getElementById('password-problems-list');
+    const form = document.querySelector('form.bo-form');
+    const submitBtn = document.querySelector('.bo-btn-submit');
+    const isEditMode = '{{ modo }}' === 'editar';
+
+    let debounceTimer;
+    let isPasswordValid = isEditMode; // true by default on edit mode (since blank means keep current)
+
+    // Detect webkit-text-security support
+    const supportsTextSecurity = ('webkitTextSecurity' in document.documentElement.style) || ('textSecurity' in document.documentElement.style);
+    if (!supportsTextSecurity && passwordInput) {
+        passwordInput.type = 'password';
+    }
+
+    // Toggle Visibility
+    if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', () => {
+            if (passwordInput.type === 'password') {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                toggleBtn.innerHTML = isPassword ? '<i class="far fa-eye-slash"></i>' : '<i class="far fa-eye"></i>';
+            } else {
+                const isMasked = passwordInput.style.webkitTextSecurity !== 'none';
+                passwordInput.style.webkitTextSecurity = isMasked ? 'none' : 'disc';
+                passwordInput.style.textSecurity = isMasked ? 'none' : 'disc';
+                toggleBtn.innerHTML = isMasked ? '<i class="far fa-eye-slash"></i>' : '<i class="far fa-eye"></i>';
+            }
+        });
+    }
+
+    // Debounced Evaluation
+    if (passwordInput) {
+        passwordInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            const val = passwordInput.value;
+
+            if (!val) {
+                container.style.display = 'none';
+                isPasswordValid = isEditMode;
+                updateSubmitState();
+                return;
+            }
+
+            container.style.display = 'block';
+            debounceTimer = setTimeout(() => evaluatePassword(val), 250);
+        });
+    }
+
+    async function evaluatePassword(password) {
+        try {
+            const response = await fetch('/api/v1/avaliar-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ password })
+            });
+
+            if (!response.ok) return;
+            const data = await response.json();
+
+            const strength = data.classificacao; // 'Fraca', 'Média', 'Forte', 'Muito forte'
+            const score = data.pontuacao; // 0 a 6
+            const problems = data.problemas || [];
+
+            // Update UI elements
+            scoreNumber.textContent = score;
+            labelText.textContent = strength;
+            
+            // Clean previous classes
+            progressBar.className = 'password-strength-bar-progress';
+            labelText.className = '';
+
+            let widthPercent = 0;
+            let strengthClass = '';
+            let textClass = '';
+
+            if (strength === 'Fraca') {
+                widthPercent = 25;
+                strengthClass = 'strength-fraca';
+                textClass = 'text-fraca';
+                isPasswordValid = false;
+            } else if (strength === 'Média') {
+                widthPercent = 50;
+                strengthClass = 'strength-media';
+                textClass = 'text-media';
+                isPasswordValid = true;
+            } else if (strength === 'Forte') {
+                widthPercent = 75;
+                strengthClass = 'strength-forte';
+                textClass = 'text-forte';
+                isPasswordValid = true;
+            } else if (strength === 'Muito forte') {
+                widthPercent = 100;
+                strengthClass = 'strength-muito-forte';
+                textClass = 'text-muito-forte';
+                isPasswordValid = true;
+            }
+
+            progressBar.style.width = widthPercent + '%';
+            progressBar.classList.add(strengthClass);
+            labelText.classList.add(textClass);
+
+            // Update problems list
+            problemsList.innerHTML = '';
+            if (problems.length > 0) {
+                problems.forEach(prob => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span>${prob}</span>`;
+                    problemsList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.style.color = '#10b981';
+                li.innerHTML = `<i class="fas fa-check-circle"></i> <span>Excelente! A password cumpre todos os requisitos.</span>`;
+                problemsList.appendChild(li);
+            }
+
+            updateSubmitState();
+
+        } catch (e) {
+            console.error('Erro ao avaliar password:', e);
+        }
+    }
+
+    function updateSubmitState() {
+        if (submitBtn) {
+            if (!isPasswordValid) {
+                submitBtn.setAttribute('disabled', 'true');
+                submitBtn.style.opacity = '0.6';
+                submitBtn.style.cursor = 'not-allowed';
+                submitBtn.title = 'A password introduzida é muito fraca.';
+            } else {
+                submitBtn.removeAttribute('disabled');
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.title = '';
+            }
+        }
+    }
+
+    // Prevenir submit via formulário se inválido
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            if (!isPasswordValid) {
+                e.preventDefault();
+                alert('Por favor, defina uma password mais forte antes de guardar.');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Mensagens de Contacto{% endblock %}
+{% block page_title %}Mensagens de Contacto{% endblock %}
+
+{% block bo_content %}
+<div class="bo-list-section">
+    <div class="bo-list-header">
+        <div class="bo-list-header__left">
+            <div class="bo-list-header__icon"><i class="fas fa-envelope"></i></div>
+            <h2>Mensagens Recebidas <span>({{ mensagens|length }})</span></h2>
+        </div>
+    </div>
+
+    {% if mensagens %}
+    <div class="bo-table-wrapper" style="margin-top: 2rem;">
+        <table class="bo-table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Remetente</th>
+                    <th>Mensagem</th>
+                    <th class="text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for msg in mensagens %}
+                <tr>
+                    <td style="white-space: nowrap; font-size: 0.85rem; color: var(--bo-muted);">
+                        {{ msg.criado_em.strftime('%d/%m/%Y %H:%M') if msg.criado_em else '—' }}
+                    </td>
+                    <td>
+                        <div style="font-weight: 600; color: var(--bo-text);">{{ msg.nome }}</div>
+                        <div style="font-size: 0.8rem; color: var(--bo-muted);">{{ msg.email }}</div>
+                    </td>
+                    <td style="max-width: 400px;">
+                        <div style="font-size: 0.9rem; line-height: 1.5; color: var(--bo-text-soft);">
+                            {{ msg.mensagem }}
+                        </div>
+                    </td>
+                    <td class="bo-table__actions text-right">
+                        <div class="flex items-center gap-2">
+                            <!-- Link Default (Agora também Outlook Web por ser mais fiável) -->
+                            <a href="https://outlook.office.com/mail/deeplink/compose?to={{ msg.email }}&subject=Resposta ao seu contacto - Lab Cultural&body=%0D%0A%0D%0A--- Mensagem Original ---%0D%0A{{ msg.mensagem|truncate(300)|urlencode }}"
+                                class="bo-btn-view" title="Responder (Outlook Web)" target="_blank">
+                                <i class="fas fa-reply"></i>
+                            </a>
+                        </div>
+
+                        <form method="POST" action="{{ url_for('backoffice.eliminar_mensagem', msg_id=msg.id) }}"
+                            onsubmit="return confirm('Tem a certeza que deseja eliminar esta mensagem?')"
+                            style="display:inline; margin-left: 8px;">
+                            <button type="submit" class="bo-btn-delete" title="Eliminar">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="bo-list-empty">
+        <div class="bo-list-empty__icon"><i class="fas fa-envelope-open"></i></div>
+        <h3>Sem mensagens</h3>
+        <p>Ainda não foram recebidas mensagens através do formulário da homepage.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

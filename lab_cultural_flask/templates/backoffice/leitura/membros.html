@@ -1,0 +1,72 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Membros - Clube de Leitura{% endblock %}
+{% block page_title %}Membros do Clube de Leitura{% endblock %}
+
+{% block bo_content %}
+<div class="bo-card" style="margin-bottom: 2rem;">
+    <div class="bo-card-header">
+        <h3><i class="fas fa-users"></i> Lista de Membros e Interessados</h3>
+        <a href="{{ url_for('backoffice.listar_livros') }}" class="bo-btn bo-btn--outline">Voltar</a>
+    </div>
+    
+    <div class="bo-card-body p-0">
+        <div class="bo-table-container">
+            <table class="bo-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email Institucional</th>
+                        <th>Data de Pedido</th>
+                        <th>Estado</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in membros %}
+                    <tr>
+                        <td>#{{ m.id }}</td>
+                        <td><strong>{{ m.nome }}</strong></td>
+                        <td><a href="mailto:{{ m.email }}" style="color: #f97316; font-weight: 500;">{{ m.email }}</a></td>
+                        <td>{{ m.criado_em.strftime('%d/%m/%Y %H:%M') if m.criado_em else 'N/A' }}</td>
+                        <td>
+                            {% if m.estado == 'Pendente' %}
+                                <span class="bo-badge" style="background:#fef3c7; color:#d97706;">Pendente</span>
+                            {% elif m.estado == 'Aceite' %}
+                                <span class="bo-badge" style="background:#d1fae5; color:#059669;">Aceite</span>
+                            {% else %}
+                                <span class="bo-badge" style="background:#fee2e2; color:#dc2626;">Recusado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if m.estado == 'Pendente' %}
+                            <div style="display:flex; gap:5px;">
+                                <form method="POST" action="{{ url_for('backoffice.acao_membro_leitura', membro_id=m.id) }}">
+                                    <input type="hidden" name="acao" value="Aceite">
+                                    <button type="submit" class="bo-btn" style="background:#059669; color:white; padding:4px 8px; font-size:12px; border:none; border-radius:4px; cursor:pointer;" onclick="return confirm('Aceitar este membro e enviar email?')">
+                                        <i class="fas fa-check"></i> Aceitar
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ url_for('backoffice.acao_membro_leitura', membro_id=m.id) }}">
+                                    <input type="hidden" name="acao" value="Recusado">
+                                    <button type="submit" class="bo-btn" style="background:#dc2626; color:white; padding:4px 8px; font-size:12px; border:none; border-radius:4px; cursor:pointer;" onclick="return confirm('Recusar este membro e enviar email?')">
+                                        <i class="fas fa-times"></i> Recusar
+                                    </button>
+                                </form>
+                            </div>
+                            {% else %}
+                                <span style="font-size:12px; color:#9ca3af;">Respondido</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem;">Ainda não há membros ou interessados no Clube de Leitura.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

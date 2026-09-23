@@ -1,0 +1,81 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Clubes{% endblock %}
+{% block page_title %}Clubes{% endblock %}
+
+{% block bo_content %}
+
+<div class="bo-section-header">
+    <h2 class="bo-section-title">Gerir Clubes</h2>
+    <a href="{{ url_for('backoffice.criar_clube') }}" class="bo-btn bo-btn--primary">
+        <i class="fas fa-plus-circle"></i> Novo Clube
+    </a>
+</div>
+
+{% if clubes %}
+<div class="bo-table-wrapper">
+    <table class="bo-table">
+        <thead>
+            <tr>
+                <th>Ícone</th>
+                <th>Nome</th>
+                <th>Slug (URL)</th>
+                <th>Local</th>
+                <th>Horário</th>
+                <th>Estado</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in clubes %}
+            <tr>
+                <td style="font-size:1.5rem;">{{ c.icone }}</td>
+                <td><strong>{{ c.nome }}</strong></td>
+                <td>
+                    <a href="{{ url_for('frontoffice.clube_dinamico', slug=c.slug) }}" target="_blank"
+                        style="color: var(--blue-500);">
+                        /clube/{{ c.slug }} <i class="fas fa-external-link-alt" style="font-size:0.75rem;"></i>
+                    </a>
+                </td>
+                <td>{{ c.local_reuniao or '—' }}</td>
+                <td>{{ c.horario or '—' }}</td>
+                <td>
+                    {% if c.ativo %}
+                    <span style="color: #059669;">● Ativo</span>
+                    {% else %}
+                    <span style="color: #dc2626;">● Inativo</span>
+                    {% endif %}
+                </td>
+                <td class="bo-table__actions">
+                    <a href="{{ url_for('backoffice.editar_clube', clube_id=c.id) }}" class="bo-btn-edit" title="Editar">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+
+                    <form method="POST" action="{{ url_for('backoffice.alternar_estado_clube', clube_id=c.id) }}"
+                        style="display:inline;">
+                        <button type="submit" class="bo-btn-status" title="{{ 'Desativar' if c.ativo else 'Ativar' }}"
+                            style="background: none; border: none; color: {{ '#d97706' if c.ativo else '#059669' }}; cursor: pointer; padding: 4px 8px; font-size: 1rem;">
+                            <i class="fas {{ 'fa-eye-slash' if c.ativo else 'fa-eye' }}"></i>
+                        </button>
+                    </form>
+
+                    <form method="POST" action="{{ url_for('backoffice.eliminar_clube', clube_id=c.id) }}"
+                        onsubmit="return confirm('ATENÇÃO: Este clube será eliminado permanentemente. Continuar?')" style="display:inline;">
+                        <button type="submit" class="bo-btn-delete" title="Eliminar Permanentemente">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div style="text-align:center; padding: 60px 24px;">
+    <div style="font-size:4rem; margin-bottom:1rem;">🎵</div>
+    <h3>Nenhum clube criado</h3>
+    <p style="color:var(--gray-500);">Crie o primeiro clube para gerar automaticamente uma página pública.</p>
+</div>
+{% endif %}
+
+{% endblock %}

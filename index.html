@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ensino superior politécnico com oferta formativa em CTeSP, Licenciaturas, Mestrados e Pós-Graduações.">
+  <title>Instituto Superior Politécnico Gaya — ISPGAYA</title>
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Lucide Icons via CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+  <!-- ============================================
+       TOP BAR
+       ============================================ -->
+  <div class="top-bar" id="top-bar">
+    <div class="container">
+      <div class="top-bar__left">
+        <a href="https://inforestudante.ispgaya.pt">Inforestudante</a>
+        <a href="https://infordocente.ispgaya.pt">Infordocente</a>
+        <a href="https://outlook.office.com">Email</a>
+        <a href="https://horarios.ispgaya.pt/geral/">Horários</a>
+      </div>
+      <div class="top-bar__right">
+        <a href="#faq">Perguntas Frequentes</a>
+        <a href="https://inforestudante.ispgaya.pt/nonio/security/preRegisto.do?origem=CANDIDATURAS">Candidatura Online</a>
+        <a href="#contactos">Contactos</a>
+        <div class="top-bar__lang">
+          <a href="#" class="active">PT</a>
+          <a href="#">EN</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       MAIN NAVIGATION
+       ============================================ -->
+  <nav class="main-nav" id="main-nav">
+    <div class="container">
+      <a href="#" class="main-nav__logo">
+        <img src="img/logo_ispgaya.png" alt="ISPGAYA Logo" class="main-nav__logo-img">
+      </a>
+
+      <div class="main-nav__menu" id="nav-menu">
+        <div class="main-nav__item">
+          <a href="#" class="main-nav__link">
+            Início
+          </a>
+        </div>
+
+        <!-- Instituição -->
+        <div class="main-nav__item">
+          <span class="main-nav__link">Instituição <span class="arrow">▾</span></span>
+          <div class="main-nav__dropdown">
+            <a href="#">O ISPGAYA</a>
+            <a href="#">Organização</a>
+            <a href="#">Corpo Docente</a>
+            <a href="#">Qualidade Institucional</a>
+            <a href="#">Ética e Boas Práticas</a>
+            <a href="#">Emprego e Recrutamento</a>
+            <a href="#">Título Especialista</a>
+            <a href="#">Contactos</a>
+          </div>
+        </div>
+
+        <!-- Ensino -->
+        <div class="main-nav__item">
+          <span class="main-nav__link">Ensino <span class="arrow">▾</span></span>
+          <div class="main-nav__dropdown">
+            <a href="#">Oferta Formativa</a>
+            <a href="#">Programas Avançados</a>
+            <a href="#">Candidaturas</a>
+            <a href="#">Bolsas e Financiamento</a>
+            <a href="#">Academica Cisco</a>
+          </div>
+        </div>
+
+        <!-- Empregabilidade -->
+        <div class="main-nav__item">
+          <span class="main-nav__link">Empregabilidade <span class="arrow">▾</span></span>
+          <div class="main-nav__dropdown">
+            <a href="#">Estágios e Emprego</a>
+            <a href="#">Alumni</a>
+          </div>
+        </div>
+
+        <!-- Investigação -->
+        <div class="main-nav__item">
+          <span class="main-nav__link">Investigação <span class="arrow">▾</span></span>
+          <div class="main-nav__dropdown">
+            <a href="#">Publicações Científicas</a>
+            <a href="#">Atividades Científicas</a>
+            <a href="#">Biblioteca</a>
+            <a href="#">WIDESKILLS</a>
+            <a href="#">INSIGHT</a>
+            <a href="#">Politécnica</a>
+          </div>
+        </div>
+
+        <!-- Internacional -->
+        <div class="main-nav__item">
+          <span class="main-nav__link">Internacional <span class="arrow">▾</span></span>
+          <div class="main-nav__dropdown">
+            <a href="#">Estudantes Internacionais</a>
+            <a href="#">Erasmus+</a>
+            <a href="#">Guia ECTS</a>
+            <a href="#">Q-Helix Alliance</a>
+            <a href="#">AMBA e BGA</a>
+          </div>
+        </div>
+
+        <!-- Vida Académica -->
+        <div class="main-nav__item">
+          <span class="main-nav__link">Vida Académica <span class="arrow">▾</span></span>
+          <div class="main-nav__dropdown">
+            <a href="#">Notícias</a>
+            <a href="#">Eventos</a>
+            <a href="#">Estudante ISPGAYA</a>
+            <a href="#">Associação de Estudantes</a>
+            <a href="#">Tuna Académica</a>
+          </div>
+        </div>
+
+        <!-- Lab. Cultural -->
+        <div class="main-nav__item">
+          <span class="main-nav__link">Lab. Cultural <span class="arrow">▾</span></span>
+          <div class="main-nav__dropdown">
+            <a href="#">Laboratório Cultural</a>
+            <a href="#">Clube de Leitura</a>
+            <a href="#">Clube de Teatro</a>
+            <a href="#">Programação Cultural</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-nav__hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       HERO SECTION
+       ============================================ -->
+  <section class="hero" id="hero">
+    <div class="hero__bg">
+      <img src="img/hero-bg.png" alt="Campus ISPGAYA">
+    </div>
+    <div class="hero__overlay"></div>
+    <div class="hero__particles"></div>
+    
+    <div class="hero-split__container">
+      <!-- Esquerda: Título e Subtítulo -->
+      <div class="hero-split__left">
+        <h1 class="hero__title-split">
+          Bem-vindo ao Instituto Superior <span>Politécnico Gaya</span>
+        </h1>
+        
+        <p class="hero__subtitle-split">
+          Aqui, é onde o teu futuro começa! No ISPGAYA vais adquirir novos conhecimentos, 
+          desenvolver novas competências e experienciar um clima académico único.
+        </p>
+
+        <!-- Três pontos de paginação (Simulados) -->
+        <div class="hero-split__dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+
+      <!-- Direita: Lista de ofertar formativa -->
+      <div class="hero-split__right">
+        <p class="hero-split__intro">Fica a conhecer a nossa oferta formativa:</p>
+        <ul class="hero-split__list">
+          <li><a href="#">CTeSP</a></li>
+          <li><a href="#">Licenciaturas</a></li>
+          <li><a href="#">Mestrados</a></li>
+          <li><a href="#">Pós-Graduações</a></li>
+        </ul>
+      </div>
+
+      <!-- Descobre Mais flutuante ao fundo -->
+      <a href="#destaques" class="hero-split__discover">
+        Descobre Mais
+        <span class="circle-icon"><i class="fas fa-arrow-down"></i></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FEATURES SECTION
+       ============================================ -->
+  <section class="features" id="content-start">
+    <div class="container">
+      <div class="feature-card fade-in">
+        <div class="feature-card__decoration"></div>
+        <div class="feature-card__icon">🎓</div>
+        <h2 class="feature-card__title">Dinamiza as tuas capacidades connosco</h2>
+        <p class="feature-card__text">
+          Temos à tua disposição instalações modernas, estreita proximidade entre o corpo docente 
+          e os estudantes, assim como, um excelente ambiente académico.
+        </p>
+      </div>
+      
+      <div class="feature-card fade-in" style="transition-delay: 0.15s;">
+        <div class="feature-card__decoration"></div>
+        <div class="feature-card__icon">💼</div>
+        <h2 class="feature-card__title">O mercado de trabalho espera por ti</h2>
+        <p class="feature-card__text">
+          Temos como objetivo dar-te as ferramentas necessárias para criar uma carreira com significado 
+          e tomares as melhores decisões para a tua vida profissional e pessoal.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       HIGHLIGHTS SECTION
+       ============================================ -->
+  <section class="highlights" id="destaques">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-header__tag">Destaques</div>
+        <h2 class="section-header__title">Últimas Novidades</h2>
+        <p class="section-header__desc">
+          Acompanha as mais recentes novidades e conquistas do ISPGAYA
+        </p>
+      </div>
+      
+      <div class="highlights__carousel fade-in">
+        <button class="highlights__arrow highlights__arrow--prev" aria-label="Anterior">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="highlights__arrow highlights__arrow--next" aria-label="Próximo">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        
+        <div class="highlights__track">
+          <!-- Slide 1 -->
+          <div class="highlight-slide">
+            <div class="highlight-card">
+              <div class="highlight-card__image">
+                <div style="width:100%;height:100%;background:linear-gradient(135deg, #1a1f4e 0%, #2563eb 60%, #60a5fa 100%); display:flex;align-items:center;justify-content:center;">
+                  <div style="text-align:center;color:white;">
+                    <div style="font-size:4rem;margin-bottom:12px;">🏆</div>
+                    <div style="font-size:1.2rem;font-weight:700;letter-spacing:2px;">AMBA & BGA</div>
+                  </div>
+                </div>
+                <div class="highlight-card__image-gradient"></div>
+              </div>
+              <div class="highlight-card__content">
+                <span class="highlight-card__label">Destaque</span>
+                <h3 class="highlight-card__title">O ISPGAYA integra a AMBA e BGA</h3>
+                <p class="highlight-card__desc">
+                  ISPGAYA tem o orgulho de anunciar a sua filiação oficial na Association of MBAs (AMBA) 
+                  e na Business Graduates Association (BGA).
+                </p>
+                <a href="#" class="highlight-card__btn">
+                  Fica a saber mais <span>→</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Slide 2 -->
+          <div class="highlight-slide">
+            <div class="highlight-card">
+              <div class="highlight-card__image">
+                <div style="width:100%;height:100%;background:linear-gradient(135deg, #0d1137 0%, #1a1f4e 50%, #f59e0b 100%); display:flex;align-items:center;justify-content:center;">
+                  <div style="text-align:center;color:white;">
+                    <div style="font-size:4rem;margin-bottom:12px;">🎉</div>
+                    <div style="font-size:3rem;font-weight:800;">35</div>
+                    <div style="font-size:1rem;letter-spacing:3px;text-transform:uppercase;">Anos</div>
+                  </div>
+                </div>
+                <div class="highlight-card__image-gradient"></div>
+              </div>
+              <div class="highlight-card__content">
+                <span class="highlight-card__label">Aniversário</span>
+                <h3 class="highlight-card__title">35º Aniversário do ISPGAYA</h3>
+                <p class="highlight-card__desc">
+                  O ISPGAYA celebrou o seu 35º Aniversário! Desde 1990 a formar futuros profissionais 
+                  de excelência em Vila Nova de Gaia.
+                </p>
+                <a href="#" class="highlight-card__btn">
+                  Fica a saber mais <span>→</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Slide 3 -->
+          <div class="highlight-slide">
+            <div class="highlight-card">
+              <div class="highlight-card__image">
+                <div style="width:100%;height:100%;background:linear-gradient(135deg, #141844 0%, #14b8a6 60%, #22c55e 100%); display:flex;align-items:center;justify-content:center;">
+                  <div style="text-align:center;color:white;">
+                    <div style="font-size:4rem;margin-bottom:12px;">🌍</div>
+                    <div style="font-size:1.2rem;font-weight:700;letter-spacing:2px;">Q-HELIX</div>
+                  </div>
+                </div>
+                <div class="highlight-card__image-gradient"></div>
+              </div>
+              <div class="highlight-card__content">
+                <span class="highlight-card__label">Internacional</span>
+                <h3 class="highlight-card__title">O ISPGAYA junta-se à Q-Helix Alliance!</h3>
+                <p class="highlight-card__desc">
+                  É com grande satisfação que anunciamos que o ISPGAYA passou a integrar oficialmente a Q-Helix Alliance, 
+                  uma rede europeia dedicada ao reforço da cooperação no ensino superior, investigação e inovação.
+                </p>
+                <a href="#" class="highlight-card__btn">
+                  Fica a saber mais <span>→</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="highlights__dots">
+          <button class="highlights__dot active" aria-label="Slide 1"></button>
+          <button class="highlights__dot" aria-label="Slide 2"></button>
+          <button class="highlights__dot" aria-label="Slide 3"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STATS SECTION
+       ============================================ -->
+  <section class="stats" id="stats">
+    <div class="stats__bg-pattern"></div>
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-header__tag">Números</div>
+        <h2 class="section-header__title">Onde o Futuro Te Leva</h2>
+        <p class="section-header__desc">
+          Mais de três décadas de compromisso com a excelência no ensino superior
+        </p>
+      </div>
+      
+      <div class="stats__grid">
+        <div class="stat-card fade-in">
+          <div class="stat-card__number" data-target="36" data-suffix="">0</div>
+          <div class="stat-card__label">Anos de Experiência</div>
+          <p class="stat-card__desc">
+            Desde 1990 a formar futuros empreendedores. Somos uma instituição de ensino de referência 
+            há mais de 30 anos em Vila Nova de Gaia.
+          </p>
+        </div>
+        
+        <div class="stat-card fade-in" style="transition-delay: 0.15s;">
+          <div class="stat-card__number" data-target="3500" data-prefix="+" data-suffix="">0</div>
+          <div class="stat-card__label">Profissionais Formados</div>
+          <p class="stat-card__desc">
+            A formação continua a ser um dos nossos principais pilares. Já formamos mais de 3500 
+            profissionais de sucesso.
+          </p>
+        </div>
+        
+        <div class="stat-card fade-in" style="transition-delay: 0.3s;">
+          <div class="stat-card__number" data-target="200" data-prefix="+" data-suffix="">0</div>
+          <div class="stat-card__label">Empresas Parceiras</div>
+          <p class="stat-card__desc">
+            Temos protocolos celebrados com mais de 200 empresas que garantem a qualidade dos estágios 
+            e a integração dos estudantes no mercado de trabalho.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CTA SECTION
+       ============================================ -->
+  <section class="cta" id="candidaturas">
+    <div class="container">
+      <div class="cta__header fade-in">
+        <h2 class="cta__title">Ainda queres saber mais? Nós podemos ajudar-te.</h2>
+        <p class="cta__desc">
+          A candidatura ao ensino superior é um passo muito importante, é o ponto de partida para te tornares 
+          um profissional de sucesso. O ISPGAYA dispõe da modalidade de acesso ideal para ti.
+        </p>
+        <div class="cta__buttons">
+          <a href="https://inforestudante.ispgaya.pt/nonio/security/preRegisto.do?origem=CANDIDATURAS" class="btn-primary">
+            <i class="fas fa-paper-plane"></i> Candidatar-me
+          </a>
+          <a href="#" class="btn-secondary">
+            <i class="fas fa-info-circle"></i> Quero saber mais
+          </a>
+        </div>
+      </div>
+      
+      <div class="cta__cards">
+        <div class="cta-card fade-in">
+          <div class="cta-card__icon">📋</div>
+          <h3 class="cta-card__title">Quero Candidatar-me</h3>
+          <p class="cta-card__desc">
+            Sabias que podes realizar a tua candidatura online? Começa aqui a tua candidatura a um dos nossos cursos.
+          </p>
+          <a href="https://inforestudante.ispgaya.pt/nonio/security/preRegisto.do?origem=CANDIDATURAS" class="cta-card__link">
+            Ver mais <span>→</span>
+          </a>
+        </div>
+        
+        <div class="cta-card fade-in" style="transition-delay: 0.15s;">
+          <div class="cta-card__icon">💰</div>
+          <h3 class="cta-card__title">Bolsas e Apoios</h3>
+          <p class="cta-card__desc">
+            Sabias que podes candidatar-te a uma Bolsa de Estudo? Fica a saber o que precisas de fazer e o que temos à tua disposição.
+          </p>
+          <a href="#" class="cta-card__link">
+            Ver mais <span>→</span>
+          </a>
+        </div>
+        
+        <div class="cta-card fade-in" style="transition-delay: 0.3s;">
+          <div class="cta-card__icon">🎓</div>
+          <h3 class="cta-card__title">Acesso ao Ensino Superior</h3>
+          <p class="cta-card__desc">
+            Após terminares o 12º ano, existem várias formas de ingressar no ISPGAYA. Fica a saber mais, nós explicamos tudo.
+          </p>
+          <a href="#" class="cta-card__link">
+            Ver mais <span>→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       NEWS & EVENTS SECTION
+       ============================================ -->
+  <section class="news-events" id="noticias-eventos">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-header__tag">Atualidade</div>
+        <h2 class="section-header__title">Notícias & Eventos</h2>
+        <p class="section-header__desc">
+          Mantém-te atualizado com tudo o que acontece no ISPGAYA
+        </p>
+      </div>
+      
+      <div class="news-events__tabs fade-in">
+        <button class="news-events__tab active" data-tab="noticias-panel">Notícias</button>
+        <button class="news-events__tab" data-tab="eventos-panel">Eventos</button>
+      </div>
+      
+      <!-- News Panel -->
+      <div class="news-events__panel active" id="noticias-panel">
+        <div class="news-events__grid">
+          <div class="news-card fade-in">
+            <div class="news-card__image">
+              <div style="width:100%;height:100%;background:linear-gradient(135deg, #1a1f4e, #3b82f6);display:flex;align-items:center;justify-content:center;">
+                <div style="color:white;font-size:3rem;"><i class="fas fa-book-open"></i></div>
+              </div>
+              <div class="news-card__image-overlay"></div>
+            </div>
+            <div class="news-card__content">
+              <div class="news-card__tags">
+                <span class="news-card__tag">#workshopispgaya</span>
+              </div>
+              <h3 class="news-card__title">Workshop "Educação inclusiva: Práticas pedagógicas que transformam"</h3>
+              <p class="news-card__desc">
+                Decorreu, no passado dia 12 de fevereiro, o workshop "Educação inclusiva: Práticas pedagógicas que transformam", 
+                dirigido a docentes do ISPGAYA.
+              </p>
+              <a href="#" class="news-card__link">Ler mais <span>→</span></a>
+            </div>
+          </div>
+          
+          <div class="news-card fade-in" style="transition-delay: 0.15s;">
+            <div class="news-card__image">
+              <div style="width:100%;height:100%;background:linear-gradient(135deg, #0d1137, #14b8a6);display:flex;align-items:center;justify-content:center;">
+                <div style="color:white;font-size:3rem;">📱</div>
+              </div>
+              <div class="news-card__image-overlay"></div>
+            </div>
+            <div class="news-card__content">
+              <div class="news-card__tags">
+                <span class="news-card__tag">#apoioaoestudante</span>
+              </div>
+              <h3 class="news-card__title">Marketing Digital no Colégio de Gaia</h3>
+              <p class="news-card__desc">
+                Os finalistas do CTeSP em Marketing Digital do ISPGAYA realizaram uma atividade de mentoria, 
+                prestando apoio na preparação das PAP dos estudantes.
+              </p>
+              <a href="#" class="news-card__link">Ler mais <span>→</span></a>
+            </div>
+          </div>
+          
+          <div class="news-card fade-in" style="transition-delay: 0.3s;">
+            <div class="news-card__image">
+              <div style="width:100%;height:100%;background:linear-gradient(135deg, #141844, #f59e0b);display:flex;align-items:center;justify-content:center;">
+                <div style="color:white;font-size:3rem;">📄</div>
+              </div>
+              <div class="news-card__image-overlay"></div>
+            </div>
+            <div class="news-card__content">
+              <div class="news-card__tags">
+                <span class="news-card__tag">#congressointernacional</span>
+              </div>
+              <h3 class="news-card__title">Proceedings of ISPGAYA Congress 2024</h3>
+              <p class="news-card__desc">
+                The two proceedings volumes of the 2024 Business Sustainability: Innovation in Entrepreneurship 
+                & Internationalisation Congress are now available.
+              </p>
+              <a href="#" class="news-card__link">Ler mais <span>→</span></a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="news-events__view-all">
+          <a href="#" class="btn-secondary">Ver todas as notícias <span>→</span></a>
+        </div>
+      </div>
+      
+      <!-- Events Panel -->
+      <div class="news-events__panel" id="eventos-panel">
+        <div class="news-events__grid">
+          <div class="news-card">
+            <div class="news-card__image">
+              <div style="width:100%;height:100%;background:linear-gradient(135deg, #1a1f4e, #22c55e);display:flex;align-items:center;justify-content:center;">
+                <div style="color:white;font-size:3rem;">🤝</div>
+              </div>
+              <div class="news-card__image-overlay"></div>
+            </div>
+            <div class="news-card__content">
+              <div class="news-card__tags">
+                <span class="news-card__tag">#apoioaoestudante</span>
+              </div>
+              <h3 class="news-card__title">Celebração do Dia Internacional do Voluntariado</h3>
+              <p class="news-card__desc">
+                O teu tempo pode mudar a comunidade. Junta-te à Bolsa de Voluntariado ISPGAYA!
+              </p>
+              <a href="#" class="news-card__link">Ler mais <span>→</span></a>
+            </div>
+          </div>
+          
+          <div class="news-card">
+            <div class="news-card__image">
+              <div style="width:100%;height:100%;background:linear-gradient(135deg, #0d1137, #f59e0b);display:flex;align-items:center;justify-content:center;">
+                <div style="color:white;font-size:3rem;">🌰</div>
+              </div>
+              <div class="news-card__image-overlay"></div>
+            </div>
+            <div class="news-card__content">
+              <div class="news-card__tags">
+                <span class="news-card__tag">#atunabiracopos</span>
+                <span class="news-card__tag">#apoioaoestudante</span>
+              </div>
+              <h3 class="news-card__title">Magusto 2025</h3>
+              <p class="news-card__desc">
+                O ISPGAYA deseja a toda a comunidade um bom Magusto!
+              </p>
+              <a href="#" class="news-card__link">Ler mais <span>→</span></a>
+            </div>
+          </div>
+          
+          <div class="news-card">
+            <div class="news-card__image">
+              <div style="width:100%;height:100%;background:linear-gradient(135deg, #141844, #2563eb);display:flex;align-items:center;justify-content:center;">
+                <div style="color:white;font-size:3rem;">⚡</div>
+              </div>
+              <div class="news-card__image-overlay"></div>
+            </div>
+            <div class="news-card__content">
+              <div class="news-card__tags">
+                <span class="news-card__tag">#engenhariaeletronicaedeautomacao</span>
+              </div>
+              <h3 class="news-card__title">Apresentação Centro de Formação para a Transição Energética</h3>
+              <p class="news-card__desc">
+                No próximo dia 17 de novembro, entre as 18h00 e as 19h30, terá lugar, no Auditório Padre Freitas, 
+                a sessão de apresentação do Centro de Formação para a Transição Energética.
+              </p>
+              <a href="#" class="news-card__link">Ler mais <span>→</span></a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="news-events__view-all">
+          <a href="#" class="btn-secondary">Ver todos os eventos <span>→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TESTIMONIALS SECTION
+       ============================================ -->
+  <section class="testimonials" id="testemunhos">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-header__tag">Testemunhos</div>
+        <h2 class="section-header__title">O Que Dizem os Nossos Estudantes</h2>
+        <p class="section-header__desc">
+          Conhece a experiência dos nossos estudantes e alumni
+        </p>
+      </div>
+      
+      <div class="testimonials__carousel fade-in">
+        <div class="testimonial-card">
+          <div class="testimonial-card__avatar">
+            <span>MO</span>
+          </div>
+          <p class="testimonial-card__quote">
+            O ISPGAYA proporcionou-me uma formação de excelência, com professores sempre disponíveis 
+            e um ambiente académico que me preparou verdadeiramente para o mercado de trabalho. 
+            A proximidade com as empresas parceiras foi fundamental para o início da minha carreira.
+          </p>
+          <div class="testimonial-card__name">Manuel Oliveira</div>
+          <div class="testimonial-card__role">Estudante de Mestrado</div>
+        </div>
+        
+        <div class="testimonial-card">
+          <div class="testimonial-card__avatar">
+            <span>MC</span>
+          </div>
+          <p class="testimonial-card__quote">
+            Escolher o ISPGAYA foi a melhor decisão que tomei. As instalações modernas, o corpo docente 
+            qualificado e o clima académico diferenciador fizeram toda a diferença na minha formação 
+            e no meu desenvolvimento pessoal e profissional.
+          </p>
+          <div class="testimonial-card__name">Maribel Carvalho</div>
+          <div class="testimonial-card__role">Estudante ISPGAYA</div>
+        </div>
+      </div>
+      
+      <div class="testimonials__dots">
+        <button class="testimonials__dot active" aria-label="Testemunho 1"></button>
+        <button class="testimonials__dot" aria-label="Testemunho 2"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="footer" id="footer">
+    <div class="container">
+      <div class="footer__top">
+        <!-- Brand -->
+        <div class="footer__brand">
+          <div class="footer__logo-row">
+            <span class="footer__logo-text">ISPGAYA</span>
+          </div>
+          <p class="footer__brand-desc">
+            Instituto Superior Politécnico Gaya — Ensino superior politécnico com oferta formativa em 
+            CTeSP, Licenciaturas, Mestrados e Pós-Graduações.
+          </p>
+          <div class="footer__social">
+            <a href="https://www.facebook.com/ispgaya" class="footer__social-link" aria-label="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://www.instagram.com/ispgaya/" class="footer__social-link" aria-label="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.linkedin.com/school/ispgaya/" class="footer__social-link" aria-label="LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+          </div>
+          
+          <div class="footer__contact">
+            <div class="footer__contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Av. dos Descobrimentos, 333<br>4400-103 Santa Marinha - V.N.Gaia</span>
+            </div>
+            <div class="footer__contact-item">
+              <i class="fas fa-phone"></i>
+              <span>(+351) 223 745 730</span>
+            </div>
+            <div class="footer__contact-item">
+              <i class="fas fa-envelope"></i>
+              <span>info@ispgaya.pt</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Ensino -->
+        <div>
+          <h4 class="footer__col-title">Ensino</h4>
+          <div class="footer__links">
+            <a href="#">CTeSP</a>
+            <a href="#">Licenciaturas</a>
+            <a href="#">Mestrados</a>
+            <a href="#">Pós-Graduações</a>
+            <a href="#">Candidaturas</a>
+            <a href="#">Bolsas e Financiamento</a>
+            <a href="#">Programas Avançados</a>
+          </div>
+        </div>
+        
+        <!-- ISPGAYA HUB -->
+        <div>
+          <h4 class="footer__col-title">ISPGAYA HUB</h4>
+          <div class="footer__links">
+            <a href="https://inforestudante.ispgaya.pt/">Inforestudante</a>
+            <a href="https://infordocente.ispgaya.pt/">Infordocente</a>
+            <a href="https://www.office.com/?omkt=pt-pt">Email</a>
+            <a href="#">Wi-Fi</a>
+            <a href="https://password.ispgaya.pt/">Password</a>
+            <a href="#">Cartão ISPGAYA</a>
+            <a href="https://brand.ispgaya.pt">Identidade Visual</a>
+          </div>
+        </div>
+        
+        <!-- Links de Interesse -->
+        <div>
+          <h4 class="footer__col-title">Links de Interesse</h4>
+          <div class="footer__links">
+            <a href="https://www.dges.gov.pt/pt">DGES</a>
+            <a href="https://www.a3es.pt/pt">A3ES</a>
+            <a href="https://cienciavitae.pt">Ciência Vitae</a>
+            <a href="https://www.portugal.gov.pt/">Governo de Portugal</a>
+            <a href="#">Projetos Cofinanciados</a>
+            <a href="#">Repositório de Documentos</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer__bottom">
+        <span>© 2025 ISPGAYA — Instituto Superior Politécnico Gaya. Todos os direitos reservados.</span>
+        <div class="footer__legal">
+          <a href="#">Termos e Condições</a>
+          <a href="#">Política de Privacidade</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="js/main.js"></script>
+</body>
+</html>

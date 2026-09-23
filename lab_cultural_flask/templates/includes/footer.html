@@ -1,0 +1,130 @@
+<!-- FOOTER -->
+<footer class="z-10 relative mt-auto w-full bg-[#151B26] text-white ispgaya-footer">
+    <!-- Load Open Sans Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        .ispgaya-footer {
+            font-family: 'Open Sans', sans-serif !important;
+        }
+        .ispgaya-footer a {
+            transition: color 0.15s ease-in-out, opacity 0.15s ease-in-out;
+        }
+    </style>
+
+    <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10 pt-16 pb-8">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-8 text-white relative z-10">
+            <!-- Column 1: Logo & Social Media -->
+            <div class="flex flex-col">
+                <a href="{{ url_for('frontoffice.homepage') }}" class="mb-6 block">
+                    <img width="175" height="54" class="block" src="https://ispgaya.pt/images/logo/ispgaya-logo-negative.svg" alt="ISPGAYA" />
+                </a>
+                <p class="font-bold text-base mb-3">Segue-nos</p>
+                <div class="flex items-center space-x-4">
+                    <a href="https://www.facebook.com/ispgaya" target="_blank" rel="noopener noreferrer" class="text-white hover:opacity-80 text-xl">
+                        <i class="fab fa-facebook-square"></i>
+                    </a>
+                    <a href="https://www.instagram.com/ispgaya/" target="_blank" rel="noopener noreferrer" class="text-white hover:opacity-80 text-xl">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/school/ispgaya/" target="_blank" rel="noopener noreferrer" class="text-white hover:opacity-80 text-xl">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Column 2: Ensino -->
+            <div>
+                <p class="font-bold text-lg">Ensino</p>
+                <ul class="mt-4 space-y-2 text-sm text-gray-300">
+                    <li><a href="https://ispgaya.pt/pt/ensino/oferta-formativa/ctesp" target="_blank" class="hover:underline underline-offset-2">CTeSP</a></li>
+                    <li><a href="https://ispgaya.pt/pt/ensino/oferta-formativa/licenciaturas" target="_blank" class="hover:underline underline-offset-2">Licenciaturas</a></li>
+                    <li><a href="https://ispgaya.pt/pt/ensino/oferta-formativa/mestrados" target="_blank" class="hover:underline underline-offset-2">Mestrados</a></li>
+                    <li><a href="https://ispgaya.pt/pt/ensino/programas-avancados/pos-graduacoes" target="_blank" class="hover:underline underline-offset-2">Pós Graduações</a></li>
+                    <li><a href="https://ispgaya.pt/pt/ensino/candidaturas" target="_blank" class="hover:underline underline-offset-2">Candidaturas</a></li>
+                    <li><a href="https://ispgaya.pt/pt/ensino/bolsas-e-financiamento" target="_blank" class="hover:underline underline-offset-2">Bolsas e Financiamento</a></li>
+                    <li><a href="https://ispgaya.pt/pt/ensino/programas-avancados" target="_blank" class="hover:underline underline-offset-2">Programas Avançados</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: ISPGAYA HUB -->
+            <div>
+                <p class="font-bold text-lg">ISPGAYA HUB</p>
+                <ul class="mt-4 space-y-2 text-sm text-gray-300">
+                    <li><a href="https://inforestudante.ispgaya.pt/" target="_blank" rel="noindex nofollow" class="hover:underline underline-offset-2">Inforestudante</a></li>
+                    <li><a href="https://infordocente.ispgaya.pt/" target="_blank" rel="noindex nofollow" class="hover:underline underline-offset-2">Infordocente</a></li>
+                    <li><a href="https://www.office.com/?omkt=pt-pt" target="_blank" rel="noindex nofollow" class="hover:underline underline-offset-2">Email</a></li>
+                    <li><a href="https://ispgaya.pt/files/tutorial_configuracao_rede_wireless.pdf" target="_blank" rel="noindex nofollow" download class="hover:underline underline-offset-2">Wi Fi</a></li>
+                    <li><a href="https://password.ispgaya.pt/" target="_blank" rel="noindex nofollow" class="hover:underline underline-offset-2">Password</a></li>
+                    <li><a href="https://ispgaya.pt/pt/cartao-ispgaya" target="_blank" class="hover:underline underline-offset-2">Cartão ISPGAYA</a></li>
+                    <li><a href="https://brand.ispgaya.pt" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-2">Identidade Visual</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 4: Links de Interesse -->
+            <div>
+                <p class="font-bold text-lg">Links de Interesse</p>
+                <ul class="mt-4 space-y-2 text-sm text-gray-300">
+                    <li><a href="https://www.dges.gov.pt/pt" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-2">DGES</a></li>
+                    <li><a href="https://www.a3es.pt/pt" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-2">A3ES</a></li>
+                    <li><a href="https://cienciavitae.pt" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-2">Ciência Vitae</a></li>
+                    <li><a href="https://www.portugal.gov.pt/" target="_blank" rel="noopener noreferrer" class="hover:underline underline-offset-2">Governo de Portugal</a></li>
+                    <li><a href="https://ispgaya.pt/projetos-cofinanciados" target="_blank" class="hover:underline underline-offset-2">Projetos Cofinanciados</a></li>
+                    <li><a href="https://ispgaya.pt/pt/repositorio-de-documentos" target="_blank" class="hover:underline underline-offset-2">Repositório de Documentos</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 5: Contactos -->
+            <div class="flex flex-col justify-between">
+                <div>
+                    <p class="font-bold text-lg">Contactos</p>
+                    <address class="mt-4 not-italic text-sm text-gray-300 space-y-1">
+                        <p class="font-bold text-white">Av. dos Descobrimentos, 333</p>
+                        <p class="font-bold text-white">4400-103 Santa Marinha - V.N.Gaia</p>
+                        <p class="pt-2">
+                            (+351) 223 745 730
+                            <span class="block text-[10px] text-gray-400 mt-1 leading-normal">
+                                O valor da chamada corresponde ao valor de uma chamada para a rede fixa, em função do seu plano tarifário.
+                            </span>
+                        </p>
+                        <p class="pt-1">
+                            <a href="mailto:info@ispgaya.pt" class="text-white hover:underline">info@ispgaya.pt</a>
+                        </p>
+                    </address>
+                </div>
+
+                <!-- Certification Logos -->
+                <div class="mt-6 flex gap-4">
+                    <img class="w-[62px]" width="142" height="155" src="https://ispgaya.pt/images/logos/ISO-9001.svg" alt="ISO 9001">
+                    <img class="w-[62px]" width="404" height="446" src="https://ispgaya.pt/images/logos/ISO-21001.svg" alt="ISO 21001">
+                    <img class="w-[62px]" width="404" height="446" src="https://ispgaya.pt/images/logos/ISO-14001.svg" alt="ISO 14001">
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Bar (Sub-Footer) -->
+        <div class="mt-16 pt-6 border-t border-white border-opacity-20 flex flex-col md:flex-row md:items-center md:justify-between relative z-10">
+            <div class="text-white text-xs flex flex-wrap gap-x-4 gap-y-1">
+                <span>&copy; 2026 Instituto Superior Politécnico Gaya</span>
+                <span>Atualizado em 25/05/2026 - 13:49</span>
+            </div>
+
+            <div class="mt-2 text-white text-xs md:mt-0 flex items-center">
+                <a href="https://ispgaya.pt/pt/legal/termos-e-condicoes" target="_blank" class="hover:underline underline-offset-2">
+                    Termos e Condições
+                </a>
+                <span class="px-3">/</span>
+                <a href="https://ispgaya.pt/pt/legal/politica-de-privacidade" target="_blank" class="hover:underline underline-offset-2">
+                    Política de Privacidade
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gaia Skyline Vector drawing absolute background -->
+    <img width="795" height="140" class="absolute bottom-0 -left-12 opacity-10 pointer-events-none z-0" src="https://ispgaya.pt/images/gaia-skyline.webp" alt="Vila Nova de Gaia">
+</footer>
+
+<!-- Chatbot Widget Flutuante (global) -->
+{% include 'includes/chatbot_widget.html' %}

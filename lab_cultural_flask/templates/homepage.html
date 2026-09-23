@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Instituto Superior Politécnico Gaya — ISPGAYA</title>
+  <meta name="description"
+    content="Instituição de ensino superior politécnico situada em Vila Nova de Gaia com oferta formativa em CTeSP, Licenciaturas, Mestrados e Pós-Graduações nas áreas de Engenharia, Contabilidade, Gestão e Turismo." />
+
+  <!-- Fonts (Matches ispgaya.pt) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+  <!-- Base UI CSS (Navbar compatibility) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/lab_cultural.css') }}">
+
+  <style>
+    /* Swiper custom styles */
+    .swiper-pagination-bullet {
+      background: rgba(255, 255, 255, 0.5) !important;
+      opacity: 1 !important;
+      width: 40px !important;
+      height: 3px !important;
+      border-radius: 0 !important;
+    }
+
+    .swiper-pagination-bullet-active {
+      background: #fff !important;
+    }
+
+    .image-overlay {
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.2) 100%);
+    }
+
+
+
+    /* Snap scroll for mobile highlights */
+    .snap-x {
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+    }
+
+    .snap-center {
+      scroll-snap-align: center;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Animations */
+    .hero-content-animate {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease-out;
+    }
+
+    .swiper-slide-active .hero-content-animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body class="antialiased bg-white text-black font-sans">
+  <!-- Ornamentos ISPGAYA -->
+  <div class="dot-pattern dot-pattern--top-right dot-pattern--behind" style="top: 200px; right: 40px;"></div>
+  <div class="dot-pattern dot-pattern--bottom-left dot-pattern--behind"
+    style="position: fixed; bottom: 120px; left: 40px;"></div>
+
+  {% include 'includes/navbar.html' %}
+
+  <main>
+    <!-- HERO SLIDER (Fullscreen as in ispgaya.pt) -->
+    <section class="hero-slider swiper relative w-full h-screen">
+      <div class="swiper-wrapper h-full">
+        <!-- Slide 1 -->
+        <div class="swiper-slide h-full relative">
+          <img class="absolute w-full h-full inset-0 object-cover z-0"
+            src="https://ispgaya.pt/images/hero/bem-vindos-estudantes-ispgaya.webp" alt="Bem-vindo ao ISPGAYA" />
+          <div class="image-overlay absolute inset-0 z-10"></div>
+          <div class="relative container mx-auto px-4 sm:px-6 xl:px-8 h-full z-20 flex items-end pb-[12vh]">
+            <div class="grid grid-cols-12 text-white w-full">
+              <div class="col-span-12 lg:col-span-6 xl:col-span-7 hero-content-animate">
+                <h1
+                  class="font-serif font-bold text-3xl sm:text-5xl md:text-6xl leading-tight xl:text-5xl 2xl:text-6xl">
+                  Bem-vindo ao Instituto Superior Politécnico Gaya
+                </h1>
+                <p class="mt-5 hidden font-medium xl:block lg:text-lg text-gray-200">
+                  Aqui, é onde o teu futuro começa! No ISPGAYA vais adquirir novos conhecimentos, desenvolver novas
+                  competências e experienciar um clima académico único.
+                </p>
+              </div>
+              <div class="mt-6 col-span-12 lg:mt-0 lg:col-span-6 xl:col-span-5 hero-content-animate"
+                style="transition-delay: 0.3s;">
+                <p class="font-medium text-orange-400 uppercase tracking-widest text-sm mb-4">Oferta Formativa</p>
+                <ul class="divide-y-2 divide-white/20 xl:mt-1">
+                  <li><a href="#"
+                      class="group py-3 px-4 flex items-center justify-between font-bold text-xl hover:bg-white/10 transition-colors"><span>CTeSP</span><span
+                        class="-translate-x-4 transition opacity-0 group-hover:translate-x-0 group-hover:opacity-100 text-orange-400">⟶</span></a>
+                  </li>
+                  <li><a href="#"
+                      class="group py-3 px-4 flex items-center justify-between font-bold text-xl hover:bg-white/10 transition-colors"><span>Licenciaturas</span><span
+                        class="-translate-x-4 transition opacity-0 group-hover:translate-x-0 group-hover:opacity-100 text-orange-400">⟶</span></a>
+                  </li>
+                  <li><a href="#"
+                      class="group py-3 px-4 flex items-center justify-between font-bold text-xl hover:bg-white/10 transition-colors"><span>Mestrados</span><span
+                        class="-translate-x-4 transition opacity-0 group-hover:translate-x-0 group-hover:opacity-100 text-orange-400">⟶</span></a>
+                  </li>
+                  <li><a href="#"
+                      class="group py-3 px-4 flex items-center justify-between font-bold text-xl hover:bg-white/10 transition-colors"><span>Pós-Graduações</span><span
+                        class="-translate-x-4 transition opacity-0 group-hover:translate-x-0 group-hover:opacity-100 text-orange-400">⟶</span></a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="absolute container w-full mx-auto z-30 inset-x-0 bottom-[5vh] px-4">
+        <div class="swiper-pagination !flex !justify-start"></div>
+      </div>
+    </section>
+
+    <!-- DESTAQUES (Exact Clone from User) -->
+    <section id="content-start" class="scroll-mt-36 mt-10 lg:mt-12 xl:mt-16 2xl:mt-20">
+      <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10">
+        <div class="text-center">
+          <h2 class="text-3xl xl:text-4xl 2xl:text-5xl text-black font-bold font-serif tracking-tight">
+            Destaques
+          </h2>
+        </div>
+      </section>
+      <section class="relative container mx-auto z-10 sm:px-6 xl:px-8">
+        <div
+          class="mt-10 py-2 snap-x w-full overflow-x-scroll flex items-center gap-2 md:gap-6 md:w-auto md:overflow-x-auto md:justify-center lg:gap-6 xl:gap-8 no-scrollbar">
+          <a href="https://ispgaya.pt/pt/vida-academica/noticias/o-ispgaya-integra-a-amba-e-bga"
+            class="first:ml-2 last:mr-2 rounded snap-center group shrink-0 relative flex flex-col flex-nowrap basis-[90vw] min-h-[500px] overflow-hidden bg-gray-200 transition duration-150 ease-in-out md:first:ml-0 md:last:mr-0 md:shrink md:basis-6/12 lg:basis-4/12 2xl:basis-3/12">
+            <div
+              class="after:absolute after:inset-0 after:w-full after:h-full after:bg-gradient-to-t after:from-gray-900">
+              <figure class="absolute inset-0 block w-full h-full overflow-hidden">
+                <div
+                  class="w-full h-full bg-cover bg-no-repeat transition-transform ease-in-out duration-500 group-hover:scale-105"
+                  style="background-image: url(https://ispg-prd.s3.eu-west-1.amazonaws.com/publications/97b25d8e-53cc-4b6d-b7bb-708f44dece28/2.webp)">
+                </div>
+              </figure>
+            </div>
+            <div class="relative mt-auto mb-0 pt-6 px-6 z-20">
+              <p class="font-serif text-white text-2xl underline-offset-2 group-hover:underline">
+                O ISPGAYA integra a AMBA e BGA
+              </p>
+              <div
+                class="text-white overflow-hidden transition-[max-height] duration-500 ease-in-out md:max-h-0 md:group-hover:max-h-80">
+                <p class="mt-4 font-medium">
+                  ISPGAYA tem o orgulho de anunciar a sua filiação oficial na Association of MBAs
+                  (AMBA) e na Business Graduates Association (BGA).
+                </p>
+              </div>
+            </div>
+            <div class="relative py-6 px-6 z-10 text-white flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
+                  clip-rule="evenodd">
+                </path>
+              </svg>
+              <p class="ml-3 font-medium">
+                Fica a saber mais
+              </p>
+            </div>
+          </a>
+          <a href="https://ispgaya.pt/pt/ensino/candidaturas/licenciaturas/m-23"
+            class="first:ml-2 last:mr-2 rounded snap-center group shrink-0 relative flex flex-col flex-nowrap basis-[90vw] min-h-[500px] overflow-hidden bg-gray-200 transition duration-150 ease-in-out md:first:ml-0 md:last:mr-0 md:shrink md:basis-6/12 lg:basis-4/12 2xl:basis-3/12">
+            <div
+              class="after:absolute after:inset-0 after:w-full after:h-full after:bg-gradient-to-t after:from-gray-900">
+              <figure class="absolute inset-0 block w-full h-full overflow-hidden">
+                <div
+                  class="w-full h-full bg-cover bg-no-repeat transition-transform ease-in-out duration-500 group-hover:scale-105"
+                  style="background-image: url(https://ispg-prd.s3.eu-west-1.amazonaws.com/publications/a0282dbd-8274-4470-8012-c438e7eb03b8/Destaque%20%284%29.webp)">
+                </div>
+              </figure>
+            </div>
+            <div class="relative mt-auto mb-0 pt-6 px-6 z-20">
+              <p class="font-serif text-white text-2xl underline-offset-2 group-hover:underline">
+                Regime M23 - Candidaturas Abertas!
+              </p>
+              <div
+                class="text-white overflow-hidden transition-[max-height] duration-500 ease-in-out md:max-h-0 md:group-hover:max-h-80">
+                <p class="mt-4 font-medium">
+                  Estão abertas as candidaturas ao Regime M23!
+                </p>
+              </div>
+            </div>
+            <div class="relative py-6 px-6 z-10 text-white flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
+                  clip-rule="evenodd">
+                </path>
+              </svg>
+              <p class="ml-3 font-medium">
+                Fica a saber mais
+              </p>
+            </div>
+          </a>
+          <a href="https://ispgaya.pt/pt/vida-academica/noticias/o-ispgaya-junta-se-a-q-helix-alliance"
+            class="first:ml-2 last:mr-2 rounded snap-center group shrink-0 relative flex flex-col flex-nowrap basis-[90vw] min-h-[500px] overflow-hidden bg-gray-200 transition duration-150 ease-in-out md:first:ml-0 md:last:mr-0 md:shrink md:basis-6/12 lg:basis-4/12 2xl:basis-3/12">
+            <div
+              class="after:absolute after:inset-0 after:w-full after:h-full after:bg-gradient-to-t after:from-gray-900">
+              <figure class="absolute inset-0 block w-full h-full overflow-hidden">
+                <div
+                  class="w-full h-full bg-cover bg-no-repeat transition-transform ease-in-out duration-500 group-hover:scale-105"
+                  style="background-image: url(https://ispg-prd.s3.eu-west-1.amazonaws.com/publications/26a59fc9-202d-425a-80a0-37282c7c619a/helix-ispgaya-site.webp)">
+                </div>
+              </figure>
+            </div>
+            <div class="relative mt-auto mb-0 pt-6 px-6 z-20">
+              <p class="font-serif text-white text-2xl underline-offset-2 group-hover:underline">
+                O ISPGAYA junta-se à Q-Helix Alliance!
+              </p>
+              <div
+                class="text-white overflow-hidden transition-[max-height] duration-500 ease-in-out md:max-h-0 md:group-hover:max-h-80">
+                <p class="mt-4 font-medium">
+                  É com grande satisfação que anunciamos que o ISPGAYA – Instituto Superior
+                  Politécnico de Gaia passou a integrar oficialmente a Q-Helix Alliance, uma rede
+                  europeia em crescimento dedicada ao reforço da cooperação no ensino superior,
+                  investigação e inovação.
+                </p>
+              </div>
+            </div>
+            <div class="relative py-6 px-6 z-10 text-white flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
+                  clip-rule="evenodd">
+                </path>
+              </svg>
+              <p class="ml-3 font-medium">
+                Fica a saber mais
+              </p>
+            </div>
+          </a>
+        </div>
+      </section>
+    </section>
+
+    <!-- ONDE O FUTURO TE LEVA (Exact Clone) -->
+    <section class="mt-20 lg:mt-24 xl:mt-28 2xl:mt-30">
+      <div
+        class="relative before:absolute before:-top-5 before:inset-x-0 before:skew-y-1 before:bg-gray-50 before:h-14 relative bg-gray-50 after:absolute after:inset-x-0 after:-bottom-5 after:-skew-y-1 after:bg-gray-50 after:h-14">
+        <section
+          class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10 relative z-10 pt-8 pb-16 lg:pt-12 lg:pb-20">
+          <div class="text-center px-8 sm:px-0">
+            <h2 class="text-3xl xl:text-4xl 2xl:text-5xl text-black font-bold font-serif tracking-tight">
+              Onde o Futuro Te Leva
+            </h2>
+          </div>
+          <div class="mt-12 grid grid-cols-2 lg:gap-x-4 lg:mt-20 2xl:mt-28 xl:gap-x-6 2xl:gap-x-8">
+            <div class="hidden lg:block relative col-span-1">
+              <div class="marketing-dots-pattern sticky mt-18 top-36">
+                <img src="https://ispgaya.pt/images/on-o-futuro-te-leva.webp" alt="Onde o Futuro Te Leva"
+                  class="block relative z-10 mx-auto shadow-2xl lg:w-10/12 xl:w-auto" loading="lazy" decoding="async"
+                  width="443" height="572" />
+              </div>
+            </div>
+            <div
+              class="col-span-2 max-w-xl mx-auto space-y-10 lg:mx-0 lg:max-w-none lg:col-span-1 lg:space-y-10 xl:space-y-14">
+              <div class="flex">
+                <div>
+                  <p class="mt-2 font-serif font-bold text-orange-400 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl">
+                    36
+                  </p>
+                </div>
+                <div class="ml-2 pt-2 pl-2 sm:ml-4 sm:pl-6 pr-2 pb-2 sm:pb-6 border-b-2 border-r-2 border-gray-300">
+                  <p class="font-bold lg:text-lg xl:text-xl 2xl:text-2xl">
+                    Experiência
+                  </p>
+                  <p class="mt-3 text-sm sm:text-base lg:max-w-md">
+                    Desde 1990 a formar futuros empreendedores. Somos uma instituição de ensino de referência há mais de
+                    30 anos em Vila Nova de Gaia. Quer pela qualidade dos seus cursos, quer pelo corpo docente
+                    qualificado, quer pelo clima académico estimulante e diferenciador.
+                  </p>
+                </div>
+              </div>
+              <div class="flex">
+                <div class="mr-4 pt-2 pl-6 pr-2 pb-6 border-b-2 border-l-2 border-gray-300">
+                  <p class="font-bold lg:text-lg xl:text-xl 2xl:text-2xl">
+                    Profissionais Formados
+                  </p>
+                  <p class="mt-3 text-sm sm:text-base lg:max-w-md">
+                    A formação continua a ser um dos nossos principais pilares. Somos reconhecidos pela formação de
+                    excelência e já formamos mais de 3500 profissionais de sucesso. Aqui os estudantes têm oportunidade
+                    de construir o seu futuro pessoal e profissional.
+                  </p>
+                </div>
+                <div>
+                  <p class="mt-2 font-serif font-bold text-orange-400 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl">
+                    +3.5k
+                  </p>
+                </div>
+              </div>
+              <div class="flex">
+                <div>
+                  <p class="mt-2 font-serif font-bold text-orange-400 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl">
+                    +200
+                  </p>
+                </div>
+                <div class="ml-2 pt-2 pl-2 sm:ml-4 sm:pl-6 pr-2 pb-2 sm:pb-6 border-b-2 border-r-2 border-gray-300">
+                  <p class="font-bold lg:text-lg xl:text-xl 2xl:text-2xl">
+                    Empresas
+                  </p>
+                  <p class="mt-3 text-sm sm:text-base lg:max-w-md">
+                    Trabalhamos em proximidade com as empresas, estando atentos às suas necessidades e a par das suas
+                    aspirações. Temos protocolos celebrados com mais de 200 empresas que garantem a qualidade dos
+                    estágios e permitem a integração de estudantes no mercado de trabalho.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- AJUDA / CTA (Exact Clone from User) -->
+    <section class="mt-16 lg:mt-28 xl:mt-32 2xl:mt-32 relative overflow-hidden">
+      <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10 bg-white">
+        <div class="grid grid-cols-2 gap-x-10">
+          <div class="py-6 relative col-span-2 lg:col-span-1 z-10 bg-white">
+            <h2
+              class="text-3xl xl:text-4xl 2xl:text-5xl text-black font-bold font-serif tracking-tight sm:max-w-xs md:max-w-sm xl:max-w-lg 2xl:max-w-2xl">
+              Ainda queres saber mais? Nós podemos ajudar-te.
+            </h2>
+            <p class="mt-4">
+              A candidatura ao ensino superior é um passo muito importante, é o ponto de partida para
+              te tornares um profissional de sucesso. O ISPGAYA dispõe da modalidade de acesso ideal
+              para ti, quer tenhas terminado o ensino secundário ou já estejas a trabalhar e queiras
+              aperfeiçoar os teus conhecimentos.
+            </p>
+            <div class="mt-6 flex flex-col sm:items-center sm:flex-row">
+              <a href="https://inforestudante.ispgaya.pt/nonio/security/preRegisto.do?origem=CANDIDATURAS"
+                target="_blank" rel="noopener noreferrer nofollow"
+                class="block text-center px-6 py-2 bg-orange-400 text-white font-bold border-2 border-transparent transition sm:inline hover:bg-orange-500">
+                Candidatar-me
+              </a>
+              <a href="https://ispgaya.pt/pt/ensino/candidaturas"
+                class="block text-center mt-3 px-6 py-2 border-2 border-orange-700 text-orange-700 font-bold transition sm:inline sm:mt-0 sm:ml-6 hover:border-orange-600 hover:bg-orange-600 hover:text-white">
+                Quero saber mais
+              </a>
+            </div>
+          </div>
+          <div class="relative col-span-2 h-full lg:col-span-1 min-w-0 bg-white">
+            <div class="adm-swiper swiper xl:max-w-2xl">
+              <div class="py-4 flex items-center">
+                <button type="button" class="swiper-button-prev text-gray-700 p-2 transition hover:text-gray-600"
+                  aria-hidden="true">
+                  <span class="sr-only"> Anterior </span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                  </svg>
+                </button>
+                <div class="mx-2 swiper-pagination flex items-center space-x-3"></div>
+                <button type="button" class="swiper-button-next text-gray-700 p-2 transition hover:text-gray-600"
+                  aria-hidden="true">
+                  <span class="sr-only"> Próximo </span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3">
+                    </path>
+                  </svg>
+                </button>
+              </div>
+              <div class="relative swiper-wrapper">
+                <!-- Slides -->
+                <div class="swiper-slide">
+                  <div
+                    class="bg-orange-50 text-center px-6 py-8 border border-orange-50 transition duration-500 ease-in-out hover:bg-orange-100 hover:border-orange-200">
+                    <div class="w-40 h-40 mx-auto">
+                      <img src="https://ispgaya.pt/images/illustrations/ispg-students-admissions.webp"
+                        alt="Quero Candidatar-me" class="object-cover" loading="lazy" decoding="async" width="284"
+                        height="250" />
+                    </div>
+                    <p class="mt-3 text-large font-bold"> Quero Candidatar-me </p>
+                    <p class="mt-2 text-sm text-gray-600">
+                      Sabias que podes realizar a tua candidatura online? Começa aqui a tua
+                      candidatura a um dos nossos cursos.
+                    </p>
+                    <a href="https://inforestudante.ispgaya.pt/nonio/security/preRegisto.do?origem=CANDIDATURAS"
+                      target="_blank" rel="noopener noreferrer nofollow"
+                      class="mt-6 inline-block px-5 py-1.5 text-sm font-semibold border-2 border-orange-700 text-orange-700 transition hover:text-white hover:border-orange-600 hover:bg-orange-600">
+                      Ver mais
+                    </a>
+                  </div>
+                </div>
+                <div class="swiper-slide">
+                  <div
+                    class="bg-orange-50 text-center px-6 py-8 border border-orange-50 transition duration-500 ease-in-out hover:bg-orange-100 hover:border-orange-200">
+                    <div class="w-40 h-40 mx-auto">
+                      <img src="https://ispgaya.pt/images/illustrations/ispgaya-students-grants.webp"
+                        alt="Bolsas e Apoios" class="object-cover" loading="lazy" decoding="async" width="284"
+                        height="250" />
+                    </div>
+                    <p class="mt-3 text-large font-bold"> Bolsas e Apoios </p>
+                    <p class="mt-2 text-sm text-gray-600">
+                      Sabias que podes candidatar-te a uma Bolsa de Estudo? Fica a saber o que
+                      precisas de fazer e o que temos à tua disposição.
+                    </p>
+                    <a href="https://ispgaya.pt/pt/ensino/bolsas-e-financiamento"
+                      class="mt-6 inline-block px-5 py-1.5 text-sm font-semibold border-2 border-orange-700 text-orange-700 transition hover:text-white hover:border-orange-600 hover:bg-orange-600">
+                      Ver mais
+                    </a>
+                  </div>
+                </div>
+                <div class="swiper-slide">
+                  <div
+                    class="bg-orange-50 text-center px-6 py-8 border border-orange-50 transition duration-500 ease-in-out hover:bg-orange-100 hover:border-orange-200">
+                    <div class="w-40 h-40 mx-auto">
+                      <img class="object-cover" src="https://ispgaya.pt/images/illustrations/ispgaya-students-help.webp"
+                        alt="Acesso ao Ensino Superior" loading="lazy" decoding="async" width="284" height="250" />
+                    </div>
+                    <p class="mt-3 text-large font-bold"> Acesso ao Ensino Superior </p>
+                    <p class="mt-2 text-sm text-gray-600">
+                      Após terminares o 12º ano, existem várias formas de ingressar no
+                      ISPGAYA. Fica a saber mais, nós explicamos tudo.
+                    </p>
+                    <a href="https://ispgaya.pt/pt/ensino/candidaturas"
+                      class="mt-6 inline-block px-5 py-1.5 text-sm font-semibold border-2 border-orange-700 text-orange-700 transition hover:text-white hover:border-orange-600 hover:bg-orange-600">
+                      Ver mais
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- NOTÍCIAS E EVENTOS (Exact Clone from User) -->
+    <section class="mt-14 lg:mt-16 xl:mt-20 2xl:mt-24">
+      <section class="relative container mx-auto px-4 sm:px-6 xl:px-8 z-10">
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-y-10 lg:gap-y-0 lg:gap-x-8 xl:gap-x-10">
+          <div class="z-10">
+            <div class="pl-3">
+              <h2 class="text-3xl xl:text-4xl 2xl:text-5xl text-black font-bold font-serif tracking-tight">Notícias</h2>
+              <a href="https://ispgaya.pt/pt/vida-academica/noticias"
+                class="ml-1 mt-1 text-gray-500 text-sm flex items-center underline-offset-2 hover:underline">
+                <span>Ver tudo</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="shrink-0 ml-1 mt-1 h-4 w-4" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3">
+                  </path>
+                </svg>
+              </a>
+            </div>
+            <div class="mt-2 sm:mt-4 z-10">
+              <article class="group relative overflow-hidden border-b-2 border-gray-200 p-3.5">
+                <div class="hidden group-hover:block absolute inset-0 z-20">
+                  <img class="pointer-events-none z-10 w-full aspect-[16/9] object-cover"
+                    src="https://ispg-prd.s3.eu-west-1.amazonaws.com/publications/e7bcd837-69c2-441e-831f-0dddd7d262a6/cover/md-WhatsApp%20Image%202026-04-10%20at%2009.42.45.webp"
+                    alt="Seminário" loading="lazy" decoding="async" />
+                  <span class="absolute inset-0 z-10 w-full h-full bg-black bg-opacity-70"></span>
+                </div>
+                <div class="relative z-30">
+                  <time class="font-semibold text-sm uppercase text-orange-400" datetime="2026-04-10 08:52:14">10 abril,
+                    2026</time>
+                  <p
+                    class="mt-2 text-md lg:text-lg xl:text-xl 2xl:text-2xl font-bold transition underline-offset-2 group-hover:text-white group-hover:underline">
+                    <a
+                      href="https://ispgaya.pt/pt/vida-academica/noticias/seminario-comercio-internacional-com-dr-ricardo-oliveira">Seminário:
+                      Comércio Internacional com DR. Ricardo Oliveira</a>
+                  </p>
+                  <p class="mt-1 line-clamp-2 transition group-hover:text-white">
+                    <a
+                      href="https://ispgaya.pt/pt/vida-academica/noticias/seminario-comercio-internacional-com-dr-ricardo-oliveira">No
+                      próximo dia 24 de abril, pelas 18h, terá lugar, no Auditório Padre Freitas (ISPGAYA), o seminário
+                      &ldquo;Comércio Internacional: Uma Visão Estratégica sobre os Mercados Globais&rdquo;, dinamizado
+                      pelo Dr. Ricardo Oliveira, fundador da empresa P&amp;RO &ndash; Consultoria.</a>
+                  </p>
+                  <div class="mt-2 flex items-center space-x-3 text-sm text-gray-600 transition group-hover:text-white">
+                    <a href="https://ispgaya.pt/pt/vida-academica/hashtag/congressointernacional/noticias"
+                      class="hover:underline underline-offset-2">#congressointernacional</a>
+                  </div>
+                </div>
+              </article>
+              <article class="group relative overflow-hidden border-b-2 border-gray-200 p-3.5">
+                <div class="hidden group-hover:block absolute inset-0 z-20">
+                  <img class="pointer-events-none z-10 w-full aspect-[16/9] object-cover"
+                    src="https://ispg-prd.s3.eu-west-1.amazonaws.com/publications/23b4b152-507b-4d43-9ca8-6c9465a575eb/cover/md-WhatsApp%20Image%202026-04-08%20at%2011.39.28.webp"
+                    alt="MSUB ISPGAYA" loading="lazy" decoding="async" />
+                  <span class="absolute inset-0 z-10 w-full h-full bg-black bg-opacity-70"></span>
+                </div>
+                <div class="relative z-30">
+                  <time class="font-semibold text-sm uppercase text-orange-400" datetime="2026-04-08 10:57:20">08 abril,
+                    2026</time>
+                  <p
+                    class="mt-2 text-md lg:text-lg xl:text-xl 2xl:text-2xl font-bold transition underline-offset-2 group-hover:text-white group-hover:underline">
+                    <a href="https://ispgaya.pt/pt/vida-academica/noticias/msub-ispgaya">MSUB ISPGAYA</a>
+                  </p>
+                  <p class="mt-1 line-clamp-2 transition group-hover:text-white">
+                    <a href="https://ispgaya.pt/pt/vida-academica/noticias/msub-ispgaya">Entre 23 e 27 de março,
+                      estudantes do ISPGAYA em colaboração com estudantes da MSUB desenvolveram um projeto de
+                      internacionalização entre Portugal e os EUA.</a>
+                  </p>
+                  <div class="mt-2 flex items-center space-x-3 text-sm text-gray-600 transition group-hover:text-white">
+                    <a href="https://ispgaya.pt/pt/vida-academica/hashtag/estudantesinternacionais/noticias"
+                      class="hover:underline underline-offset-2">#estudantesinternacionais</a>
+                    <a href="https://ispgaya.pt/pt/vida-academica/hashtag/programaerasmus/noticias"
+                      class="hover:underline underline-offset-2">#programaerasmus</a>
+                  </div>
+                </div>
+              </article>
+              <article class="group relative overflow-hidden border-b-2 border-gray-200 p-3.5">
+                <div class="hidden group-hover:block absolute inset-0 z-20">
+                  <img class="pointer-events-none z-10 w-full aspect-[16/9] object-cover"
+                    src="https://ispg-prd.s3.eu-west-1.amazonaws.com/publications/962ca966-cf11-476d-8cd6-b257b7aeb6b1/cover/md-FII%3B%29CA%201%20site%20%281%29.webp"
+                    alt="FII;)CA PROJECT ISPGAYA" loading="lazy" decoding="async" />
+                  <span class="absolute inset-0 z-10 w-full h-full bg-black bg-opacity-70"></span>
+                </div>
+                <div class="relative z-30">
+                  <time class="font-semibold text-sm uppercase text-orange-400" datetime="2026-04-07 16:44:52">07 abril,
+                    2026</time>
+                  <p
+                    class="mt-2 text-md lg:text-lg xl:text-xl 2xl:text-2xl font-bold transition underline-offset-2 group-hover:text-white group-hover:underline">
+                    <a href="https://ispgaya.pt/pt/vida-academica/noticias/fiica-project-ispgaya">FII;)CA PROJECT
+                      ISPGAYA</a>
+                  </p>
+                  <p class="mt-1 line-clamp-2 transition group-hover:text-white">
+                    <a href="https://ispgaya.pt/pt/vida-academica/noticias/fiica-project-ispgaya">O ISPGAYA acolheu os
+                      estudantes e professores do Projeto FII;)CA nas suas instalações, onde participaram em várias
+                      atividades.</a>
+                  </p>
+                  <div class="mt-2 flex items-center space-x-3 text-sm text-gray-600 transition group-hover:text-white">
+                    <a href="https://ispgaya.pt/pt/vida-academica/hashtag/congressointernacional/noticias"
+                      class="hover:underline underline-offset-2">#congressointernacional</a>
+                    <a href="https://ispgaya.pt/pt/vida-academica/hashtag/estudantesinternacionais/noticias"
+                      class="hover:underline underline-offset-2">#estudantesinternacionais</a>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+          <div>
+            <div class="pl-3">
+              <h2 class="text-3xl xl:text-4xl 2xl:text-5xl text-black font-bold font-serif tracking-tight">Eventos</h2>
+              <a href="https://ispgaya.pt/pt/vida-academica/eventos"
+                class="ml-1 mt-1 text-gray-500 text-sm flex items-center hover:underline underline-offset-2">
+                <span>Ver tudo</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="shrink-0 ml-1 mt-1 h-4 w-4" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3">
+                  </path>
+                </svg>
+              </a>
+            </div>
+            <div class="mt-2 sm:mt-4">
+              <article class="group relative overflow-hidden border-b-2 border-gray-200 p-3.5">
+                <div class="hidden group-hover:block absolute inset-0 z-20">
+                  <img class="pointer-events-none w-full aspect-[16/9] object-cover"
+                    src="https://ispg-prd.s3.eu-west-1.amazonaws.com/publications/19592afb-c1ec-496b-a531-522d9553c12d/cover/md-7.webp"
+                    alt="Celebração do Dia Internacional do Voluntariado" loading="lazy" decoding="async" />
+                  <span class="absolute inset-0 z-10 w-full h-full bg-black bg-opacity-60"></span>
+                </div>
+                <div class="relative z-30">
+                  <time class="font-semibold text-sm uppercase text-orange-400" datetime="2025-12-02 11:33:58">02
+                    dezembro, 2025</time>
+                  <p
+                    class="mt-2 text-md lg:text-lg xl:text-xl 2xl:text-2xl font-bold transition underline-offset-3 group-hover:text-white group-hover:underline">
+                    <a
+                      href="https://ispgaya.pt/pt/vida-academica/eventos/celebracao-do-dia-internacional-do-voluntariado">Celebração
+                      do Dia Internacional do Voluntariado</a>
+                  </p>
+                  <p class="mt-1 line-clamp-2 transition group-hover:text-white">
+                    <a
+                      href="https://ispgaya.pt/pt/vida-academica/eventos/celebracao-do-dia-internacional-do-voluntariado">O
+                      teu tempo pode mudar a comunidade. Junta-te à Bolsa de Voluntariado ISPGAYA!</a>
+                  </p>
+                  <div class="mt-2 flex items-center space-x-3 text-sm text-gray-600 transition group-hover:text-white">
+                    <a href="https://ispgaya.pt/pt/vida-academica/hashtag/apoioaoestudante/eventos"
+                      class="hover:underline underline-offset-2">#apoioaoestudante</a>
+                  </div>
+                </div>
+              </article>
+              <article class="group relative overflow-hidden border-b-2 border-gray-200 p-3.5">
+                <div class="hidden group-hover:block absolute inset-0 z-20">
+                  <img class="pointer-events-none w-full aspect-[16/9] object-cover"
+                    src="https://ispg-prd.s3.eu-west-1.amazonaws.com/publications/fd8b219e-0f56-4ebc-9f0a-e0bac3e9104f/cover/md-NOTICIA%20BOM%20MAGUSTO%21.webp"
+                    alt="Magusto 2025" loading="lazy" decoding="async" />
+                  <span class="absolute inset-0 z-10 w-full h-full bg-black bg-opacity-60"></span>
+                </div>
+                <div class="relative z-30">
+                  <time class="font-semibold text-sm uppercase text-orange-400" datetime="2025-11-12 10:27:30">12
+                    novembro, 2025</time>
+                  <p
+                    class="mt-2 text-md lg:text-lg xl:text-xl 2xl:text-2xl font-bold transition underline-offset-3 group-hover:text-white group-hover:underline">
+                    <a href="https://ispgaya.pt/pt/vida-academica/eventos/magusto-2025">Magusto 2025</a>
+                  </p>
+                  <p class="mt-1 line-clamp-2 transition group-hover:text-white">
+                    <a href="https://ispgaya.pt/pt/vida-academica/eventos/magusto-2025">O ISPGAYA deseja a toda a
+                      comunidade um bom Magusto!</a>
+                  </p>
+                  <div class="mt-2 flex items-center space-x-3 text-sm text-gray-600 transition group-hover:text-white">
+                    <a href="https://ispgaya.pt/pt/vida-academica/hashtag/atunabiracopos/eventos"
+                      class="hover:underline underline-offset-2">#atunabiracopos</a>
+                    <a href="https://ispgaya.pt/pt/vida-academica/hashtag/apoioaoestudante/eventos"
+                      class="hover:underline underline-offset-2">#apoioaoestudante</a>
+                  </div>
+                </div>
+              </article>
+              <article class="group relative overflow-hidden border-b-2 border-gray-200 p-3.5">
+                <div class="hidden group-hover:block absolute inset-0 z-20">
+                  <img class="pointer-events-none w-full aspect-[16/9] object-cover"
+                    src="https://ispg-prd.s3.eu-west-1.amazonaws.com/publications/b5824817-3d71-4956-aaac-f2eae53cb1a6/cover/md-3.webp"
+                    alt="Apresentação Centro de Formação para a Transição Energética" loading="lazy" decoding="async" />
+                  <span class="absolute inset-0 z-10 w-full h-full bg-black bg-opacity-60"></span>
+                </div>
+                <div class="relative z-30">
+                  <time class="font-semibold text-sm uppercase text-orange-400" datetime="2025-11-10 10:22:00">10
+                    novembro, 2025</time>
+                  <p
+                    class="mt-2 text-md lg:text-lg xl:text-xl 2xl:text-2xl font-bold transition underline-offset-3 group-hover:text-white group-hover:underline">
+                    <a
+                      href="https://ispgaya.pt/pt/vida-academica/eventos/apresentacao-centro-de-formacao-para-a-transicao-energetica">Apresentação
+                      Centro de Formação para a Transição Energética</a>
+                  </p>
+                  <p class="mt-1 line-clamp-2 transition group-hover:text-white">
+                    <a
+                      href="https://ispgaya.pt/pt/vida-academica/eventos/apresentacao-centro-de-formacao-para-a-transicao-energetica">No
+                      próximo dia 17 de novembro, entre as 18h00 e as 19h30, terá lugar, no Auditório Padre Freitas, a
+                      sessão de apresentação do Centro de Formação para a Transição Energética.</a>
+                  </p>
+                  <div class="mt-2 flex items-center space-x-3 text-sm text-gray-600 transition group-hover:text-white">
+                    <a href="https://ispgaya.pt/pt/vida-academica/hashtag/engenhariaeletronicaedeautomacao/eventos"
+                      class="hover:underline underline-offset-2">#engenhariaeletronicaedeautomacao</a>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- TESTEMUNHOS (Max Width restricted as in original) -->
+    <section class="py-12 bg-white">
+      <div class="container mx-auto px-4 sm:px-6 xl:px-8">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl xl:text-4xl 2xl:text-5xl text-black font-bold font-serif tracking-tight">Testemunhos</h2>
+        </div>
+        <div class="test-swiper swiper max-w-2xl mx-auto">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide text-center pb-8 p-4">
+              <div class="relative">
+                <i class="fas fa-quote-left text-orange-100 text-7xl absolute -top-8 left-1/2 -translate-x-1/2 z-0"></i>
+                <blockquote
+                  class="text-lg sm:text-xl font-serif italic text-gray-700 relative z-10 px-8 mb-10 leading-relaxed">
+                  "O ISPGAYA proporcionou-me uma formação de excelência, com professores sempre disponíveis e um
+                  ambiente académico que me preparou verdadeiramente para o mercado de trabalho."
+                </blockquote>
+                <div class="flex flex-col items-center">
+                  <img
+                    src="https://ispg-prd.s3.eu-west-1.amazonaws.com/testimonials/4280ac7e-15c7-4500-afeb-532af5d9886b/manuel-oliveira-1.webp"
+                    class="w-16 h-16 rounded-full border-4 border-white shadow-md mb-3" />
+                  <p class="font-bold text-xl uppercase tracking-tighter">Manuel Oliveira</p>
+                  <p class="text-orange-500 font-bold text-xs uppercase tracking-widest">Estudante Mestrado</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="swiper-button-next !text-orange-400 scale-75"></div>
+          <div class="swiper-button-prev !text-orange-400 scale-75"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  {% include 'includes/footer.html' %}
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Main Hero
+      new Swiper('.hero-slider', {
+        loop: true, speed: 1000, autoplay: { delay: 6000 },
+        pagination: { el: '.swiper-pagination', clickable: true },
+        effect: 'fade', fadeEffect: { crossFade: true },
+      });
+
+      // Testimonials
+      new Swiper('.test-swiper', {
+        loop: false, autoplay: { delay: 5000 },
+        navigation: { nextEl: '.test-swiper .swiper-button-next', prevEl: '.test-swiper .swiper-button-prev' },
+      });
+
+      // Admissions Slider
+      new Swiper('.adm-swiper', {
+        loop: false,
+        autoplay: { delay: 4000 },
+        pagination: { el: '.adm-swiper .swiper-pagination', clickable: true },
+        navigation: { nextEl: '.adm-swiper .swiper-button-next', prevEl: '.adm-swiper .swiper-button-prev' },
+      });
+
+
+    });
+  </script>
+  <!-- COOKIE CONSENT BANNER -->
+  <div id="cookie-overlay"
+    class="fixed inset-0 z-[999999] flex items-center justify-center bg-black/50 backdrop-blur-[2px] transition-opacity duration-300"
+    style="display: none;">
+    <div
+      class="bg-white rounded-lg shadow-2xl max-w-xl w-full mx-4 overflow-hidden flex flex-col font-sans text-left border border-gray-100">
+      <!-- Title and Body -->
+      <div class="p-8 md:p-10 pb-6 flex-1 overflow-y-auto max-h-[70vh]">
+        <h2 class="text-2xl font-bold text-[#151B26] mb-6">Está em controlo dos seus dados</h2>
+
+        <div class="text-sm text-gray-600 space-y-4 leading-relaxed">
+          <p>Nós e os nossos parceiros de negócios utilizamos tecnologias, incluindo cookies, para recolhermos
+            informações sobre si para diversas finalidades, incluindo:</p>
+
+          <p class="font-bold text-gray-800">Estatísticos, Publicidade</p>
+
+          <p>Ao premir "Aceito", consente todas estas finalidades. Também pode escolher especificar as finalidades que
+            irá consentir, ao clicar na caixa de verificação ao lado da finalidade e, em seguida, em "Guardar
+            definições".</p>
+
+          <p>Pode retirar o seu consentimento a qualquer altura, ao premir o ícone pequeno que se encontra no canto
+            inferior esquerdo do nosso website.</p>
+
+          <p>Pode ler mais sobre a forma como utilizamos cookies e outras tecnologias e como recolhemos e processamos
+            dados pessoais, clicando na ligação.</p>
+        </div>
+
+        <!-- Links -->
+        <div class="mt-6 space-y-3">
+          <a href="https://ispgaya.pt/pt/legal/politica-de-privacidade" target="_blank"
+            class="block font-bold text-[#2D5A27] hover:underline text-sm underline-offset-2">
+            Ler mais acerca de cookies
+          </a>
+          <a href="https://policies.google.com/privacy" target="_blank"
+            class="inline-flex items-center font-bold text-[#2D5A27] hover:underline text-sm underline-offset-2 gap-1">
+            <span>Política de privacidade do Google</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+          <div class="pt-2">
+            <button id="cookie-show-details"
+              class="text-sm font-semibold text-gray-500 hover:text-gray-700 underline underline-offset-2 focus:outline-none">
+              Mostrar detalhes
+            </button>
+          </div>
+        </div>
+
+        <!-- Details Area (Collapsible) -->
+        <div id="cookie-details-panel"
+          class="mt-6 border-t border-gray-100 pt-4 space-y-4 text-xs text-gray-500 hidden leading-relaxed">
+          <div>
+            <h4 class="font-bold text-gray-700 mb-1">Estritamente necessários</h4>
+            <p>Estes cookies são necessários para o funcionamento do website e não podem ser desativados nos nossos
+              sistemas. Geralmente, apenas são configurados em resposta a ações realizadas por si que correspondam a um
+              pedido de serviços, tais como definir as suas preferências de privacidade, iniciar sessão ou preencher
+              formulários.</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-gray-700 mb-1">Estatísticos</h4>
+            <p>Estes cookies permitem-nos contar visitas e fontes de tráfego, para que possamos medir e melhorar o
+              desempenho do nosso website. Ajudam-nos a saber quais são as páginas mais e menos populares e a ver como
+              os visitantes se movimentam pelo website.</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-gray-700 mb-1">Publicidade</h4>
+            <p>Estes cookies podem ser estabelecidos através do nosso site pelos nossos parceiros de publicidade. Podem
+              ser usados por essas empresas para construir um perfil dos seus interesses e mostrar-lhe anúncios
+              relevantes em outros websites.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons Area -->
+      <div class="px-8 md:px-10 pb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button id="cookie-save-settings"
+          class="w-full py-3 px-6 bg-[#F3F4F6] border border-[#D1D5DB] text-[#151B26] font-bold text-sm rounded transition-all hover:bg-gray-200 uppercase tracking-wider">
+          Guardar definições
+        </button>
+        <button id="cookie-accept-all"
+          class="w-full py-3 px-6 bg-[#2D5A27] text-white font-bold text-sm rounded transition-all hover:bg-[#23461E] uppercase tracking-wider">
+          Aceitar todos
+        </button>
+      </div>
+
+      <!-- Toggles Section (Bottom Grey Container) -->
+      <div
+        class="bg-[#F3F4F6] border-t border-gray-100 p-8 md:px-10 flex flex-col sm:flex-row justify-between items-center gap-6 relative">
+        <div class="grid grid-cols-3 gap-8 w-full sm:w-auto">
+          <!-- Toggle 1: Estritamente necessários -->
+          <div class="flex flex-col items-start">
+            <span class="text-xs font-bold text-gray-700 mb-2">Estritamente necessários</span>
+            <label class="relative inline-flex items-center cursor-not-allowed select-none">
+              <input type="checkbox" class="sr-only peer" checked disabled>
+              <div
+                class="w-12 h-6 bg-gray-300 rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[26px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all">
+              </div>
+            </label>
+          </div>
+
+          <!-- Toggle 2: Estatísticos -->
+          <div class="flex flex-col items-start">
+            <span class="text-xs font-bold text-gray-700 mb-2">Estatísticos</span>
+            <label class="relative inline-flex items-center cursor-pointer select-none">
+              <input type="checkbox" id="cookie-toggle-stats" class="sr-only peer" checked>
+              <div
+                class="w-12 h-6 bg-gray-300 rounded-full peer-checked:after:translate-x-[24px] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2D5A27]">
+              </div>
+            </label>
+          </div>
+
+          <!-- Toggle 3: Publicidade -->
+          <div class="flex flex-col items-start">
+            <span class="text-xs font-bold text-gray-700 mb-2">Publicidade</span>
+            <label class="relative inline-flex items-center cursor-pointer select-none">
+              <input type="checkbox" id="cookie-toggle-marketing" class="sr-only peer" checked>
+              <div
+                class="w-12 h-6 bg-gray-300 rounded-full peer-checked:after:translate-x-[24px] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2D5A27]">
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Powered by -->
+        <div class="text-[10px] text-gray-500 self-end sm:self-center">
+          powered by: <a href="https://cookieinformation.com/" target="_blank" rel="noopener noreferrer"
+            class="underline hover:text-gray-700">Cookie Information</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING TRIGGER BUTTON (Bottom-left corner, only top-right corner rounded) -->
+  <div id="cookie-trigger"
+    class="fixed bottom-0 left-0 z-[99998] bg-white w-14 h-12 rounded-tr-[18px] shadow-[2px_-2px_10px_rgba(0,0,0,0.15)] cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-center pb-0.5 pr-0.5"
+    style="display: none;">
+    <!-- Cookie SVG Icon -->
+    <svg version="1.1" id="coi-renew-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 304.4 304.4" class="w-7 h-7"
+      style="display: block;">
+      <style>
+        #coi-renew-svg .renew_path {
+          fill: #2D5A27;
+        }
+      </style>
+      <g>
+        <path class="renew_path" d="M80.8,53.3c-6.6-8.2-19.5-8.5-27.5,0.5C33,76.8,1.7,124.4,16.4,187.7c0,0-4.1,1.2-9.3,2.7
+                c-5.1,1.5-2.5,9.7,5.9,18.3l35.9,36.9c8.4,8.6,16.6,6,18.4-5.9l7.2-48.3c1.8-11.9-2.3-19.9-9.1-17.9L53,177
+                c-8.9-42.1,10-75.1,24.7-93.3C85.3,74.4,87.4,61.5,80.8,53.3z" />
+        <path class="renew_path" d="M121.7,300.8c9.5,1.9,21.6,3.6,35.3,3.6c29.2,0,65.3-7.7,97.5-36.7c0,0,4.1,3.9,9.2,8.8
+                c5.1,4.9,11.8-0.5,15.1-12.1l14.1-49.5c3.3-11.6-3.1-17.4-14.3-13l-45.4,17.8c-11.2,4.4-17.1,11-13.3,14.7l7,6.7
+                c-31.7,27.1-68.7,27.1-91.4,23.4c-11.9-1.9-24.1,2.7-27.9,12.5C103.8,287,110,298.3,121.7,300.8z" />
+        <path class="renew_path" d="M299.3,127.6c-6.9-29.3-26.8-80.8-84.1-106.1c0,0,1.9-5.5,4.2-12.2c2.3-6.7-5.4-10.7-17.3-8.9l-50.8,7.9
+                c-11.9,1.8-14.5,10.1-5.8,18.4l35.2,33.8c8.7,8.3,17.1,11.1,18.8,6.1l3.1-8.9c36.8,17.6,52,50.7,58.1,72.5
+                c3.3,11.6,12.6,20.8,23.1,20.1C294.3,149.6,302,139.3,299.3,127.6z" />
+      </g>
+      <g>
+        <g>
+          <g>
+            <path class="renew_path" d="M203.9,101.4c-2.6-2.6-6.1-4.1-9.1-6.2c-3-2.2-5.6-4.7-8.9-6.4c-3.3-1.7-6.4-3.9-9.9-5
+                        c-3.5-1.1-7.2-1.7-10.8-2.3c-3.6-0.6-7.3-1.6-11-1.6c-3.7,0-7.2,2.6-10.8,3.2c-3.7,0.6-7.3,0.6-10.8,1.7
+                        c-3.5,1.1-6.5,3.1-9.8,4.7c-3.3,1.7-6.5,3.1-9.5,5.3c-2.9,2.1-6.6,3.5-9.2,6.2c-2.6,2.6-5.7,5.1-7.8,8c-2.2,3-2.8,7-4.5,10.3
+                        c-1.7,3.3-2,7-3.1,10.5c-1.1,3.5-3.3,6.7-3.9,10.3c-0.6,3.6-0.9,7.3-0.9,11c0,3.7-0.7,7.6-0.1,11.2c0.6,3.7,1.9,7.3,3.1,10.7
+                        c1.1,3.5,4.2,6.2,5.9,9.4c1.7,3.3,2.1,7.3,4.2,10.3c2.1,2.9,5.8,4.7,8.4,7.3c2.6,2.6,4,6.7,6.9,8.9c3,2.2,7.2,2.5,10.4,4.2
+                        c3.3,1.7,6.2,4.2,9.7,5.4c3.5,1.1,7,2.8,10.7,3.3c3.6,0.6,7.5-0.2,11.2-0.2c3.7,0,7.2-1.8,10.8-2.3c3.7-0.6,7.3-0.6,10.8-1.7
+                        c3.5-1.1,7-2.2,10.3-3.9c3.3-1.7,6.5-3.5,9.5-5.7c2.9-2.1,4.9-5.4,7.5-8c2.6-2.6,5-5.2,7.2-8.2c2.2-3,5.7-5.1,7.4-8.4
+                        c1.7-3.3,3-6.9,4.1-10.4c1.1-3.5,0.3-7.5,0.8-11.1c0.6-3.6,1.7-7.1,1.7-10.8c0-3.7-1.4-7.2-2-10.8c-0.6-3.7-1.2-7.1-2.3-10.6
+                        c-1.1-3.5-1.3-7.3-3-10.6c-1.7-3.3-3.7-6.4-5.9-9.4C209,106.8,206.5,104.1,203.9,101.4z M209.6,151.1c0,4.2,0.6,8.6-0.3,12.6
+                        c-0.9,4.1-3.1,7.9-4.9,11.6c-1.8,3.8-4.7,6.8-7.3,10c-2.6,3.2-5.3,6.3-8.5,8.9c-3.2,2.6-7,4.1-10.8,5.9c-3.7,1.8-6.9,5.4-11,6.3
+                        c-4,0.9-8.4,0.6-12.6,0.6c-4.2,0-8.6,0.1-12.6-0.8c-4.1-0.9-8.1-2.8-11.7-4.6c-3.8-1.8-6.6-5.1-9.8-7.7c-3.2-2.6-5.5-5.9-8.1-9.1
+                        c-2.6-3.2-6-5.8-7.9-9.6c-1.8-3.7-4.3-7.4-5.2-11.5c-0.9-4,0-8.4,0-12.6c0-4.2,0.5-8.3,1.5-12.3c0.9-4.1,3.2-7.5,5-11.2
+                        c1.8-3.8,3.5-7.4,6.1-10.6c2.6-3.2,4.3-7.5,7.5-10.1c3.2-2.6,7.7-3.3,11.5-5.1c3.7-1.8,7.1-4.7,11.2-5.7c4-0.9,8.3,0.8,12.6,0.8
+                        c4.2,0,8.5-1.4,12.5-0.5c4.1,0.9,7.6,3.5,11.3,5.3c3.8,1.8,6.7,4.6,9.9,7.1c3.2,2.6,6.8,4.7,9.4,7.9c2.6,3.2,6.1,6,7.9,9.8
+                        c1.8,3.7,2.4,8.1,3.4,12.1C209.5,142.7,209.6,146.9,209.6,151.1z" />
+          </g>
+          <g>
+            <path class="renew_path" d="M154.2,191.6c0-2.7-2.3-5-5-5c-2.7,0-4.9,2.3-4.9,5c0,2.7,2.2,4.8,4.9,4.8
+                        C151.9,196.4,154.2,194.3,154.2,191.6z" />
+          </g>
+          <g>
+            <path class="renew_path"
+              d="M198.4,143.3c0-2.7-2.2-5-4.9-5c-2.7,0-4.8,2.2-4.8,5s2.1,4.9,4.8,4.9C196.2,148.2,198.4,146,198.4,143.3z" />
+          </g>
+          <g>
+            <path class="renew_path"
+              d="M161,150c0-2.7-2.1-4.8-4.8-4.8c-2.7,0-4.9,2.1-4.9,4.8s2.2,4.8,4.9,4.8C158.9,154.9,161,152.7,161,150z" />
+          </g>
+          <g>
+            <path class="renew_path"
+              d="M127,175.1c0-2.7-2.1-4.9-4.8-4.9c-2.7,0-4.9,2.2-4.9,4.9s2.2,4.9,4.9,4.9C124.9,180,127,177.8,127,175.1z" />
+          </g>
+          <g>
+            <path class="renew_path" d="M141.6,110.6c0-2.7-2.2-4.8-4.9-4.8c-2.7,0-4.9,2.1-4.9,4.8s2.2,4.8,4.9,4.8
+                        C139.4,115.4,141.6,113.3,141.6,110.6z" />
+          </g>
+          <g>
+            <path class="renew_path"
+              d="M127.6,130c-3.8,0-7.2,1.6-9.7,4.1c-2.5,2.5-4,5.9-4,9.7c0,3.8,1.3,7.4,3.8,9.9c2.5,2.5,6.1,3.8,9.9,3.8
+                        s7.4-1.3,9.9-3.9c2.5-2.5,4.1-6.1,4.1-9.9c0-3.8-1.9-7.1-4.4-9.7C134.8,131.6,131.5,130,127.6,130z M127.6,150
+                        c-3.4,0-6.2-2.8-6.2-6.2c0-3.4,2.9-6.3,6.2-6.3c3.4,0,5.9,2.9,5.9,6.3C133.5,147.2,131,150,127.6,150z" />
+          </g>
+          <g>
+            <path class="renew_path"
+              d="M177.7,161.9c-3.8,0-7.1,1.7-9.7,4.2c-2.5,2.5-4.4,5.8-4.4,9.7c0,3.8,1.7,7.3,4.2,9.8c2.5,2.5,6,4.2,9.8,4.2
+                        c3.8,0,7.2-1.8,9.7-4.3c2.5-2.5,4.4-5.9,4.4-9.7c0-3.8-1.9-7.2-4.4-9.7C184.8,163.6,181.5,161.9,177.7,161.9z M177.7,181.9
+                        c-3.4,0-6.3-2.8-6.3-6.1c0-3.4,3-5.9,6.3-5.9c3.4,0,6.1,2.6,6.1,5.9C183.8,179.1,181,181.9,177.7,181.9z" />
+          </g>
+          <g>
+            <path class="renew_path"
+              d="M181.3,123.9c0-3.2-1.2-6.1-3.3-8.2c-2.1-2.1-5-3.2-8.2-3.2c-3.2,0-5.9,1.3-8,3.3c-2.1,2.1-3.6,4.8-3.6,8
+                        c0,3.2,1.4,6,3.5,8.1c2.1,2.1,4.9,3.2,8.1,3.2s6.2-1,8.3-3.1C180.2,130.1,181.3,127.1,181.3,123.9z M166.1,123.9
+                        c0-2.1,1.7-3.7,3.8-3.7c2.1,0,3.9,1.6,3.9,3.7s-1.8,3.9-3.9,3.9C167.8,127.8,166.1,126,166.1,123.9z" />
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <script>
+    (function () {
+      const overlay = document.getElementById('cookie-overlay');
+      const trigger = document.getElementById('cookie-trigger');
+      const statsCheckbox = document.getElementById('cookie-toggle-stats');
+      const marketingCheckbox = document.getElementById('cookie-toggle-marketing');
+      const showDetailsBtn = document.getElementById('cookie-show-details');
+      const detailsPanel = document.getElementById('cookie-details-panel');
+      const saveBtn = document.getElementById('cookie-save-settings');
+      const acceptBtn = document.getElementById('cookie-accept-all');
+
+      // Toggle Details
+      if (showDetailsBtn && detailsPanel) {
+        showDetailsBtn.addEventListener('click', function () {
+          const isHidden = detailsPanel.classList.contains('hidden');
+          if (isHidden) {
+            detailsPanel.classList.remove('hidden');
+            showDetailsBtn.textContent = 'Ocultar detalhes';
+          } else {
+            detailsPanel.classList.add('hidden');
+            showDetailsBtn.textContent = 'Mostrar detalhes';
+          }
+        });
+      }
+
+      // Show Modal or Trigger based on localStorage
+      function initCookieConsent() {
+        const consent = localStorage.getItem('ispgaya_cookie_consent');
+        if (consent) {
+          const data = JSON.parse(consent);
+          if (statsCheckbox) statsCheckbox.checked = !!data.stats;
+          if (marketingCheckbox) marketingCheckbox.checked = !!data.marketing;
+          if (overlay) overlay.style.display = 'none';
+          if (trigger) trigger.style.display = 'flex';
+        } else {
+          if (overlay) overlay.style.display = 'flex';
+          if (trigger) trigger.style.display = 'none';
+        }
+      }
+
+      // Trigger Clicked
+      if (trigger) {
+        trigger.addEventListener('click', function () {
+          if (overlay) overlay.style.display = 'flex';
+          trigger.style.display = 'none';
+        });
+      }
+
+      // Accept All
+      if (acceptBtn) {
+        acceptBtn.addEventListener('click', function () {
+          if (statsCheckbox) statsCheckbox.checked = true;
+          if (marketingCheckbox) marketingCheckbox.checked = true;
+
+          const consentData = {
+            necessary: true,
+            stats: true,
+            marketing: true,
+            timestamp: new Date().getTime()
+          };
+          localStorage.setItem('ispgaya_cookie_consent', JSON.stringify(consentData));
+
+          if (overlay) overlay.style.display = 'none';
+          if (trigger) trigger.style.display = 'flex';
+        });
+      }
+
+      // Save Settings
+      if (saveBtn) {
+        saveBtn.addEventListener('click', function () {
+          const stats = statsCheckbox ? statsCheckbox.checked : false;
+          const marketing = marketingCheckbox ? marketingCheckbox.checked : false;
+
+          const consentData = {
+            necessary: true,
+            stats: stats,
+            marketing: marketing,
+            timestamp: new Date().getTime()
+          };
+          localStorage.setItem('ispgaya_cookie_consent', JSON.stringify(consentData));
+
+          if (overlay) overlay.style.display = 'none';
+          if (trigger) trigger.style.display = 'flex';
+        });
+      }
+
+      // Run
+      document.addEventListener('DOMContentLoaded', initCookieConsent);
+      if (document.readyState === 'interactive' || document.readyState === 'complete') {
+        initCookieConsent();
+      }
+    })();
+  </script>
+
+  <script src="{{ url_for('static', filename='js/homepage.js') }}"></script>
+</body>
+
+</html>

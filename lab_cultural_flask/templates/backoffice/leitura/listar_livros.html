@@ -1,0 +1,136 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Livros{% endblock %}
+{% block page_title %}Gestão de Livros{% endblock %}
+
+{% block bo_content %}
+<div class="bo-list-section">
+
+    <div class="bo-list-header">
+        <div class="bo-list-header__left">
+            <div class="bo-list-header__icon"><i class="fas fa-book"></i></div>
+            <h2>Livros <span>({{ livros|length }})</span></h2>
+        </div>
+        <a href="{{ url_for('backoffice.criar_livro') }}" class="bo-btn bo-btn--primary">
+            <i class="fas fa-plus"></i> Novo Livro
+        </a>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="bo-filters-card" style="margin-bottom: 2rem; background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--bo-border-light);">
+        <form method="GET" action="{{ url_for('backoffice.listar_livros') }}" class="bo-filters-form" style="display: flex; gap: 1rem; align-items: end;">
+            <div class="bo-form-group" style="margin-bottom: 0; flex: 2;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Pesquisar</label>
+                <input type="text" name="q" value="{{ filtros.q }}" placeholder="Título, autor ou género..." style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+            </div>
+            
+            <div class="bo-form-group" style="margin-bottom: 0; flex: 1;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Ordenar Por</label>
+                <select name="ordem" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+                    <option value="titulo" {% if filtros.ordem == 'titulo' %}selected{% endif %}>Título</option>
+                    <option value="autor" {% if filtros.ordem == 'autor' %}selected{% endif %}>Autor</option>
+                    <option value="ano" {% if filtros.ordem == 'ano' %}selected{% endif %}>Ano</option>
+                    <option value="destaque" {% if filtros.ordem == 'destaque' %}selected{% endif %}>Destaque</option>
+                    <option value="criado_em" {% if filtros.ordem == 'criado_em' %}selected{% endif %}>Mais Recentes</option>
+                </select>
+            </div>
+
+            <div class="bo-form-group" style="margin-bottom: 0; flex: 0.5;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--bo-muted);">Direção</label>
+                <select name="dir" style="padding: 8px 12px; border: 1px solid var(--bo-border-light); border-radius: 4px; width: 100%;">
+                    <option value="ASC" {% if filtros.dir == 'ASC' %}selected{% endif %}>A-Z</option>
+                    <option value="DESC" {% if filtros.dir == 'DESC' %}selected{% endif %}>Z-A</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 5px;">
+                <button type="submit" class="bo-btn bo-btn--primary" style="padding: 10px;">
+                    <i class="fas fa-filter"></i>
+                </button>
+                <a href="{{ url_for('backoffice.listar_livros') }}" class="bo-btn bo-btn--outline" style="padding: 10px;" title="Limpar">
+                    <i class="fas fa-undo"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {% if livros %}
+    <div class="bo-card-grid">
+        {% for l in livros %}
+        <div class="bo-list-card">
+            <div class="bo-list-card__strip bo-list-card__strip--blue"></div>
+            <div class="bo-list-card__body">
+                {% if l.destaque %}
+                <div class="bo-list-card__featured" title="Livro do Mês"><i class="fas fa-star"></i></div>
+                {% endif %}
+
+                <div class="bo-list-card__top">
+                    <h3 class="bo-list-card__title">{{ l.titulo }}</h3>
+                </div>
+
+                {% if l.sinopse %}
+                <p class="bo-list-card__desc">{{ l.sinopse[:120] }}{% if l.sinopse|length > 120 %}…{% endif %}</p>
+                {% endif %}
+
+                <div class="bo-list-card__meta">
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-user"></i>
+                        {{ l.autor }}
+                    </div>
+                    {% if l.ano %}
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-calendar"></i>
+                        {{ l.ano }}
+                    </div>
+                    {% endif %}
+                    {% if l.genero %}
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-bookmark"></i>
+                        {{ l.genero }}
+                    </div>
+                    {% endif %}
+                    {% if l.mes_selecao %}
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-award"></i>
+                        {{ l.mes_selecao }}
+                    </div>
+                    {% endif %}
+                    <div class="bo-list-card__meta-item">
+                        <i class="fas fa-info-circle"></i>
+                        {% if l.esta_disponivel %}
+                        <span style="color: #059669; font-weight: bold;">Disponível</span>
+                        {% else %}
+                        <span style="color: #dc2626; font-weight: bold;">Indisponível</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="bo-list-card__actions">
+                    <a href="{{ url_for('backoffice.requisicoes_livro', livro_id=l.id) }}" class="bo-btn bo-btn--outline" style="padding: 0.25rem 0.5rem; font-size: 11px; margin-right: auto;" title="Ver Requisições">
+                        <i class="fas fa-list"></i> Requisições
+                    </a>
+                    <a href="{{ url_for('backoffice.editar_livro', livro_id=l.id) }}" class="bo-btn-edit" title="Editar">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <form method="POST" action="{{ url_for('backoffice.toggle_destaque_livro', livro_id=l.id) }}" style="display:inline;">
+                        <button type="submit" class="bo-btn-edit" title="{{ 'Remover Destaque' if l.destaque else 'Marcar como Destaque' }}" style="{{ 'color: #f59e0b;' if l.destaque else '' }}">
+                            <i class="{{ 'fas' if l.destaque else 'far' }} fa-star"></i>
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('backoffice.eliminar_livro', livro_id=l.id) }}"
+                        onsubmit="return confirm('Eliminar este livro?')" style="display:inline;">
+                        <button type="submit" class="bo-btn-delete" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bo-list-empty">
+        <div class="bo-list-empty__icon"><i class="fas fa-book-open"></i></div>
+        <h3>Nenhum livro na biblioteca</h3>
+        <p>Adicione o primeiro livro ao acervo do Clube de Leitura.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

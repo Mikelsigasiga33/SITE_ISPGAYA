@@ -1,0 +1,70 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Utilizadores{% endblock %}
+{% block page_title %}Utilizadores{% endblock %}
+
+{% block bo_content %}
+
+<div class="bo-section-header">
+    <h2 class="bo-section-title">Gerir Utilizadores</h2>
+    <a href="{{ url_for('backoffice.criar_utilizador') }}" class="bo-btn bo-btn--primary">
+        <i class="fas fa-plus-circle"></i> Novo Utilizador
+    </a>
+</div>
+
+<div class="bo-table-wrapper">
+    <table class="bo-table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Clube</th>
+                <th>Estado</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in utilizadores %}
+            <tr>
+                <td>{{ u.nome }}</td>
+                <td><code>{{ u.username }}</code></td>
+                <td>{{ u.email }}</td>
+                <td>
+                    <span class="bo-badge bo-badge--{% if u.role == 'admin' %}interno{% elif u.role == 'conteudo' %}externo{% else %}interno{% endif %}">
+                        {% if u.role == 'admin' %}🛡️ Admin Global
+                        {% elif u.role == 'conteudo' %}📝 Conteúdo
+                        {% elif u.role == 'leitura' %}📚 Leitura
+                        {% elif u.role == 'teatro' %}🎭 Teatro
+                        {% elif u.role == 'tuna' %}🎵 Tuna
+                        {% else %}{{ u.role }}{% endif %}
+                    </span>
+                </td>
+                <td>{{ u.clube_nome or '—' }}</td>
+                <td>
+                    {% if u.ativo %}
+                    <span style="color: #059669;">● Ativo</span>
+                    {% else %}
+                    <span style="color: #dc2626;">● Inativo</span>
+                    {% endif %}
+                </td>
+                <td class="bo-table__actions">
+                    <a href="{{ url_for('backoffice.editar_utilizador', user_id=u.id) }}" class="bo-btn-edit" title="Editar">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    {% if u.id != session.get('admin_id') %}
+                    <form method="POST" action="{{ url_for('backoffice.eliminar_utilizador', user_id=u.id) }}"
+                        onsubmit="return confirm('Desativar este utilizador?')" style="display:inline;">
+                        <button type="submit" class="bo-btn-delete" title="Desativar">
+                            <i class="fas fa-user-slash"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

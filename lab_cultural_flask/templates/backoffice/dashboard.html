@@ -1,0 +1,294 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block bo_content %}
+
+{% set role = session.get('admin_role', 'admin') %}
+
+<div class="bo-stats-grid">
+    {% if stats.get('eventos') is not none %}
+    <a href="{{ url_for('backoffice.listar_eventos') }}" class="bo-stat-card bo-stat-card--blue">
+        <div class="bo-stat-card__icon"><i class="fas fa-calendar-days"></i></div>
+        <div class="bo-stat-card__info">
+            <span class="bo-stat-card__num">{{ stats.eventos }}</span>
+            <span class="bo-stat-card__label">Eventos</span>
+        </div>
+    </a>
+    {% endif %}
+    {% if stats.get('noticias') is not none %}
+    <a href="{{ url_for('backoffice.listar_noticias') }}" class="bo-stat-card bo-stat-card--green">
+        <div class="bo-stat-card__icon"><i class="fas fa-newspaper"></i></div>
+        <div class="bo-stat-card__info">
+            <span class="bo-stat-card__num">{{ stats.noticias }}</span>
+            <span class="bo-stat-card__label">Notícias</span>
+        </div>
+    </a>
+    {% endif %}
+    {% if stats.get('livros') is not none %}
+    <a href="{{ url_for('backoffice.listar_livros') }}" class="bo-stat-card bo-stat-card--amber">
+        <div class="bo-stat-card__icon"><i class="fas fa-book"></i></div>
+        <div class="bo-stat-card__info">
+            <span class="bo-stat-card__num">{{ stats.livros }}</span>
+            <span class="bo-stat-card__label">Livros</span>
+        </div>
+    </a>
+    {% endif %}
+    {% if stats.get('espetaculos') is not none %}
+    <a href="{{ url_for('backoffice.listar_espetaculos') }}" class="bo-stat-card bo-stat-card--purple">
+        <div class="bo-stat-card__icon"><i class="fas fa-theater-masks"></i></div>
+        <div class="bo-stat-card__info">
+            <span class="bo-stat-card__num">{{ stats.espetaculos }}</span>
+            <span class="bo-stat-card__label">Espetáculos</span>
+        </div>
+    </a>
+    {% endif %}
+    {% if stats.get('utilizadores') is not none %}
+    <a href="{{ url_for('backoffice.listar_utilizadores') }}" class="bo-stat-card bo-stat-card--blue">
+        <div class="bo-stat-card__icon"><i class="fas fa-users"></i></div>
+        <div class="bo-stat-card__info">
+            <span class="bo-stat-card__num">{{ stats.utilizadores }}</span>
+            <span class="bo-stat-card__label">Utilizadores</span>
+        </div>
+    </a>
+    {% endif %}
+    {% if stats.get('clubes') is not none %}
+    <a href="{{ url_for('backoffice.listar_clubes') }}" class="bo-stat-card bo-stat-card--green">
+        <div class="bo-stat-card__icon"><i class="fas fa-layer-group"></i></div>
+        <div class="bo-stat-card__info">
+            <span class="bo-stat-card__num">{{ stats.clubes }}</span>
+            <span class="bo-stat-card__label">Clubes</span>
+        </div>
+    </a>
+    {% endif %}
+</div>
+
+<!-- Ações Rápidas -->
+<div class="bo-quick-actions">
+    <h2 class="bo-section-title">Ações Rápidas</h2>
+    <div class="bo-quick-actions__grid">
+        {% if role in ('admin', 'conteudo') %}
+        <a href="{{ url_for('backoffice.criar_evento') }}" class="bo-quick-btn">
+            <i class="fas fa-plus-circle"></i> Novo Evento
+        </a>
+        <a href="{{ url_for('backoffice.criar_noticia') }}" class="bo-quick-btn">
+            <i class="fas fa-plus-circle"></i> Nova Notícia
+        </a>
+        {% endif %}
+        {% if role in ('admin', 'leitura') %}
+        <a href="{{ url_for('backoffice.criar_livro') }}" class="bo-quick-btn">
+            <i class="fas fa-plus-circle"></i> Novo Livro
+        </a>
+        {% endif %}
+        {% if role in ('admin', 'teatro') %}
+        <a href="{{ url_for('backoffice.criar_espetaculo') }}" class="bo-quick-btn">
+            <i class="fas fa-plus-circle"></i> Novo Espetáculo
+        </a>
+        {% endif %}
+        {% if role == 'admin' %}
+        <a href="{{ url_for('backoffice.criar_utilizador') }}" class="bo-quick-btn">
+            <i class="fas fa-user-plus"></i> Novo Utilizador
+        </a>
+        <a href="{{ url_for('backoffice.criar_clube') }}" class="bo-quick-btn">
+            <i class="fas fa-layer-group"></i> Novo Clube
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Estatísticas Avançadas (Charts) -->
+<div class="bo-chart-grid bo-chart-grid--2">
+    <div class="bo-chart-card">
+        <h3 class="bo-chart-header">
+            <i class="fas fa-chart-line text-blue-500"></i> Inscrições nos Últimos 6 Meses
+        </h3>
+        <div class="bo-chart-container">
+            <canvas id="registrationsChart"></canvas>
+        </div>
+    </div>
+    <div class="bo-chart-card">
+        <h3 class="bo-chart-header">
+            <i class="fas fa-chart-pie text-purple-500"></i> Distribuição por Categoria
+        </h3>
+        <div class="bo-chart-container">
+            <canvas id="categoriesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+
+<div class="bo-chart-grid bo-chart-grid--3">
+    <!-- Top Eventos -->
+    <div class="bo-chart-card bo-col-span-2">
+        <h3 class="bo-chart-header">
+            <i class="fas fa-star text-amber-500"></i> Top 5 Eventos Mais Populares
+        </h3>
+        <div id="top-events-container" class="space-y-4">
+            <div class="animate-pulse flex space-x-4">
+                <div class="flex-1 space-y-4 py-1">
+                    <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div class="h-4 bg-gray-200 rounded"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Info Adicional -->
+    <div class="bg-[#2a303b] text-white p-8 rounded-sm shadow-xl relative overflow-hidden flex flex-col justify-center">
+        <div class="relative z-10">
+            <h3 class="text-lg font-bold mb-4">Dica de Gestão</h3>
+            <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                Utilize os filtros de data para analisar o desempenho dos eventos em períodos específicos. Eventos internos tendem a ter maior adesão nos primeiros 3 dias de publicação.
+            </p>
+            <div class="h-1 w-12 bg-orange-500 mb-6"></div>
+            <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Lab Cultural · {{ agora_server.strftime('%Y') }}</p>
+        </div>
+        <i class="fas fa-lightbulb absolute -bottom-4 -right-4 text-8xl text-white/5 rotate-12"></i>
+    </div>
+</div>
+
+
+<!-- Eventos Recentes -->
+{% if eventos_recentes %}
+<div class="bo-table-section">
+    <div class="bo-section-header">
+        <h2 class="bo-section-title">Eventos Recentes</h2>
+        <a href="{{ url_for('backoffice.listar_eventos') }}" class="bo-section-link">Ver todos →</a>
+    </div>
+    <div class="bo-table-wrapper">
+        <table class="bo-table">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Data</th>
+                    <th>Cidade</th>
+                    <th>Tipo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ev in eventos_recentes %}
+                <tr>
+                    <td>{{ ev.titulo[:50] }}{% if ev.titulo|length > 50 %}…{% endif %}</td>
+                    <td>{{ ev.data_evento.strftime('%d/%m/%Y') if ev.data_evento else '-' }}</td>
+                    <td>{{ ev.cidade }}</td>
+                    <td><span class="bo-badge bo-badge--{{ ev.tipo }}">{{ ev.tipo }}</span></td>
+                    <td class="bo-table__actions">
+                        <a href="{{ url_for('backoffice.editar_evento', evento_id=ev.id) }}" class="bo-btn-edit"
+                            title="Editar">
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
+                        <form method="POST" action="{{ url_for('backoffice.eliminar_evento', evento_id=ev.id) }}"
+                            onsubmit="return confirm('Eliminar este evento?')" style="display:inline;">
+                            <button type="submit" class="bo-btn-delete" title="Eliminar">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            const response = await fetch('/api/v1/backoffice/stats');
+            const data = await response.json();
+            
+            if (data.error) return;
+
+            // 1. Gráfico de Inscrições Mensais
+            const regCtx = document.getElementById('registrationsChart').getContext('2d');
+            new Chart(regCtx, {
+                type: 'line',
+                data: {
+                    labels: data.inscricoes_mensais.map(item => item.mes),
+                    datasets: [{
+                        label: 'Inscrições',
+                        data: data.inscricoes_mensais.map(item => item.total),
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { precision: 0 }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // 2. Gráfico de Categorias
+            const catCtx = document.getElementById('categoriesChart').getContext('2d');
+            new Chart(catCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.categorias_distribuicao.map(item => item.nome),
+                    datasets: [{
+                        data: data.categorias_distribuicao.map(item => item.total),
+                        backgroundColor: ['#7c3aed', '#2563eb', '#db2777', '#d97706', '#059669', '#dc2626', '#4b5563']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom',
+                            labels: { boxWidth: 12, padding: 15, font: { size: 11 } }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+
+            // 3. Renderizar Top Eventos
+            const topContainer = document.getElementById('top-events-container');
+            topContainer.innerHTML = '';
+            
+            if (data.top_eventos.length === 0) {
+                topContainer.innerHTML = '<p class="text-sm text-gray-400">Sem inscrições registadas.</p>';
+            } else {
+                data.top_eventos.forEach((ev, index) => {
+                    const progress = (ev.inscritos / data.top_eventos[0].inscritos) * 100;
+                    topContainer.innerHTML += `
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs font-bold mb-1">
+                                <span class="text-gray-700">${index + 1}. ${ev.titulo}</span>
+                                <span class="text-orange-600">${ev.inscritos} inscritos</span>
+                            </div>
+                            <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-orange-500 rounded-full" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+        } catch (err) {
+            console.error("Erro ao carregar estatísticas:", err);
+        }
+    });
+</script>
+{% endblock %}

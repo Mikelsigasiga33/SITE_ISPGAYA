@@ -1,0 +1,378 @@
+{% extends "backoffice/base_backoffice.html" %}
+{% block title %}Esquema da Base de Dados{% endblock %}
+{% block page_title %}Esquema da Base de Dados{% endblock %}
+
+{% block bo_content %}
+<style>
+  .erd-wrap { background: #f8f7f2; border-radius: 8px; padding: 2rem; border: 1px solid var(--bo-border-light); }
+  .erd-header { margin-bottom: 1.5rem; }
+  .erd-header h2 { font-size: 1.15rem; font-weight: 600; color: var(--bo-text); margin: 0 0 4px; }
+  .erd-header .sub { font-size: 0.8rem; color: #888780; }
+  .erd-legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-bottom: 1.5rem; font-size: 0.78rem; color: #666; }
+  .erd-legend span { display: flex; align-items: center; gap: 6px; }
+  .erd-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  #erd-diagram { width: 100%; overflow-x: auto; }
+  #erd-diagram svg { max-width: 100%; height: auto !important; }
+
+  .erd-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 2rem; }
+  .erd-stat { background: white; border: 1px solid #e5e5e0; border-radius: 6px; padding: 14px 16px; text-align: center; }
+  .erd-stat__num { font-size: 1.6rem; font-weight: 700; color: var(--bo-accent, #f97316); }
+  .erd-stat__label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #888; font-weight: 600; margin-top: 2px; }
+
+  .erd-table-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 2rem; }
+  .erd-table-card { background: white; border: 1px solid #e5e5e0; border-radius: 6px; overflow: hidden; }
+  .erd-table-card__head { padding: 10px 14px; font-weight: 700; font-size: 0.85rem; color: white; display: flex; align-items: center; gap: 8px; }
+  .erd-table-card__body { padding: 10px 14px; }
+  .erd-table-card__col { font-size: 0.75rem; padding: 3px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3f3f0; }
+  .erd-table-card__col:last-child { border-bottom: none; }
+  .erd-col-name { font-weight: 600; color: #333; }
+  .erd-col-type { font-size: 0.7rem; color: #999; font-family: monospace; }
+  .erd-col-pk { color: #f59e0b; font-weight: 700; }
+  .erd-col-fk { color: #3b82f6; font-size: 0.65rem; }
+
+  @media (prefers-color-scheme: dark) {
+    .erd-wrap { background: #1e1e1c; }
+  }
+</style>
+
+<div class="erd-wrap">
+  <div class="erd-header" style="border-bottom: 1px solid #e5e5e0; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+      <div>
+        <h2 style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <i class="fas fa-project-diagram" style="color:var(--bo-accent);"></i>
+          Esquema da Base de Dados — lab_cultural
+          <span style="background: #e2f0d9; border: 1px solid #c3e6cb; color: #2e5b32; font-size: 0.72rem; padding: 4px 10px; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" title="Versão atual do esquema SQLite (PRAGMA user_version)">
+            <i class="fas fa-code-branch"></i> v1.0.{{ db_version }}
+          </span>
+        </h2>
+        <p class="sub" style="margin-top: 4px;">{{ tabelas|length }} tabelas · {{ total_colunas }} colunas · {{ total_fks }} relações · Sincronizado em tempo real</p>
+      </div>
+      
+      <!-- Sync/Update Button -->
+      <form action="{{ url_for('backoffice.atualizar_versao_bd') }}" method="POST" style="margin: 0;">
+        <button type="submit" class="btn btn-sm btn-primary" style="font-size: 0.78rem; font-weight: 700; display: flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 6px; cursor: pointer; background: var(--bo-accent, #f97316); border: none; color: white; transition: all 0.2s; box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);" onmouseover="this.style.opacity='0.9'; this.style.transform='translateY(-1px)';" onmouseout="this.style.opacity='1'; this.style.transform='translateY(0)';" title="Lê a estrutura SQLite mais recente, sincroniza e atualiza a versão">
+          <i class="fas fa-sync-alt"></i> Sincronizar & Atualizar Versão
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="erd-stats">
+    <div class="erd-stat">
+      <div class="erd-stat__num">{{ tabelas|length }}</div>
+      <div class="erd-stat__label">Tabelas</div>
+    </div>
+    <div class="erd-stat">
+      <div class="erd-stat__num">{{ total_colunas }}</div>
+      <div class="erd-stat__label">Colunas</div>
+    </div>
+    <div class="erd-stat">
+      <div class="erd-stat__num">{{ total_fks }}</div>
+      <div class="erd-stat__label">Relações</div>
+    </div>
+    <div class="erd-stat">
+      <div class="erd-stat__num">{{ total_pks }}</div>
+      <div class="erd-stat__label">Chaves Primárias</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="erd-legend">
+    <span><span class="erd-dot" style="background:#5DCAA5"></span> Núcleo (locais, categorias)</span>
+    <span><span class="erd-dot" style="background:#7F77DD"></span> Clubes, Membros &amp; Utilizadores</span>
+    <span><span class="erd-dot" style="background:#3B8BD4"></span> Leitura &amp; Biblioteca</span>
+    <span><span class="erd-dot" style="background:#D85A30"></span> Teatro &amp; Espetáculos</span>
+    <span><span class="erd-dot" style="background:#E6A020"></span> Tuna Académica</span>
+    <span><span class="erd-dot" style="background:#D4537E"></span> Eventos</span>
+    <span><span class="erd-dot" style="background:#888780"></span> Outros (Notícias, Contacto)</span>
+  </div>
+
+  <!-- Mermaid ERD Card -->
+  <div class="erd-card-container" style="background: white; border: 1px solid #e5e5e0; border-radius: 8px; overflow: hidden; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+    <div style="padding: 12px 20px; background: #fcfcfb; border-bottom: 1px solid #e5e5e0; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 0.85rem; font-weight: 600; color: #444;">
+        <i class="fas fa-project-diagram" style="color: var(--bo-accent, #f97316); margin-right: 6px;"></i>
+        Modelo de Relações Interativo (1 para Muitos)
+      </span>
+      <div style="display: flex; gap: 8px;">
+        <button id="btn-download" class="btn btn-sm" style="font-size: 0.75rem; display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 4px; border: 1px solid #c3e6cb; background: #e2f0d9; color: #2e5b32; cursor: pointer; transition: all 0.2s; font-weight: 600;" onmouseover="this.style.background='#d4edda'" onmouseout="this.style.background='#e2f0d9'">
+          <i class="fas fa-download"></i> Descarregar SVG
+        </button>
+        <button id="btn-fullscreen" class="btn btn-sm btn-outline-primary" style="font-size: 0.75rem; display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 4px; border: 1px solid #ddd; background: white; cursor: pointer; transition: all 0.2s; font-weight: 600;">
+          <i class="fas fa-expand-arrows-alt" style="color: var(--bo-accent, #f97316);"></i> Ver em Ecrã Inteiro / Dar Zoom
+        </button>
+      </div>
+    </div>
+    <div id="erd-diagram" style="padding: 2rem 1.5rem; display: flex; justify-content: center; background: #fbfbfa; overflow-x: auto; min-height: 400px; position: relative;">
+      <pre class="mermaid" style="margin: 0; width: 100%;">
+{{ mermaid_code }}
+      </pre>
+    </div>
+  </div>
+
+  <!-- Table Detail Cards -->
+  <h3 style="margin-top:2.5rem; font-size:1rem; font-weight:700; margin-bottom:1rem;">
+    <i class="fas fa-table" style="color:var(--bo-accent);margin-right:6px;"></i> Detalhe das Tabelas
+  </h3>
+  <div class="erd-table-list">
+    {% for t in tabelas %}
+    <div class="erd-table-card">
+      <div class="erd-table-card__head" style="background:{{ t.color }};">
+        <i class="fas {{ t.icon }}"></i> {{ t.name }}
+      </div>
+      <div class="erd-table-card__body">
+        {% for col in t.columns %}
+        <div class="erd-table-card__col">
+          <span>
+            {% if col.pk %}<span class="erd-col-pk">🔑</span>{% endif %}
+            <span class="erd-col-name">{{ col.name }}</span>
+            {% if col.fk %}<span class="erd-col-fk" title="{{ col.fk }}"> → {{ col.fk.split('.')[0] }}</span>{% endif %}
+          </span>
+          <span class="erd-col-type">{{ col.type }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Fullscreen ERD Modal -->
+<div id="erd-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255, 255, 255, 0.98); z-index: 99999; flex-direction: column; justify-content: center; align-items: center; font-family: system-ui, sans-serif; color: #2c2c2a; opacity: 0; transition: opacity 0.25s ease;">
+  <!-- Header / Toolbar -->
+  <div style="position: absolute; top: 0; left: 0; width: 100%; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(255,255,255,0.98), rgba(255,255,255,0)); z-index: 10; border-bottom: 1px solid rgba(0,0,0,0.05);">
+    <div>
+      <h3 style="margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; color: #2c2c2a;">
+        <i class="fas fa-project-diagram" style="color: var(--bo-accent, #f97316);"></i>
+        Esquema da Base de Dados Interativo
+      </h3>
+      <p style="margin: 4px 0 0; font-size: 0.78rem; color: #666;">Arraste com o rato para mover · Use a roda do rato ou botões flutuantes para dar Zoom</p>
+    </div>
+    
+    <!-- Controls -->
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button onclick="downloadSVG()" style="background: #e2f0d9; border: 1px solid #c3e6cb; color: #2e5b32; padding: 0 16px; height: 38px; border-radius: 19px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#d4edda'" onmouseout="this.style.background='#e2f0d9'" title="Descarregar imagem do diagrama">
+        <i class="fas fa-download"></i> Descarregar SVG
+      </button>
+      <button onclick="zoomERD(1.2)" style="background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); color: #333; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'" title="Aproximar (Zoom In)">
+        <i class="fas fa-plus"></i>
+      </button>
+      <button onclick="zoomERD(0.85)" style="background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); color: #333; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'" title="Afastar (Zoom Out)">
+        <i class="fas fa-minus"></i>
+      </button>
+      <button onclick="resetERD()" style="background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); color: #333; padding: 0 16px; height: 38px; border-radius: 19px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.05)'">
+        <i class="fas fa-sync-alt"></i> Repor Vista
+      </button>
+      <button id="btn-close-modal" style="background: var(--bo-accent, #f97316); border: none; color: white; padding: 0 20px; height: 38px; border-radius: 19px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+        <i class="fas fa-times"></i> Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- Zoomable Pan Container -->
+  <div id="erd-modal-body" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; cursor: grab; user-select: none;">
+    <div id="erd-svg-container" style="transform-origin: center center; transition: transform 0.08s ease-out; transform: translate(0px, 0px) scale(1);">
+      <!-- Rendered SVG will be cloned here dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- Mermaid JS -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    fontFamily: 'system-ui, sans-serif',
+    themeVariables: {
+      darkMode: false,
+      fontSize: '15px',
+      fontFamily: 'system-ui, sans-serif',
+      lineColor: '#73726c',
+      textColor: '#3d3d3a',
+      primaryColor: '#f1efe8',
+      primaryBorderColor: '#b4b2a9',
+      primaryTextColor: '#3d3d3a',
+      attributeBackgroundColorEven: '#f8f7f2',
+      attributeBackgroundColorOdd: '#ffffff',
+    },
+    er: {
+      diagramPadding: 30,
+      layoutDirection: 'TB',
+      minEntityWidth: 110,
+      minEntityHeight: 75,
+      entityPadding: 12,
+      useMaxWidth: true
+    }
+  });
+
+  // Pan & Zoom Implementation
+  document.addEventListener('DOMContentLoaded', () => {
+    let scale = 1;
+    let translateX = 0;
+    let translateY = 0;
+    let isDragging = false;
+    let startX, startY;
+
+    const modal = document.getElementById('erd-modal');
+    const modalBody = document.getElementById('erd-modal-body');
+    const svgContainer = document.getElementById('erd-svg-container');
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+
+    // Open Fullscreen Modal
+    btnFullscreen.addEventListener('click', () => {
+      const originalSvg = document.querySelector('#erd-diagram svg');
+      if (!originalSvg) {
+        alert("O diagrama ainda está a ser desenhado. Aguarde um momento...");
+        return;
+      }
+
+      // Clone original SVG
+      const clonedSvg = originalSvg.cloneNode(true);
+      
+      // Reset layout attributes for fullscreen
+      clonedSvg.removeAttribute('width');
+      clonedSvg.removeAttribute('height');
+      clonedSvg.style.width = 'auto';
+      clonedSvg.style.height = '82vh';
+      clonedSvg.style.maxWidth = '92vw';
+      clonedSvg.style.maxHeight = '82vh';
+
+      svgContainer.innerHTML = '';
+      svgContainer.appendChild(clonedSvg);
+
+      // Reset coordinates
+      scale = 0.95;
+      translateX = 0;
+      translateY = 0;
+      updateTransform();
+
+      // Fade-in Modal
+      modal.style.display = 'flex';
+      setTimeout(() => {
+        modal.style.opacity = '1';
+      }, 30);
+    });
+
+    // Close Modal
+    const closeModal = () => {
+      modal.style.opacity = '0';
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 250);
+    };
+
+    btnCloseModal.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal || e.target === modalBody) {
+        closeModal();
+      }
+    });
+
+    // Handle ESC key to exit fullscreen
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.style.display === 'flex') {
+        closeModal();
+      }
+    });
+
+    // Update coordinates CSS
+    function updateTransform() {
+      svgContainer.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    // Drag-to-Pan Event Listeners
+    modalBody.addEventListener('mousedown', (e) => {
+      if (e.target.closest('button')) return;
+      isDragging = true;
+      modalBody.style.cursor = 'grabbing';
+      startX = e.clientX - translateX;
+      startY = e.clientY - translateY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      translateX = e.clientX - startX;
+      translateY = e.clientY - startY;
+      updateTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      modalBody.style.cursor = 'grab';
+    });
+
+    // Wheel-to-Zoom Event Listener
+    modalBody.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomStrength = 1.08;
+      if (e.deltaY < 0) {
+        scale = Math.min(scale * zoomStrength, 6);
+      } else {
+        scale = Math.max(scale / zoomStrength, 0.2);
+      }
+      updateTransform();
+    }, { passive: false });
+
+    // Global Zoom Functions
+    window.zoomERD = function(factor) {
+      if (factor > 1) {
+        scale = Math.min(scale * factor, 6);
+      } else {
+        scale = Math.max(scale * factor, 0.2);
+      }
+      updateTransform();
+    };
+
+    window.resetERD = function() {
+      scale = 0.95;
+      translateX = 0;
+      translateY = 0;
+      updateTransform();
+    };
+
+    // Download SVG Function
+    window.downloadSVG = function() {
+      const svgEl = document.querySelector('#erd-diagram svg');
+      if (!svgEl) {
+        alert("O diagrama ainda está a ser gerado. Aguarde um momento...");
+        return;
+      }
+      try {
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svgEl);
+        
+        // Ensure XML namespaces are present
+        if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+          source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+        }
+        if(!source.match(/^<svg[^>]+xmlns\:xlink="http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+          source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+        }
+        
+        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+        
+        const svgBlob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});
+        const url = URL.createObjectURL(svgBlob);
+        
+        const downloadLink = document.createElement("a");
+        downloadLink.href = url;
+        downloadLink.download = "esquema_base_dados_ispgaya.svg";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error("Erro ao descarregar SVG:", err);
+        alert("Ocorreu um erro ao descarregar o diagrama. Tente novamente.");
+      }
+    };
+
+    // Bind click to main page download button
+    document.getElementById('btn-download').addEventListener('click', window.downloadSVG);
+  });
+</script>
+{% endblock %}

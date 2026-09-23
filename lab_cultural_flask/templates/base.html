@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="{% block meta_desc %}Laboratório Cultural do ISPGAYA — Clube de Leitura, Clube de Teatro e Programação Cultural{% endblock %}">
+    <title>{% block title %}Laboratório Cultural{% endblock %} | ISPGAYA</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ['Libre Baskerville', 'serif'],
+              sans: ['Open Sans', 'sans-serif'],
+            },
+            colors: {
+              orange: {
+                400: '#fb923c',
+                500: '#f97316',
+                600: '#ea580c',
+                700: '#c2410c',
+              },
+            },
+          },
+        },
+      }
+    </script>
+
+    <!-- CSS Base ISPGaya + Lab. Cultural -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lab_cultural.css') }}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="bg-white">
+    <!-- Camada de Ambiente Global (Preenchimento Total) -->
+    <div class="global-grid"></div>
+
+    <!-- Ornamentos ISPGAYA (Selos de Identidade) -->
+    <div class="dot-pattern dot-pattern--lg dot-pattern--behind" style="top: 180px; right: 20px;"></div>
+    <div class="dot-pattern dot-pattern--sm dot-pattern--behind" style="top: 450px; left: 10px;"></div>
+    <div class="dot-pattern dot-pattern--behind" style="bottom: 15%; right: 40px;"></div>
+    <div class="dot-pattern dot-pattern--lg dot-pattern--behind" style="top: 1500px; left: -50px; transform: rotate(90deg); opacity: 0.1;"></div>
+    <div class="dot-pattern dot-pattern--behind" style="top: 2500px; right: 20px; opacity: 0.1;"></div>
+    <div class="dot-pattern dot-pattern--sm dot-pattern--behind" style="position: fixed; bottom: 80px; left: 20px;"></div>
+
+    {% include 'includes/navbar.html' %}
+
+    <!-- Pre-main spacer -->
+    <div class="mt-24 md:mt-28 lg:mt-40"></div>
+
+    <!-- ===== CONTEÚDO ===== -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages container mx-auto px-4 mt-4">
+        {% for category, message in messages %}
+        <div class="flash bg-{% if category == 'success' %}green{% elif category == 'error' %}red{% else %}blue{% endif %}-100 border border-{% if category == 'success' %}green{% elif category == 'error' %}red{% else %}blue{% endif %}-400 text-{% if category == 'success' %}green{% elif category == 'error' %}red{% else %}blue{% endif %}-700 px-4 py-3 rounded relative mb-4 flex justify-between items-center" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+            <button class="flash-close ml-4 hover:opacity-70 transition-opacity" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    {% include 'includes/footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/lab_cultural.js') }}"></script>
+    <script>
+        window.addEventListener('scroll', function() {
+          const nav = document.getElementById('main-nav');
+          if (nav) {
+            if (window.scrollY > 40) {
+              nav.classList.add('scrolled');
+            } else {
+              nav.classList.remove('scrolled');
+            }
+          }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

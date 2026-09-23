@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inscrição Confirmada — {{ sessao.tema }} — ISPGAYA</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+</head>
+
+<body class="antialiased bg-[#f8f9fa] text-black font-sans flex flex-col min-h-screen">
+  
+  {% include 'includes/navbar.html' %}
+
+  <!-- BREADCRUMB (Spacing for fixed navbar) -->
+  <nav class="bg-white border-b border-gray-200 py-3 mt-24 md:mt-28 lg:mt-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center text-[11px] font-medium uppercase tracking-wider text-gray-500">
+        <a href="{{ url_for('frontoffice.index') }}" class="hover:text-orange-500 transition-colors">Início</a>
+        <span class="mx-2 text-gray-300">/</span>
+        <a href="{{ url_for('frontoffice.clube_leitura') }}" class="hover:text-orange-500 transition-colors">Clube de Leitura</a>
+        <span class="mx-2 text-gray-300">/</span>
+        <span class="text-black">Confirmação</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow py-12 px-4">
+    <div class="max-w-2xl mx-auto">
+      
+      <div class="bg-white shadow-2xl rounded-sm border border-gray-100 overflow-hidden">
+          
+          <!-- Header -->
+          <div class="bg-orange-500 p-12 text-center text-white relative">
+              <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/30 backdrop-blur-sm">
+                  <i class="fas fa-check text-2xl"></i>
+              </div>
+              <h1 class="text-3xl font-serif font-bold mb-2">Inscrição Confirmada!</h1>
+              <p class="text-white/80 text-sm">Vemo-nos em breve para partilhar histórias.</p>
+          </div>
+
+          <!-- Content -->
+          <div class="p-10 text-center">
+              <p class="text-gray-600 mb-8">
+                  Olá <strong class="text-black">{{ nome }}</strong>, a tua inscrição na sessão <strong>"{{ sessao.tema }}"</strong> foi confirmada. Enviámos os detalhes para o teu e-mail: <span class="text-orange-500 font-medium">{{ email }}</span>.
+              </p>
+
+              <div class="bg-gray-50 p-6 rounded-sm mb-10 text-left border border-gray-100">
+                  <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Resumo da Sessão</h3>
+                  <div class="space-y-3">
+                      <div class="flex items-center gap-3">
+                          <i class="far fa-calendar-alt text-orange-400 w-5"></i>
+                          <span class="text-sm font-medium">{{ sessao.data_sessao.strftime('%d/%m/%Y') if sessao.data_sessao else 'A anunciar' }}</span>
+                      </div>
+                      <div class="flex items-center gap-3">
+                          <i class="far fa-clock text-orange-400 w-5"></i>
+                          <span class="text-sm font-medium">{{ sessao.hora or '18:00' }}</span>
+                      </div>
+                      <div class="flex items-center gap-3">
+                          <i class="fas fa-map-marker-alt text-orange-400 w-5"></i>
+                          <span class="text-sm font-medium">{{ sessao.local or 'Biblioteca ISPGAYA' }}</span>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="flex flex-col items-center gap-6">
+                  <div class="flex gap-4 w-full justify-center">
+                      <a href="{{ url_for('frontoffice.clube_leitura') }}" class="bg-black text-white px-8 py-3 font-bold uppercase tracking-widest text-[10px] hover:bg-orange-500 transition-all rounded-sm shadow-md no-underline">
+                          Voltar ao Clube
+                      </a>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="bg-gray-50 border-t border-gray-100 p-6 flex items-center justify-center gap-8">
+                <img src="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" class="h-6 grayscale opacity-30" alt="Logo">
+                <p class="text-[9px] text-gray-400 uppercase font-bold tracking-tighter">Clube de Leitura • ISPGAYA 2026</p>
+          </div>
+      </div>
+
+    </div>
+  </main>
+
+  {% include 'includes/footer.html' %}
+
+</body>
+</html>

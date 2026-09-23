@@ -1,0 +1,6 @@
+flask
+pymysql
+bcrypt
+fpdf2
+qrcode[pil]
+pyotp

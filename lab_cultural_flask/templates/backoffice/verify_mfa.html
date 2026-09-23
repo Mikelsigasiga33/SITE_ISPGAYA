@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segurança 2FA | Backoffice ISPGAYA</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/backoffice.css') }}">
+</head>
+
+<body class="bo-login-body">
+
+    <div class="bo-login-container">
+        <div class="bo-login-card">
+            <!-- Logo -->
+            <div class="bo-login-logo">
+                <div class="bo-login-logo__icon"><i class="fas fa-shield-alt"></i></div>
+                <div>
+                    <span class="bo-login-logo__name">ISPGAYA</span>
+                    <span class="bo-login-logo__sub">Laboratório Cultural · Backoffice</span>
+                </div>
+            </div>
+
+            <h2 class="bo-login-title">Código de Segurança</h2>
+            <p class="bo-login-subtitle">Abra a sua aplicação autenticadora (Google Authenticator) e introduza o código de 6 dígitos.</p>
+
+            <!-- Erro -->
+            {% if erro %}
+            <div class="bo-login-erro">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ erro }}
+            </div>
+            {% endif %}
+
+            <!-- Formulário -->
+            <form method="POST" action="{{ url_for('auth.verify_2fa') }}" class="bo-login-form" id="verify-form" autocomplete="off" novalidate>
+                <div class="bo-form-group">
+                    <label for="code" style="text-align: center; display: block; margin-bottom: 1rem;">
+                        Código de Verificação (6 dígitos)
+                    </label>
+                    <input type="text" id="code" name="code" placeholder="000000" required
+                           maxlength="6" pattern="\d{6}" autocomplete="off" autofocus
+                           style="text-align: center; font-size: 1.8rem; letter-spacing: 0.3em; font-family: monospace; font-weight: 700; padding: 0.6rem; border: 2px solid #cbd5e1; border-radius: 8px; outline: none; transition: border-color 0.2s; width: 100%;">
+                    <span class="form-error" id="code-error" style="text-align: center; display: block; color: #ef4444; font-size: 0.8rem; margin-top: 8px;"></span>
+                </div>
+
+                <button type="submit" class="bo-login-btn" id="verify-btn" style="background: #10b981; border: none; cursor: pointer; color: white;">
+                    <i class="fas fa-key"></i> Confirmar e Entrar
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <a href="{{ url_for('auth.login') }}" class="text-xs text-orange-500 hover:underline" style="font-size: 0.8rem; color: #f97316; text-decoration: none; font-weight: 500;">
+                    <i class="fas fa-arrow-left"></i> Voltar ao Login tradicional
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Validação do lado do cliente
+        document.getElementById('verify-form').addEventListener('submit', function (e) {
+            let valid = true;
+            const code = document.getElementById('code').value.trim();
+            const errorSpan = document.getElementById('code-error');
+
+            errorSpan.textContent = '';
+
+            if (!code) {
+                errorSpan.textContent = 'O código é obrigatório.';
+                valid = false;
+            } else if (code.length !== 6 || isNaN(code)) {
+                errorSpan.textContent = 'O código deve conter exatamente 6 dígitos numéricos.';
+                valid = false;
+            }
+            if (!valid) e.preventDefault();
+        });
+    </script>
+</body>
+
+</html>

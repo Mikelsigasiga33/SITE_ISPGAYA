@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Catálogo do Clube — ISPGAYA</title>
+  <meta name="description" content="Explora o nosso catálogo completo de livros selecionados para o Clube de Leitura ISPGAYA." />
+
+  <!-- Fonts (Matches ispgaya.pt) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons & CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/lab_cultural.css') }}">
+  
+  <style>
+    body { background-color: #ffffff; color: #000000; -webkit-font-smoothing: antialiased; }
+    
+    .book-title-link:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
+    }
+
+    .cat-pill {
+      padding: 10px 24px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .cat-pill.active {
+      background-color: #f97316;
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+    }
+
+    .cat-pill:not(.active) {
+      color: #64748b;
+    }
+
+    .cat-pill:not(.active):hover {
+      color: #f97316;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar { height: 2px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #f97316; border-radius: 10px; }
+
+    .triangle-pattern {
+      position: absolute;
+      width: 400px;
+      height: 600px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M0 30 L15 0 L30 30 Z' fill='%23e2e8f0'/%3E%3C/svg%3E");
+      background-size: 30px 30px;
+      opacity: 0.4;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .triangle-pattern--right { top: 5%; right: -200px; transform: rotate(15deg); }
+    .triangle-pattern--left { top: 35%; left: -250px; transform: rotate(-15deg); opacity: 0.5; }
+
+    /* Autocomplete Styles */
+    .autocomplete-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #f1f5f9;
+      border-top: none;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      max-height: 300px;
+      overflow-y: auto;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .autocomplete-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .autocomplete-item:hover {
+      background-color: #f8fafc;
+    }
+
+    .autocomplete-item i {
+      color: #cbd5e1;
+      font-size: 0.875rem;
+    }
+
+    .autocomplete-item .title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #1e293b;
+    }
+
+    .autocomplete-item .type {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #f97316;
+      margin-left: auto;
+    }
+  </style>
+</head>
+
+<body class="antialiased font-sans">
+    <div id="app" class="min-h-screen flex flex-col items-stretch relative">
+        
+        {% include 'includes/navbar.html' %}
+
+        <main class="flex-grow pt-24 lg:pt-32">
+          
+          <!-- BREADCRUMB & TITLE -->
+          <section class="container mx-auto px-4 sm:px-6 xl:px-8 pt-12 pb-8 relative overflow-hidden">
+            <!-- Ornamentos -->
+            <div class="triangle-pattern triangle-pattern--right"></div>
+            <div class="triangle-pattern triangle-pattern--left"></div>
+
+            <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+                <a href="{{ url_for('frontoffice.index') }}" class="hover:text-black transition-colors">Lab. Cultural</a>
+                <span class="mx-2 text-gray-300"> / </span>
+                <a href="{{ url_for('frontoffice.clube_leitura') }}" class="hover:text-black transition-colors"> Clube de Leitura </a>
+                <span class="mx-2 text-gray-300"> / </span>
+                <span class="text-black font-medium"> Biblioteca </span>
+            </nav>
+            <h1 class="text-4xl lg:text-5xl font-bold font-serif mb-4 tracking-tight text-gray-900">Biblioteca do Clube</h1>
+            <p class="text-xl text-gray-600 leading-relaxed max-w-3xl">
+              Explora todas as obras que integram o nosso acervo e viaja através da leitura.
+            </p>
+          </section>
+
+          <!-- FILTERS (Modern & Integrated) -->
+          <section class="border-b border-gray-100 py-8 bg-white sticky top-[70px] z-50 shadow-sm">
+            <div class="container mx-auto px-4 sm:px-6 xl:px-8">
+                <form id="filter-form" class="space-y-8">
+                    <!-- Genres Row -->
+                    <div class="overflow-x-auto custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+                        <div class="flex items-center space-x-2 md:space-x-4 whitespace-nowrap pb-4">
+                            <button type="button" data-genero="" 
+                                class="cat-pill transition-all {{ 'active' if not filtros_ativos.get('genero') }}">
+                                Todos os Livros
+                            </button>
+                            {% for g in generos %}
+                            <button type="button" data-genero="{{ g }}" 
+                                class="cat-pill transition-all {{ 'active' if filtros_ativos.get('genero') == g }}">
+                                {{ g }}
+                            </button>
+                            {% endfor %}
+                            <input type="hidden" name="genero" id="genero_input" value="{{ filtros_ativos.get('genero', '') }}">
+                        </div>
+                    </div>
+
+                    <!-- Search & Secondary Filters Row -->
+                    <div class="flex flex-col lg:flex-row gap-6 items-stretch lg:items-center">
+                        <!-- Search Bar -->
+                        <div class="relative flex-grow group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-300 group-focus-within:text-orange-500 transition-colors"></i>
+                            </div>
+                            <input type="text" name="q" id="q_input" value="{{ filtros_ativos.get('q', '') }}" 
+                                placeholder="Procurar por título, autor ou ISBN..." autocomplete="off"
+                                class="w-full bg-gray-50 border border-gray-100 rounded-lg pl-11 pr-4 py-3 text-sm font-medium focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all placeholder:text-gray-400">
+                            
+                            <!-- Sugestões -->
+                            <div id="autocomplete-results" class="autocomplete-results hidden"></div>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div class="relative w-full lg:w-64">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-filter text-gray-300 text-xs"></i>
+                            </div>
+                            <select name="disponibilidade" 
+                                    class="w-full bg-gray-50 border border-gray-100 rounded-lg pl-10 pr-10 py-3 text-xs font-bold text-gray-600 appearance-none cursor-pointer focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all uppercase tracking-widest">
+                                <option value="">Estado (Todos)</option>
+                                <option value="disponivel" {{ 'selected' if filtros_ativos.get('disponibilidade') == 'disponivel' }}>Disponível</option>
+                                <option value="indisponivel" {{ 'selected' if filtros_ativos.get('disponibilidade') == 'indisponivel' }}>Requisitado</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-400 text-[10px]"></i>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+          </section>
+
+          <!-- BOOKS LIST -->
+          <section class="container mx-auto px-4 sm:px-6 xl:px-8 py-12 lg:py-24">
+            <div id="results-wrapper" class="transition-opacity duration-300">
+                <div class="mb-10 flex items-center justify-between border-b pb-4">
+                    <span class="text-sm font-bold uppercase tracking-widest text-gray-400">
+                        Catálogo: <span class="text-black">{{ total }}</span> livros
+                    </span>
+                </div>
+
+                <div id="books-container">
+                    {% if livros %}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
+                        {% for livro in livros %}
+                        <article class="group flex flex-col">
+                            <div class="aspect-[3/4] relative overflow-hidden rounded-lg shadow-md bg-gray-50 mb-4">
+                                <a href="{{ url_for('frontoffice.livro_detalhe', livro_id=livro.id) }}">
+                                    {% if livro.imagem %}
+                                    <img src="{{ url_for('static', filename=livro.imagem) }}" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105" alt="{{ livro.titulo }}">
+                                    {% else %}
+                                    <img src="{{ url_for('static', filename='img/leitura/livro1.jpg') }}" class="w-full h-full object-cover" alt="{{ livro.titulo }}">
+                                    {% endif %}
+                                </a>
+                                <!-- Badge Status -->
+                                <div class="absolute top-4 right-4">
+                                    {% if livro.esta_disponivel %}
+                                    <span class="px-2 py-1 bg-green-500 text-white text-[9px] font-bold uppercase tracking-widest rounded shadow-sm">Disponível</span>
+                                    {% else %}
+                                        {% if livro.req_estado == 'Levantado' %}
+                                        <span class="px-2 py-1 bg-red-500 text-white text-[9px] font-bold uppercase tracking-widest rounded shadow-sm">Requisitado</span>
+                                        {% else %}
+                                        <span class="px-2 py-1 bg-gray-500 text-white text-[9px] font-bold uppercase tracking-widest rounded shadow-sm">Indisponível</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <span class="text-orange-500 font-bold text-[10px] uppercase tracking-widest">{{ livro.genero or 'Leitura' }}</span>
+                                <h3 class="text-lg font-black leading-tight font-sans">
+                                    <a href="{{ url_for('frontoffice.livro_detalhe', livro_id=livro.id) }}" class="book-title-link transition-colors text-black">{{ livro.titulo }}</a>
+                                </h3>
+                                <p class="text-sm text-gray-500">{{ livro.autor }}</p>
+                                
+                                {% if not livro.esta_disponivel and livro.dias_restantes is not none %}
+                                <div class="flex items-center gap-1.5 pt-1">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse"></div>
+                                    <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-tight">
+                                        {% if livro.dias_restantes < 0 %}
+                                            Previsão: em breve
+                                        {% elif livro.dias_restantes == 0 %}
+                                            Disponível hoje
+                                        {% elif livro.dias_restantes == 1 %}
+                                            Previsão: amanhã
+                                        {% else %}
+                                            Previsão: em {{ livro.dias_restantes }} dias
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </article>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    <div id="pagination-container" class="mt-24 flex justify-center">
+                    {% if total_paginas > 1 %}
+                        <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+                            <a href="{{ url_for('frontoffice.biblioteca', pagina=pagina-1, **filtros_ativos) }}" 
+                               class="relative inline-flex items-center px-3 py-2 rounded-l border border-gray-200 bg-white text-sm font-medium transition-all {{ 'text-gray-200 pointer-events-none' if pagina == 1 else 'text-gray-500 hover:bg-gray-50 hover:text-orange-500' }}">
+                                <i class="fas fa-chevron-left text-[10px]"></i>
+                            </a>
+                            
+                            {% for p in range(1, total_paginas + 1) %}
+                            <a href="{{ url_for('frontoffice.biblioteca', pagina=p, **filtros_ativos) }}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-200 bg-white text-sm transition-all {{ 'text-orange-500 font-bold z-10 border-orange-200' if p == pagina else 'text-gray-600 hover:bg-gray-50 hover:text-orange-500' }}">
+                              {{ p }}
+                            </a>
+                            {% endfor %}
+
+                            <a href="{{ url_for('frontoffice.biblioteca', pagina=pagina+1, **filtros_ativos) }}" 
+                               class="relative inline-flex items-center px-3 py-2 rounded-r border border-gray-200 bg-white text-sm font-medium transition-all {{ 'text-gray-200 pointer-events-none' if pagina == total_paginas else 'text-gray-500 hover:bg-gray-50 hover:text-orange-500' }}">
+                                <i class="fas fa-chevron-right text-[10px]"></i>
+                            </a>
+                        </nav>
+                    {% endif %}
+                    </div>
+
+                    {% else %}
+                    <div class="py-24 text-center border-2 border-dashed border-gray-100 rounded-lg">
+                        <p class="text-gray-400 uppercase tracking-widest font-bold">Nenhum livro encontrado</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+          </section>
+
+        </main>
+
+        {% include 'includes/footer.html' %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filter-form');
+            const container = document.getElementById('books-container');
+            const wrapper = document.getElementById('results-wrapper');
+            const paginationContainer = document.getElementById('pagination-container');
+            
+            const BASE_DETALHE_URL = "{{ url_for('frontoffice.livro_detalhe', livro_id=0) }}".replace('0', '');
+            const BASE_STATIC_URL = "{{ url_for('static', filename='') }}";
+
+            function renderCard(livro) {
+                const imgPath = livro.imagem ? BASE_STATIC_URL + livro.imagem : BASE_STATIC_URL + 'img/leitura/livro1.jpg';
+                const statusBadge = livro.esta_disponivel 
+                    ? '<span class="px-2 py-1 bg-green-500 text-white text-[9px] font-bold uppercase tracking-widest rounded shadow-sm">Disponível</span>'
+                    : (livro.req_estado === 'Levantado' 
+                        ? '<span class="px-2 py-1 bg-red-500 text-white text-[9px] font-bold uppercase tracking-widest rounded shadow-sm">Requisitado</span>'
+                        : '<span class="px-2 py-1 bg-gray-500 text-white text-[9px] font-bold uppercase tracking-widest rounded shadow-sm">Indisponível</span>');
+
+                return `
+                    <article class="group flex flex-col">
+                        <div class="aspect-[3/4] relative overflow-hidden rounded-lg shadow-md bg-gray-50 mb-4">
+                            <a href="${BASE_DETALHE_URL}${livro.id}">
+                                <img src="${imgPath}" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105" alt="${livro.titulo}">
+                            </a>
+                            <div class="absolute top-4 right-4">${statusBadge}</div>
+                        </div>
+                        <div class="space-y-2">
+                            <span class="text-orange-500 font-bold text-[10px] uppercase tracking-widest">${livro.genero || 'Leitura'}</span>
+                            <h3 class="text-lg font-black leading-tight font-sans">
+                                <a href="${BASE_DETALHE_URL}${livro.id}" class="book-title-link transition-colors text-black">${livro.titulo}</a>
+                            </h3>
+                            <p class="text-sm text-gray-500">${livro.autor}</p>
+                            ${!livro.esta_disponivel && livro.dias_restantes !== null ? `
+                                <div class="flex items-center gap-1.5 pt-1">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse"></div>
+                                    <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-tight">
+                                        ${livro.dias_restantes < 0 ? 'Previsão: em breve' : 
+                                          livro.dias_restantes === 0 ? 'Disponível hoje' : 
+                                          livro.dias_restantes === 1 ? 'Previsão: amanhã' : 
+                                          `Previsão: em ${livro.dias_restantes} dias`}
+                                    </span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </article>
+                `;
+            }
+
+            function renderPagination(total, current) {
+                if (total <= 1) return '';
+                let html = `
+                    <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
+                        <a href="#" data-page="${current - 1}" 
+                           class="relative inline-flex items-center px-3 py-2 rounded-l border border-gray-200 bg-white text-sm font-medium transition-all ${current === 1 ? 'text-gray-200 pointer-events-none' : 'text-gray-500 hover:bg-gray-50 hover:text-orange-500'}">
+                            <i class="fas fa-chevron-left text-[10px]"></i>
+                        </a>
+                `;
+                for (let p = 1; p <= total; p++) {
+                    html += `
+                        <a href="#" data-page="${p}" 
+                           class="relative inline-flex items-center px-4 py-2 border border-gray-200 bg-white text-sm transition-all ${p === current ? 'text-orange-500 font-bold z-10 border-orange-200' : 'text-gray-600 hover:bg-gray-50 hover:text-orange-500'}">
+                          ${p}
+                        </a>
+                    `;
+                }
+                html += `
+                        <a href="#" data-page="${current + 1}" 
+                           class="relative inline-flex items-center px-3 py-2 rounded-r border border-gray-200 bg-white text-sm font-medium transition-all ${current === total ? 'text-gray-200 pointer-events-none' : 'text-gray-500 hover:bg-gray-50 hover:text-orange-500'}">
+                            <i class="fas fa-chevron-right text-[10px]"></i>
+                        </a>
+                    </nav>
+                `;
+                return html;
+            }
+
+            function syncFiltersFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                
+                // 1. Gênero
+                const generoVal = params.get('genero') || '';
+                document.getElementById('genero_input').value = generoVal;
+                document.querySelectorAll('.cat-pill').forEach(btn => {
+                    if ((btn.dataset.genero || '') === generoVal) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+
+                // 2. Pesquisa
+                document.getElementById('q_input').value = params.get('q') || '';
+
+                // 3. Select de Disponibilidade
+                filterForm.querySelectorAll('select').forEach(select => {
+                    const name = select.getAttribute('name');
+                    if (name && params.has(name)) {
+                        select.value = params.get(name);
+                    } else if (name) {
+                        select.value = '';
+                    }
+                });
+            }
+
+            function getCurrentPageFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                return parseInt(params.get('pagina')) || 1;
+            }
+
+            async function updateResults(page = 1, pushState = true) {
+                wrapper.style.opacity = '0.5';
+                const params = new URLSearchParams(new FormData(filterForm));
+                params.set('pagina', page);
+
+                try {
+                    const res = await fetch(`/api/v1/biblioteca?${params.toString()}`);
+                    if (!res.ok) throw new Error(`API error: ${res.status}`);
+                    
+                    const data = await res.json();
+                    
+                    if (data.livros && data.livros.length > 0) {
+                        const grid = document.createElement('div');
+                        grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12';
+                        grid.innerHTML = data.livros.map(l => renderCard(l)).join('');
+                        container.innerHTML = '';
+                        container.appendChild(grid);
+                        
+                        const pagDiv = document.createElement('div');
+                        pagDiv.id = 'pagination-container';
+                        pagDiv.className = 'mt-24 flex justify-center';
+                        pagDiv.innerHTML = renderPagination(data.total_paginas, data.pagina);
+                        container.appendChild(pagDiv);
+                    } else {
+                        container.innerHTML = `
+                            <div class="py-24 text-center border-2 border-dashed border-gray-100 rounded-lg">
+                                <p class="text-gray-400 uppercase tracking-widest font-bold">Nenhum livro encontrado para estes filtros</p>
+                            </div>
+                        `;
+                    }
+                    
+                    if (pushState) {
+                        window.history.pushState({}, '', window.location.pathname + '?' + params.toString());
+                    }
+                } catch (e) { 
+                    console.error('Erro na atualização:', e);
+                    container.innerHTML = `<div class="py-10 text-center text-red-500 font-medium">Erro ao carregar dados.</div>`;
+                }
+                finally { wrapper.style.opacity = '1'; }
+            }
+
+            // Inicializar e sincronizar a partir do URL
+            syncFiltersFromURL();
+
+            window.addEventListener('popstate', () => {
+                syncFiltersFromURL();
+                updateResults(getCurrentPageFromURL(), false);
+            });
+
+            // Listeners
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                btn.onclick = () => {
+                    document.getElementById('genero_input').value = btn.dataset.genero;
+                    document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    updateResults(1);
+                };
+            });
+
+            filterForm.querySelectorAll('select').forEach(el => {
+                el.onchange = () => updateResults(1);
+            });
+
+            let timer;
+            const qInput = document.getElementById('q_input');
+            const suggestions = document.getElementById('autocomplete-results');
+
+            qInput.oninput = () => {
+                clearTimeout(timer);
+                const query = qInput.value.trim();
+                
+                if (query.length < 2) {
+                    suggestions.classList.add('hidden');
+                    updateResults(1);
+                    return;
+                }
+
+                timer = setTimeout(async () => {
+                    // 1. Atualizar resultados principais
+                    updateResults(1);
+
+                    // 2. Procurar sugestões
+                    try {
+                        const res = await fetch(`/api/v1/autocomplete?q=${encodeURIComponent(query)}&tipo=livro`);
+                        const data = await res.json();
+                        
+                        if (data.length > 0) {
+                            suggestions.innerHTML = data.map(item => `
+                                <div class="autocomplete-item" onclick="window.location.href='${item.tipo === 'livro' ? BASE_DETALHE_URL : '/lab-cultural/eventos/'}${item.id}'">
+                                    <i class="fas ${item.tipo === 'livro' ? 'fa-book' : 'fa-calendar'}"></i>
+                                    <span class="title">${item.titulo}</span>
+                                    <span class="type">${item.tipo}</span>
+                                </div>
+                            `).join('');
+                            suggestions.classList.remove('hidden');
+                        } else {
+                            suggestions.classList.add('hidden');
+                        }
+                    } catch (e) { console.error(e); }
+                }, 400);
+            };
+
+            // Fechar sugestões ao clicar fora
+            document.addEventListener('click', (e) => {
+                if (!qInput.contains(e.target) && !suggestions.contains(e.target)) {
+                    suggestions.classList.add('hidden');
+                }
+            });
+
+            container.onclick = (e) => {
+                const link = e.target.closest('a[data-page]');
+                if (link) {
+                    e.preventDefault();
+                    updateResults(link.dataset.page);
+                    window.scrollTo({ top: document.getElementById('results-wrapper').offsetTop - 100, behavior: 'smooth' });
+                }
+            };
+        });
+    </script>
+</body>
+</html>

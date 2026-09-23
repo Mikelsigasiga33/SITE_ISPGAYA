@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ noticia.titulo }} — ISPGAYA</title>
+  <meta name="description" content="{{ noticia.resumo or '' }}" />
+
+  <!-- Fonts (Matches ispgaya.pt) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Libre Baskerville', 'serif'],
+            sans: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            orange: {
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}" type="image/x-icon">
+</head>
+
+<body class="antialiased bg-white text-black font-sans">
+  <div id="app" class="h-full min-h-screen flex flex-col items-stretch">
+
+    {% include 'includes/navbar.html' %}
+
+    <main class="h-full mt-20 md:mt-24 lg:mt-32">
+      <section class="max-w-4xl mx-auto px-4 z-10 pb-10 sm:px-6 lg:px-0">
+
+        <!-- Back Link -->
+        <a href="{{ url_for('frontoffice.noticias') }}"
+          class="flex items-center text-sm font-medium text-gray-400 hover:text-black transition-colors group">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          Voltar
+        </a>
+
+        <article class="mt-10">
+          <div class="mb-8">
+            <h1 class="text-4xl lg:text-5xl font-serif font-bold leading-tight mb-8 text-[#1a1a1a]">
+              {{ noticia.titulo }}
+            </h1>
+
+            <div class="flex flex-wrap items-center gap-x-8 gap-y-4 text-sm font-medium text-gray-500">
+              {% if noticia.publicado_em %}
+              <div class="flex items-center">
+                <i class="far fa-calendar-alt mr-2 text-gray-400"></i>
+                <span class="capitalize">{{ noticia.publicado_em.strftime('%d %B, %Y') if noticia.publicado_em else '' }}</span>
+              </div>
+              {% endif %}
+              
+              {% if noticia.categoria_nome %}
+              <div class="flex items-center text-orange-500">
+                <span>#{{ noticia.categoria_nome|upper|replace(' ', '') }}</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Featured Image -->
+          <div class="my-10">
+            {% if noticia.imagem %}
+            {% set img_path = noticia.imagem|trim %}
+            {% if img_path.lower().startswith('http') %}
+            <img class="w-full aspect-video object-cover" src="{{ img_path }}" alt="{{ noticia.titulo }}" />
+            {% else %}
+            <img class="w-full aspect-video object-cover" src="{{ url_for('static', filename=img_path) }}"
+              alt="{{ noticia.titulo }}" />
+            {% endif %}
+            {% else %}
+            <img class="w-full aspect-video object-cover"
+              src="{{ url_for('static', filename='img/teatro/teatro1.jpg') }}"
+              alt="{{ noticia.titulo }}" />
+            {% endif %}
+          </div>
+
+          <!-- Body -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div class="lg:col-span-8">
+              <div class="prose max-w-none prose-lg prose-headings:font-serif">
+                <div class="whitespace-pre-line text-gray-700 leading-relaxed text-lg mb-12">
+                  {{ noticia.conteudo or 'Conteúdo não disponível.' }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Detail Sidebar -->
+            <div class="lg:col-span-4 space-y-6">
+              <div class="bg-white border border-gray-100 p-6 rounded-sm shadow-lg sticky top-32">
+                <div class="mt-4">
+                  <p class="text-[10px] uppercase font-bold text-gray-400 mb-4 tracking-tighter">Partilhar notícia</p>
+                  <div class="flex gap-4">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url|urlencode }}" target="_blank"
+                      class="w-10 h-10 flex items-center justify-center rounded-sm bg-gray-50 text-gray-400 hover:bg-black hover:text-white transition-all"><i
+                        class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/intent/tweet?url={{ request.url|urlencode }}&text={{ noticia.titulo|urlencode }}"
+                      target="_blank"
+                      class="w-10 h-10 flex items-center justify-center rounded-sm bg-gray-50 text-gray-400 hover:bg-black hover:text-white transition-all"><i
+                        class="fab fa-twitter"></i></a>
+                    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url|urlencode }}"
+                      target="_blank"
+                      class="w-10 h-10 flex items-center justify-center rounded-sm bg-gray-50 text-gray-400 hover:bg-black hover:text-white transition-all"><i
+                        class="fab fa-linkedin-in"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    {% include 'includes/footer.html' %}
+  </div>
+</body>
+
+</html>

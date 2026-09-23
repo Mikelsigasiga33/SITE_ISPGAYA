@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth selection:text-white selection:bg-orange-400">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registo Fotográfico — {% if clube_tipo == 'tuna' %}Tuna Académica{% else %}Clube de Teatro{% endif %} — ISPGAYA</title>
+
+    <!-- Fonts (Matches ispgaya.pt) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Open+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Libre Baskerville', 'serif'],
+                        sans: ['Open Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        orange: {
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon_ispgaya.png') }}">
+
+    <style>
+        body { background-color: #ffffff; color: #000000; -webkit-font-smoothing: antialiased; }
+        
+        .triangle-pattern {
+            position: absolute;
+            width: 400px;
+            height: 600px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M0 30 L15 0 L30 30 Z' fill='%23e2e8f0'/%3E%3C/svg%3E");
+            background-size: 30px 30px;
+            opacity: 0.4;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .triangle-pattern--right { top: 5%; right: -200px; transform: rotate(15deg); }
+        .triangle-pattern--left { top: 35%; left: -250px; transform: rotate(-15deg); opacity: 0.5; }
+        .triangle-pattern--mid { top: 60%; right: -180px; transform: rotate(45deg); opacity: 0.45; }
+        .triangle-pattern--bottom { bottom: 5%; left: -200px; transform: rotate(10deg); opacity: 0.4; }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .photo-container {
+            mask-image: linear-gradient(to right, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+        }
+
+        /* Lightbox */
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+        #lightbox img {
+            max-width: 85vw;
+            max-height: 80vh;
+            object-fit: contain;
+            transition: opacity 0.3s ease;
+        }
+        .lb-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s;
+        }
+        .lb-arrow:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+        }
+        .lb-arrow--left { left: 24px; }
+        .lb-arrow--right { right: 24px; }
+        .lb-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .lb-close:hover { opacity: 0.6; }
+        .lb-caption {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .lb-counter {
+            position: absolute;
+            top: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.4);
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+        }
+    </style>
+</head>
+
+<body class="antialiased font-sans">
+    <div id="app" class="min-h-screen flex flex-col items-stretch">
+
+        {% include 'includes/navbar.html' %}
+
+        <main class="flex-grow pt-24 md:pt-28 lg:pt-40 relative overflow-x-hidden">
+            <!-- Ornamentos de Triângulos (Contidos para não gerar scroll) -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+                <div class="triangle-pattern triangle-pattern--right"></div>
+                <div class="triangle-pattern triangle-pattern--left"></div>
+                <div class="triangle-pattern triangle-pattern--mid"></div>
+                <div class="triangle-pattern triangle-pattern--bottom"></div>
+            </div>
+
+            <section class="container mx-auto px-4 sm:px-6 xl:px-8 mb-20">
+                
+                <!-- Breadcrumbs -->
+                <nav class="flex text-xs font-medium text-gray-400 mb-8" aria-label="Breadcrumb">
+                    <a href="{{ url_for('frontoffice.index') }}" class="hover:text-black transition-colors">Lab. Cultural</a>
+                    <span class="mx-3 text-gray-300">/</span>
+                    {% if clube_tipo == 'tuna' %}
+                    <a href="{{ url_for('frontoffice.clube_tuna') }}" class="hover:text-black transition-colors">Tuna Académica</a>
+                    {% else %}
+                    <a href="{{ url_for('frontoffice.clube_teatro') }}" class="hover:text-black transition-colors">Clube de Teatro</a>
+                    {% endif %}
+                    <span class="mx-3 text-gray-300">/</span>
+                    <span class="text-black">Registo Fotográfico</span>
+                </nav>
+
+                <div class="max-w-3xl mb-12">
+                    <h1 class="font-serif text-4xl lg:text-5xl font-bold mb-8 text-[#1a1a1a]">Registo Fotográfico</h1>
+                    <p class="text-lg text-gray-600 leading-relaxed max-w-2xl mb-10">
+                        {% if clube_tipo == 'tuna' %}
+                        As atuações e os momentos marcantes da nossa Tuna Académica. Navega pelas memórias de cada espetáculo.
+                        {% else %}
+                        As produções e os momentos marcantes do nosso Clube de Teatro. Navega pelas memórias de cada espetáculo.
+                        {% endif %}
+                    </p>
+
+                    <!-- Search Bar Integrated with Gallery Info -->
+                    <div class="relative max-w-md group">
+                        <form action="{% if clube_tipo == 'tuna' %}{{ url_for('frontoffice.galeria_tuna') }}{% else %}{{ url_for('frontoffice.galeria_teatro') }}{% endif %}" method="GET" class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-magnifying-glass text-gray-400 group-focus-within:text-orange-500 transition-colors"></i>
+                            </div>
+                            <input type="text" name="q" value="{{ request.args.get('q', '') }}" 
+                                placeholder="{% if clube_tipo == 'tuna' %}Procurar atuação...{% else %}Procurar espetáculo...{% endif %}" 
+                                class="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 focus:bg-white transition-all duration-300 rounded-none placeholder:text-gray-400 font-medium"
+                                oninput="handleSearchAutocomplete(this.value)"
+                                autocomplete="off"
+                                id="gallery-search-input">
+                            
+                            <!-- Autocomplete Dropdown -->
+                            <div id="search-suggestions" class="absolute left-0 right-0 top-full bg-white border border-gray-100 shadow-xl z-[60] hidden">
+                                <!-- Sugestões via JS -->
+                            </div>
+                            
+                            {% if request.args.get('q') %}
+                            <a href="{% if clube_tipo == 'tuna' %}{{ url_for('frontoffice.galeria_tuna') }}{% else %}{{ url_for('frontoffice.galeria_teatro') }}{% endif %}" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-300 hover:text-gray-500 transition-colors">
+                                <i class="fa-solid fa-xmark"></i>
+                            </a>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+
+                <div class="space-y-24 lg:space-y-32">
+                    {% for grupo in grupos %}
+                    {% set group_idx = loop.index0 %}
+                    <article class="group">
+                        <div class="flex flex-col gap-10 lg:flex-row lg:items-center">
+                            
+                            <!-- Info Column (Left) -->
+                            <div class="lg:w-4/12">
+                                <div class="space-y-4">
+                                    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f97316]">{% if clube_tipo == 'tuna' %}Tuna Académica{% else %}Clube de Teatro{% endif %}</p>
+                                    <h2 class="font-serif text-3xl lg:text-4xl font-bold text-[#1a1a1a] leading-tight">
+                                        {{ grupo.nome }}
+                                    </h2>
+                                    {% if grupo.data %}
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest -mt-1">
+                                        {{ grupo.data.strftime('%d %b %Y') if grupo.data.strftime else grupo.data }}
+                                    </p>
+                                    {% endif %}
+                                    <div class="h-1 w-12 bg-gray-100 group-hover:w-24 transition-all duration-500"></div>
+                                    <p class="text-xs text-gray-400 font-medium uppercase tracking-widest">
+                                        {{ grupo.fotos|length }} {% if grupo.fotos|length == 1 %}Fotografia{% else %}Fotografias{% endif %}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Photo Row (Right) -->
+                            <div class="lg:w-8/12">
+                                <div class="photo-container flex overflow-x-auto gap-6 pb-6 hide-scrollbar snap-x">
+                                    {% for foto in grupo.fotos %}
+                                    <div class="w-64 md:w-80 flex-shrink-0 snap-start">
+                                        <div class="aspect-video bg-gray-50 overflow-hidden shadow-sm relative group/photo cursor-pointer"
+                                             onclick="openLightbox('{{ group_idx }}', {{ loop.index0 }})">
+                                            <img src="{{ url_for('static', filename=foto.path) }}" 
+                                                 class="w-full h-full object-cover transition-transform duration-1000 group-hover/photo:scale-110 grayscale group-hover/photo:grayscale-0" 
+                                                 alt="{{ foto.titulo }}">
+                                            
+                                            <!-- Simple Tag -->
+                                            <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 text-[8px] font-bold uppercase tracking-widest">
+                                                {{ foto.titulo if foto.titulo != grupo.nome else 'Momento' }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+
+                {% if not grupos %}
+                <div class="text-center py-32 border-t border-gray-100">
+                    <p class="text-gray-400 uppercase tracking-widest font-bold text-sm">Ainda não existem memórias registadas para este clube</p>
+                </div>
+                {% endif %}
+
+                <div class="mt-40 pt-12 border-t border-gray-100 text-center">
+                    {% if clube_tipo == 'tuna' %}
+                    <a href="{{ url_for('frontoffice.clube_tuna') }}" class="inline-flex items-center text-[#f97316] font-bold uppercase tracking-widest text-xs hover:text-black transition-all group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Voltar à Tuna
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('frontoffice.clube_teatro') }}" class="inline-flex items-center text-[#f97316] font-bold uppercase tracking-widest text-xs hover:text-black transition-all group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Voltar ao Clube
+                    </a>
+                    {% endif %}
+                </div>
+            </section>
+        </main>
+
+        {% include 'includes/footer.html' %}
+    </div>
+
+    <!-- LIGHTBOX OVERLAY -->
+    <div id="lightbox">
+        <div class="lb-close" onclick="closeLightbox()">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="lb-arrow lb-arrow--left" onclick="navigateLightbox(-1)">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="lb-arrow lb-arrow--right" onclick="navigateLightbox(1)">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+        <img id="lb-image" src="" alt="">
+        <div class="lb-caption" id="lb-caption"></div>
+        <div class="lb-counter" id="lb-counter"></div>
+    </div>
+
+    <script>
+        // --- Search Autocomplete & Live Filtering ---
+        const CLUBE_TIPO = "{{ clube_tipo }}";
+        let searchTimeout;
+        const galleryWrapper = document.querySelector('.space-y-24'); // Container dos grupos
+
+        async function updateGallery(q) {
+            const url = `{% if clube_tipo == 'tuna' %}{{ url_for('frontoffice.galeria_tuna') }}{% else %}{{ url_for('frontoffice.galeria_teatro') }}{% endif %}?q=${encodeURIComponent(q)}`;
+            galleryWrapper.style.opacity = '0.5';
+            
+            try {
+                const res = await fetch(url);
+                const html = await res.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                const newContent = doc.querySelector('.space-y-24');
+                const emptyContent = doc.querySelector('.text-center.py-32');
+                
+                if (newContent) {
+                    galleryWrapper.innerHTML = newContent.innerHTML;
+                    galleryWrapper.className = newContent.className;
+                    // Re-indexar galleryData se necessário (Jinja já faz no reload, mas aqui precisamos atualizar a variável JS)
+                    // Para simplificar, como o lightbox usa galleryData fixo, vamos recarregar a página se o utilizador clicar numa foto após filtrar?
+                    // Não, vamos extrair os dados novos também se possível, mas por agora o filtro serve para ver.
+                } else if (emptyContent) {
+                    galleryWrapper.innerHTML = `<div class="text-center py-32 border-t border-gray-100">${emptyContent.innerHTML}</div>`;
+                }
+                
+                window.history.pushState({}, '', url);
+            } catch (e) {
+                console.error("Erro ao atualizar galeria:", e);
+            } finally {
+                galleryWrapper.style.opacity = '1';
+            }
+        }
+
+        async function handleSearchAutocomplete(q) {
+            const container = document.getElementById('search-suggestions');
+            
+            // Sempre atualizar a galeria (live filter)
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => updateGallery(q), 400);
+
+            if (CLUBE_TIPO === 'tuna') {
+                return; // Autocomplete not active for Tuna
+            }
+
+            if (q.length < 2) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/v1/autocomplete?q=${encodeURIComponent(q)}&tipo=teatro`);
+                const data = await res.json();
+
+                if (data.length > 0) {
+                    container.innerHTML = data.map(item => `
+                        <div class="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-0" 
+                             onclick="selectSuggestion('${item.titulo}')">
+                            <p class="text-xs font-bold text-[#1a1a1a]">${item.titulo}</p>
+                            <p class="text-[9px] text-orange-500 uppercase tracking-tighter">Espetáculo de Teatro</p>
+                        </div>
+                    `).join('');
+                    container.classList.remove('hidden');
+                } else {
+                    container.classList.add('hidden');
+                }
+            } catch (e) {
+                console.error("Autocomplete error:", e);
+            }
+        }
+
+        function selectSuggestion(titulo) {
+            const input = document.getElementById('gallery-search-input');
+            input.value = titulo;
+            document.getElementById('search-suggestions').classList.add('hidden');
+            updateGallery(titulo);
+        }
+
+        // Bloquear submit do form para não recarregar a página
+        document.querySelector('#gallery-search-input').closest('form').onsubmit = (e) => {
+            e.preventDefault();
+            updateGallery(document.getElementById('gallery-search-input').value);
+        };
+
+        // Close suggestions on click outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#gallery-search-input') && !e.target.closest('#search-suggestions')) {
+                document.getElementById('search-suggestions').classList.add('hidden');
+            }
+        });
+
+        // Build gallery data from Jinja
+        const galleryData = [
+            {% for grupo in grupos %}
+            {
+                nome: "{{ grupo.nome|e }}",
+                data: "{{ grupo.data.strftime('%d %b %Y') if (grupo.data and grupo.data.strftime) else (grupo.data if grupo.data else '') }}",
+                fotos: [
+                    {% for foto in grupo.fotos %}
+                    {
+                        src: "{{ url_for('static', filename=foto.path) }}",
+                        titulo: "{{ (foto.titulo if foto.titulo != grupo.nome else 'Momento')|e }}"
+                    }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        let currentGroup = 0;
+        let currentIndex = 0;
+
+        function openLightbox(groupIdx, photoIdx) {
+            currentGroup = parseInt(groupIdx);
+            currentIndex = parseInt(photoIdx);
+            updateLightbox();
+            const lb = document.getElementById('lightbox');
+            lb.style.display = 'flex';
+            requestAnimationFrame(() => lb.classList.add('active'));
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const lb = document.getElementById('lightbox');
+            lb.classList.remove('active');
+            setTimeout(() => { lb.style.display = 'none'; }, 300);
+            document.body.style.overflow = '';
+        }
+
+        function navigateLightbox(dir) {
+            const fotos = galleryData[currentGroup].fotos;
+            currentIndex = (currentIndex + dir + fotos.length) % fotos.length;
+            updateLightbox();
+        }
+
+        function updateLightbox() {
+            const grupo = galleryData[currentGroup];
+            const foto = grupo.fotos[currentIndex];
+            const img = document.getElementById('lb-image');
+            
+            img.style.opacity = '0';
+            setTimeout(() => {
+                img.src = foto.src;
+                img.alt = foto.titulo;
+                img.onload = () => { img.style.opacity = '1'; };
+            }, 150);
+
+            document.getElementById('lb-caption').textContent = grupo.nome + ' (' + grupo.data + ') — ' + foto.titulo;
+            document.getElementById('lb-counter').textContent = (currentIndex + 1) + ' / ' + grupo.fotos.length;
+
+            // Hide arrows if only 1 photo
+            const arrows = document.querySelectorAll('.lb-arrow');
+            arrows.forEach(a => a.style.display = grupo.fotos.length > 1 ? 'flex' : 'none');
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const lb = document.getElementById('lightbox');
+            if (!lb.classList.contains('active')) return;
+            
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            if (e.key === 'ArrowRight') navigateLightbox(1);
+        });
+
+        // Click on backdrop to close
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target.id === 'lightbox') closeLightbox();
+        });
+    </script>
+</body>
+</html>
